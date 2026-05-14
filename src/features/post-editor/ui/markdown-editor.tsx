@@ -170,17 +170,40 @@ export function MarkdownEditor({
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key !== "Tab") return;
-    e.preventDefault();
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const spaces = "  ";
-    setContent(ta.value.slice(0, start) + spaces + ta.value.slice(end));
-    requestAnimationFrame(() => {
-      ta.selectionStart = ta.selectionEnd = start + spaces.length;
-    });
+    const mod = e.ctrlKey || e.metaKey;
+
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const ta = textareaRef.current;
+      if (!ta) return;
+      const start = ta.selectionStart;
+      const end = ta.selectionEnd;
+      const spaces = "  ";
+      setContent(ta.value.slice(0, start) + spaces + ta.value.slice(end));
+      requestAnimationFrame(() => {
+        ta.selectionStart = ta.selectionEnd = start + spaces.length;
+      });
+      return;
+    }
+
+    if (!mod) return;
+
+    if (e.key === "b") {
+      e.preventDefault();
+      insertMarkdown("**", "**");
+    } else if (e.key === "i") {
+      e.preventDefault();
+      insertMarkdown("*", "*");
+    } else if (e.key === "k") {
+      e.preventDefault();
+      insertMarkdown("[", "](url)");
+    } else if (e.key === "u") {
+      e.preventDefault();
+      insertMarkdown("<u>", "</u>");
+    } else if (e.key === "s") {
+      e.preventDefault();
+      handleSaveDraft();
+    }
   }
 
   function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
