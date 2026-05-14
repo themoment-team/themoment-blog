@@ -105,7 +105,7 @@ export default async function PostPage({ params }: PageProps) {
           <PostContent content={post.content} />
 
           {/* 푸터 액션 */}
-          <div className="mt-10 pt-8 border-t border-border flex items-center gap-4">
+          <div className="mt-10 pt-8 border-t border-border flex flex-col items-start gap-4">
             <LikeButton slug={slug} initialCount={likeCount} />
             <Link
               href="/posts"
