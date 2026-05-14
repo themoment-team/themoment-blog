@@ -88,16 +88,35 @@ export function MarkdownEditor({
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const sel = ta.value.slice(start, end);
-    const next =
-      ta.value.slice(0, start) + before + sel + after + ta.value.slice(end);
-    setContent(next);
-    requestAnimationFrame(() => {
-      ta.focus();
-      ta.setSelectionRange(
-        start + before.length,
-        start + before.length + sel.length,
-      );
-    });
+    const full = ta.value;
+
+    // 선택 영역이 이미 마커로 감싸져 있으면 제거 (토글 off)
+    const wrappedInside = sel.startsWith(before) && sel.endsWith(after) && sel.length >= before.length + after.length;
+    const wrappedOutside =
+      full.slice(start - before.length, start) === before &&
+      full.slice(end, end + after.length) === after;
+
+    if (wrappedInside) {
+      const inner = sel.slice(before.length, sel.length - after.length);
+      setContent(full.slice(0, start) + inner + full.slice(end));
+      requestAnimationFrame(() => {
+        ta.focus();
+        ta.setSelectionRange(start, start + inner.length);
+      });
+    } else if (wrappedOutside) {
+      const next = full.slice(0, start - before.length) + sel + full.slice(end + after.length);
+      setContent(next);
+      requestAnimationFrame(() => {
+        ta.focus();
+        ta.setSelectionRange(start - before.length, start - before.length + sel.length);
+      });
+    } else {
+      setContent(full.slice(0, start) + before + sel + after + full.slice(end));
+      requestAnimationFrame(() => {
+        ta.focus();
+        ta.setSelectionRange(start + before.length, start + before.length + sel.length);
+      });
+    }
   }, []);
 
   async function handleImageUpload(file: File) {
