@@ -27,6 +27,36 @@ export async function getPublishedPosts(limit = 20, offset = 0) {
     .offset(offset);
 }
 
+export async function getDraftPosts(authorId: string) {
+  return db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      excerpt: posts.excerpt,
+      updatedAt: posts.updatedAt,
+      createdAt: posts.createdAt,
+    })
+    .from(posts)
+    .where(and(eq(posts.authorId, authorId), eq(posts.published, false)))
+    .orderBy(desc(posts.updatedAt));
+}
+
+export async function getPostForEdit(slug: string) {
+  const [post] = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      content: posts.content,
+      authorId: posts.authorId,
+    })
+    .from(posts)
+    .where(eq(posts.slug, slug))
+    .limit(1);
+  return post ?? null;
+}
+
 export async function getPostBySlug(slug: string) {
   const [post] = await db
     .select({

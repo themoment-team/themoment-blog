@@ -21,6 +21,9 @@ export async function Header() {
           <Link href="/posts" className="hover:text-fg transition-colors">
             포스트
           </Link>
+          <Link href="/about" className="hover:text-fg transition-colors">
+            더모먼트
+          </Link>
           {session?.user.isMomentMember && (
             <Link href="/write" className="hover:text-fg transition-colors">
               글쓰기

@@ -1,6 +1,7 @@
 "use client";
 
 import { logout } from "@features/auth";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 interface UserMenuProps {
@@ -40,10 +41,17 @@ export function UserMenu({ name }: UserMenuProps) {
           <div className="px-4 py-3 border-b border-border">
             <p className="text-sm font-medium text-fg truncate">{name}</p>
           </div>
+          <Link
+            href="/my"
+            onClick={() => setOpen(false)}
+            className="block w-full px-4 py-2.5 text-sm text-fg-muted hover:text-fg hover:bg-bg-subtle transition-colors"
+          >
+            내 글 목록
+          </Link>
           <form action={logout}>
             <button
               type="submit"
-              className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-bg-subtle transition-colors"
+              className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-bg-subtle transition-colors border-t border-border"
             >
               로그아웃
             </button>

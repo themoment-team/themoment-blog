@@ -76,6 +76,7 @@ export function MarkdownEditor({
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">("idle");
+  const [saveError, setSaveError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [draggingOver, setDraggingOver] = useState(false);
   // 첫 임시저장 후 생성된 slug를 보관 (중복 POST 방지)
@@ -115,18 +116,23 @@ export function MarkdownEditor({
   }
 
   async function handleSaveDraft() {
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim()) {
+      setSaveStatus("error");
+      setSaveError("제목을 입력해주세요");
+      return;
+    }
     setSaving(true);
     setSaveStatus("idle");
+    setSaveError("");
     try {
       const currentSlug = draftSlugRef.current;
       const slugified =
         currentSlug ??
-        title
+        (title
           .toLowerCase()
           .replace(/[^a-z0-9가-힣]/g, "-")
           .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "");
+          .replace(/^-|-$/g, "") || "untitled");
       const method = currentSlug ? "PATCH" : "POST";
       const url = currentSlug ? `/api/posts/${currentSlug}` : "/api/posts";
       const res = await fetch(url, {
@@ -135,7 +141,9 @@ export function MarkdownEditor({
         body: JSON.stringify({ title, slug: slugified, content, published: false }),
       });
       if (!res.ok) {
+        const d = await res.json().catch(() => ({}));
         setSaveStatus("error");
+        setSaveError((d as { error?: string }).error ?? "저장 실패");
         return;
       }
       if (!currentSlug) {
@@ -143,9 +151,12 @@ export function MarkdownEditor({
         draftSlugRef.current = data.slug;
       }
       setSaveStatus("saved");
+      setSaveError("");
       setTimeout(() => setSaveStatus("idle"), 2000);
-    } catch {
+    } catch (err) {
+      console.error("[임시저장]", err);
       setSaveStatus("error");
+      setSaveError("네트워크 오류");
     } finally {
       setSaving(false);
     }
@@ -224,26 +235,31 @@ export function MarkdownEditor({
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleSaveDraft}
-              disabled={saving}
-              className={`text-sm transition-colors disabled:opacity-50 ${
-                saveStatus === "saved"
-                  ? "text-green-500"
-                  : saveStatus === "error"
-                    ? "text-red-500"
-                    : "text-fg-muted hover:text-fg"
-              }`}
-            >
-              {saving
-                ? "저장 중..."
-                : saveStatus === "saved"
-                  ? "저장됨 ✓"
-                  : saveStatus === "error"
-                    ? "저장 실패"
-                    : "임시저장"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={saving}
+                className={`text-sm transition-colors disabled:opacity-50 ${
+                  saveStatus === "saved"
+                    ? "text-green-500"
+                    : saveStatus === "error"
+                      ? "text-red-500"
+                      : "text-fg-muted hover:text-fg"
+                }`}
+              >
+                {saving
+                  ? "저장 중..."
+                  : saveStatus === "saved"
+                    ? "저장됨 ✓"
+                    : saveStatus === "error"
+                      ? "저장 실패"
+                      : "임시저장"}
+              </button>
+              {saveStatus === "error" && saveError && (
+                <span className="text-xs text-red-400">{saveError}</span>
+              )}
+            </div>
             <button
               type="button"
               onClick={() => setShowPublishModal(true)}

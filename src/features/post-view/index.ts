@@ -1,8 +1,10 @@
 export {
   addLike,
   getAllTags,
+  getDraftPosts,
   getLikeCount,
   getPostBySlug,
+  getPostForEdit,
   getPostsByTag,
   getPublishedPosts,
   getTagBySlug,
