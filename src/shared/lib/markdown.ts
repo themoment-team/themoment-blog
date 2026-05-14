@@ -126,10 +126,14 @@ export function extractHeadings(
 
 export function generateExcerpt(content: string, maxLength = 200): string {
   return content
-    .replace(/^#{1,6}\s+/gm, "")
-    .replace(/[*_`~]/g, "")
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^#{1,6}\s+/gm, "")        // 헤딩 제거
+    .replace(/```[\s\S]*?```/g, "")      // 코드 블록 제거
+    .replace(/`[^`]*`/g, "")            // 인라인 코드 제거
+    .replace(/<[^>]+>/g, "")            // HTML 태그 제거
+    .replace(/[*_~]/g, "")              // 마크다운 강조 제거
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // 링크 텍스트만 남김
     .replace(/\n+/g, " ")
+    .replace(/\s{2,}/g, " ")
     .trim()
     .slice(0, maxLength);
 }
