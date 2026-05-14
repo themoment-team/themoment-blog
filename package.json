@@ -28,6 +28,7 @@
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
     "remark-rehype": "^11.1.2",
+    "server-only": "^0.0.1",
     "shiki": "^4.0.2",
     "unified": "^11.0.5",
     "unist-util-visit": "^5.1.0",
@@ -40,8 +41,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/uuid": "^10.0.0",
+    "@typescript-eslint/parser": "^8.59.3",
     "dotenv-cli": "^11.0.0",
     "drizzle-kit": "^0.31.10",
+    "eslint": "^9.39.4",
+    "eslint-plugin-boundaries": "^6.0.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
