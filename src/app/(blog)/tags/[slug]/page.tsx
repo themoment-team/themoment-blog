@@ -1,8 +1,6 @@
+import { getPostsByTag, getTagBySlug, PostCard } from "@features/post-view";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PostCard } from "@/components/post/PostCard";
-import { getPostsByTag } from "@/lib/posts";
-import { getTagBySlug } from "@/lib/tags";
 
 interface PageProps {
   params: Promise<{ slug: string }>;

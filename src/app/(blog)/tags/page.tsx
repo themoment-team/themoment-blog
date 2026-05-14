@@ -1,6 +1,5 @@
+import { getAllTags, TagCloud } from "@features/post-view";
 import type { Metadata } from "next";
-import { TagCloud } from "@/components/tag/TagCloud";
-import { getAllTags } from "@/lib/tags";
 
 export const metadata: Metadata = { title: "태그" };
 

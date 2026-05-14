@@ -1,6 +1,5 @@
+import { getPublishedPosts, PostCard } from "@features/post-view";
 import type { Metadata } from "next";
-import { PostCard } from "@/components/post/PostCard";
-import { getPublishedPosts } from "@/lib/posts";
 
 export const metadata: Metadata = { title: "포스트" };
 

@@ -1,6 +1,6 @@
+import { auth } from "@features/auth/config";
+import { uploadImage } from "@shared/lib/cloudinary";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { uploadImage } from "@/lib/cloudinary";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "file required" }, { status: 400 });
   }
 
-  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_SIZE = 10 * 1024 * 1024;
   if (file.size > MAX_SIZE) {
     return NextResponse.json(
       { error: "파일 크기는 10MB 이하여야 합니다" },

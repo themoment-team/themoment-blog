@@ -1,15 +1,17 @@
+import {
+  getLikeCount,
+  getPostBySlug,
+  LikeButton,
+  PostContent,
+  TableOfContents,
+  TagBadge,
+  ViewCounter,
+} from "@features/post-view";
+import { extractHeadings } from "@shared/lib/markdown";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { LikeButton } from "@/components/post/LikeButton";
-import { PostContent } from "@/components/post/PostContent";
-import { SeriesNavigator } from "@/components/post/SeriesNavigator";
-import { TableOfContents } from "@/components/post/TableOfContents";
-import { ViewCounter } from "@/components/post/ViewCounter";
-import { TagBadge } from "@/components/tag/TagBadge";
-import { extractHeadings } from "@/lib/markdown";
-import { getLikeCount, getPostBySlug } from "@/lib/posts";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -67,7 +69,7 @@ export default async function PostPage({ params }: PageProps) {
               </div>
             )}
 
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-[-0.04em] leading-[1.0] text-fg">
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-display leading-[1.0] text-fg">
               {post.title}
             </h1>
 
@@ -106,22 +108,11 @@ export default async function PostPage({ params }: PageProps) {
             <LikeButton slug={slug} initialCount={likeCount} />
             <Link
               href="/posts"
-              className="text-sm text-fg-muted hover:text-fg transition-colors uppercase tracking-[0.06em]"
+              className="text-sm text-fg-muted hover:text-fg transition-colors uppercase tracking-label"
             >
               ← 목록
             </Link>
           </div>
-
-          {/* 시리즈 내비게이터 */}
-          {post.series && (
-            <div className="mt-8">
-              <SeriesNavigator
-                seriesId={post.series.id}
-                seriesName={post.series.name}
-                currentSlug={slug}
-              />
-            </div>
-          )}
         </article>
 
         {/* ToC 사이드바 (데스크톱) */}
@@ -135,7 +126,7 @@ export default async function PostPage({ params }: PageProps) {
       {/* 모바일 ToC (접기/펼치기) */}
       {headings.length > 0 && (
         <details className="lg:hidden mt-6 border border-border rounded p-4">
-          <summary className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted cursor-pointer">
+          <summary className="text-xs font-medium uppercase tracking-label text-fg-muted cursor-pointer">
             목차
           </summary>
           <div className="mt-3">

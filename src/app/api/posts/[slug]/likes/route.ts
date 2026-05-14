@@ -1,9 +1,14 @@
+import { posts } from "@entities/post";
+import { auth } from "@features/auth/config";
+import {
+  addLike,
+  getLikeCount,
+  hasLiked,
+  removeLike,
+} from "@features/post-view";
+import { db } from "@shared/lib/db";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/lib/db";
-import { posts } from "@/lib/db/schema";
-import { addLike, getLikeCount, hasLiked, removeLike } from "@/lib/posts";
 
 async function resolvePostId(slug: string): Promise<string | null> {
   const [post] = await db
@@ -14,7 +19,6 @@ async function resolvePostId(slug: string): Promise<string | null> {
   return post?.id ?? null;
 }
 
-// 좋아요 상태 조회
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -35,7 +39,6 @@ export async function GET(
   return NextResponse.json({ count, liked });
 }
 
-// 좋아요 추가
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ slug: string }> },
@@ -67,7 +70,6 @@ export async function POST(
   }
 }
 
-// 좋아요 취소
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ slug: string }> },

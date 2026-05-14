@@ -1,8 +1,9 @@
+import { auth } from "@features/auth/config";
+import { deletePost, updatePost } from "@features/post-editor";
+import { getPostBySlug } from "@features/post-view";
+import { ALLOWED_TAGS } from "@shared/config/tags";
+import { generateExcerpt } from "@shared/lib/markdown";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { generateExcerpt } from "@/lib/markdown";
-import { deletePost, getPostBySlug, updatePost } from "@/lib/posts";
-import { findOrCreateTag } from "@/lib/tags";
 
 export async function GET(
   _req: Request,
@@ -32,22 +33,11 @@ export async function PATCH(
   }
 
   const body = await req.json();
-  const {
-    title,
-    content,
-    excerpt,
-    coverImage,
-    seriesId,
-    seriesOrder,
-    published,
-    tagNames,
-  } = body;
+  const { title, content, excerpt, coverImage, published, tagNames } = body;
 
-  const tagIds: string[] | undefined = Array.isArray(tagNames)
-    ? await Promise.all(
-        (tagNames as string[])
-          .filter(Boolean)
-          .map((n) => findOrCreateTag(n.trim())),
+  const validatedTagNames = Array.isArray(tagNames)
+    ? (tagNames as string[]).filter((t) =>
+        (ALLOWED_TAGS as readonly string[]).includes(t),
       )
     : undefined;
 
@@ -56,10 +46,8 @@ export async function PATCH(
     content,
     excerpt: excerpt || (content ? generateExcerpt(content) : undefined),
     coverImage,
-    seriesId,
-    seriesOrder,
     published,
-    tagIds,
+    tagNames: validatedTagNames,
   });
 
   return NextResponse.json({ slug: updated.slug });

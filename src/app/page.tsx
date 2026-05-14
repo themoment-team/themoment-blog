@@ -1,7 +1,6 @@
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
-import { PostCard } from "@/components/post/PostCard";
-import { getPublishedPosts } from "@/lib/posts";
+import { getPublishedPosts, PostCard } from "@features/post-view";
+import { Footer } from "./_components/footer";
+import { Header } from "./_components/header";
 
 export default async function HomePage() {
   const posts = await getPublishedPosts(10);

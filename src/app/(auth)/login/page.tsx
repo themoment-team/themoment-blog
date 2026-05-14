@@ -1,5 +1,5 @@
+import { signIn } from "@features/auth/config";
 import type { Metadata } from "next";
-import { signIn } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "로그인",

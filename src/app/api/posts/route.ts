@@ -1,8 +1,8 @@
+import { auth } from "@features/auth/config";
+import { createPost } from "@features/post-editor";
+import { ALLOWED_TAGS } from "@shared/config/tags";
+import { generateExcerpt } from "@shared/lib/markdown";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { generateExcerpt } from "@/lib/markdown";
-import { createPost } from "@/lib/posts";
-import { findOrCreateTag } from "@/lib/tags";
 
 export async function POST(req: Request) {
   const session = await auth();
@@ -11,17 +11,8 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const {
-    title,
-    slug,
-    content,
-    excerpt,
-    coverImage,
-    seriesId,
-    seriesOrder,
-    published,
-    tagNames,
-  } = body;
+  const { title, slug, content, excerpt, coverImage, published, tagNames } =
+    body;
 
   if (!title || !slug || !content) {
     return NextResponse.json(
@@ -30,15 +21,11 @@ export async function POST(req: Request) {
     );
   }
 
-  const tagIds: string[] = [];
-  if (Array.isArray(tagNames)) {
-    for (const name of tagNames as string[]) {
-      if (name.trim()) {
-        const id = await findOrCreateTag(name.trim());
-        tagIds.push(id);
-      }
-    }
-  }
+  const validatedTagNames = Array.isArray(tagNames)
+    ? (tagNames as string[]).filter((t) =>
+        (ALLOWED_TAGS as readonly string[]).includes(t),
+      )
+    : [];
 
   const post = await createPost({
     title,
@@ -47,10 +34,8 @@ export async function POST(req: Request) {
     excerpt: excerpt || generateExcerpt(content),
     coverImage: coverImage ?? undefined,
     authorId: session.user.id,
-    seriesId: seriesId ?? undefined,
-    seriesOrder: seriesOrder ?? undefined,
     published: published ?? false,
-    tagIds,
+    tagNames: validatedTagNames,
   });
 
   return NextResponse.json({ slug: post.slug }, { status: 201 });
