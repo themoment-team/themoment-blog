@@ -21,7 +21,7 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const post = await getPostBySlug(decodeURIComponent(slug));
   if (!post) return { title: "포스트를 찾을 수 없습니다" };
 
   return {
@@ -38,7 +38,8 @@ export async function generateMetadata({
 export const revalidate = 60;
 
 export default async function PostPage({ params }: PageProps) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
 
   if (!post || !post.published) notFound();
