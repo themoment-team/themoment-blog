@@ -34,7 +34,18 @@ export function UserMenu({ name }: UserMenuProps) {
           <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
         </svg>
         <span className="hidden sm:block max-w-[6rem] truncate">{name}</span>
-        <span className="text-[10px] opacity-60">▾</span>
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`size-3.5 shrink-0 opacity-60 transition-transform duration-150 ${open ? "-rotate-180" : ""}`}
+          aria-hidden="true"
+        >
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </button>
 
       {open && (
