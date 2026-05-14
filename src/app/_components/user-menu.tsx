@@ -29,9 +29,10 @@ export function UserMenu({ name }: UserMenuProps) {
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 text-sm text-fg-muted hover:text-fg transition-colors"
       >
-        <span className="size-7 rounded-full bg-bg-subtle border border-border flex items-center justify-center text-xs font-bold text-fg shrink-0">
-          {name[0]}
-        </span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="size-5 shrink-0" aria-hidden="true">
+          <circle cx="12" cy="8" r="4" />
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+        </svg>
         <span className="hidden sm:block max-w-[6rem] truncate">{name}</span>
         <span className="text-[10px] opacity-60">▾</span>
       </button>
@@ -51,7 +52,7 @@ export function UserMenu({ name }: UserMenuProps) {
           <form action={logout}>
             <button
               type="submit"
-              className="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-bg-subtle transition-colors border-t border-border"
+              className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:text-red-500 hover:bg-red-500/5 transition-colors"
             >
               로그아웃
             </button>
