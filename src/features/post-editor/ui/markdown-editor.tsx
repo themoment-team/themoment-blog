@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -23,8 +23,116 @@ interface MarkdownEditorProps {
 
 type Mode = "write" | "split" | "preview";
 
+// ── 세그먼트 파서 ─────────────────────────────────────────────
+type Segment =
+  | { id: string; type: "img"; src: string; width: number }
+  | { id: string; type: "text"; raw: string };
+
+function parseSegments(content: string): Segment[] {
+  const result: Segment[] = [];
+  let lastIndex = 0;
+  let n = 0;
+  const re = /<img\b[^>]*\/>/g;
+  let m: RegExpExecArray | null;
+
+  while ((m = re.exec(content)) !== null) {
+    if (m.index > lastIndex) {
+      result.push({ id: `t${n++}`, type: "text", raw: content.slice(lastIndex, m.index) });
+    }
+    const src   = m[0].match(/src="([^"]*)"/)?.[1] ?? "";
+    const width = Number(m[0].match(/width="([^"]*)"/)?.[1]) || 600;
+    result.push({ id: `i${n++}`, type: "img", src, width });
+    lastIndex = m.index + m[0].length;
+  }
+  if (lastIndex < content.length) {
+    result.push({ id: `t${n++}`, type: "text", raw: content.slice(lastIndex) });
+  }
+  return result;
+}
+
+// ── 이미지 리사이즈 컴포넌트 ─────────────────────────────────
+function ResizableImage({
+  src,
+  width: initialWidth,
+  alt = "이미지",
+  onWidthChange,
+}: {
+  src: string;
+  width?: number;
+  alt?: string;
+  onWidthChange: (src: string, newWidth: number) => void;
+}) {
+  const [w, setW] = useState(initialWidth ?? 600);
+  const [hovered, setHovered] = useState(false);
+  const currentW = useRef(w);
+
+  function startResize(e: React.MouseEvent, fromLeft: boolean) {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startW = w;
+    currentW.current = w;
+
+    function onMove(ev: MouseEvent) {
+      const delta = ev.clientX - startX;
+      const next = Math.max(80, startW + (fromLeft ? -delta : delta));
+      currentW.current = next;
+      setW(next);
+    }
+    function onUp() {
+      onWidthChange(src, currentW.current);
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    }
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }
+
+  const CORNER = "absolute w-3 h-3 bg-bg border-2 border-accent rounded-sm z-10";
+
+  return (
+    <span
+      className="relative inline-block my-2 select-none"
+      style={{ width: w, maxWidth: "100%" }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={(e) => {
+        if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+        setHovered(false);
+      }}
+    >
+      {/* biome-ignore lint/a11y/useAltText: alt prop으로 전달됨 */}
+      <img
+        src={src}
+        alt={alt}
+        draggable={false}
+        style={{ width: "100%", display: "block", WebkitUserDrag: "none" } as React.CSSProperties}
+      />
+      {hovered && (
+        <>
+          <span className="absolute inset-0 border-2 border-accent pointer-events-none" />
+          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded pointer-events-none select-none whitespace-nowrap">
+            {Math.round(w)}px
+          </span>
+          <span className={`${CORNER} top-1.5 left-1.5 cursor-nw-resize`}  onMouseDown={(e) => startResize(e, true)} />
+          <span className={`${CORNER} top-1.5 right-1.5 cursor-ne-resize`} onMouseDown={(e) => startResize(e, false)} />
+          <span className={`${CORNER} bottom-1.5 left-1.5 cursor-sw-resize`}  onMouseDown={(e) => startResize(e, true)} />
+          <span className={`${CORNER} bottom-1.5 right-1.5 cursor-se-resize`} onMouseDown={(e) => startResize(e, false)} />
+        </>
+      )}
+    </span>
+  );
+}
+
 // ── 미리보기 패널 ─────────────────────────────────────────────
-function PreviewPane({ content }: { content: string }) {
+function PreviewPane({
+  content,
+  onImageWidthChange,
+}: {
+  content: string;
+  onImageWidthChange: (src: string, newWidth: number) => void;
+}) {
+  const segments = useMemo(() => parseSegments(content), [content]);
+
   if (!content.trim()) {
     return (
       <div className="p-8 text-fg-muted text-sm uppercase tracking-label">
@@ -35,7 +143,20 @@ function PreviewPane({ content }: { content: string }) {
 
   return (
     <div className="prose dark:prose-invert max-w-none p-8 pt-10 text-fg">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
+      {segments.map((seg) =>
+        seg.type === "img" ? (
+          <ResizableImage
+            key={seg.id}
+            src={seg.src}
+            width={seg.width}
+            onWidthChange={onImageWidthChange}
+          />
+        ) : (
+          <ReactMarkdown key={seg.id} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {seg.raw}
+          </ReactMarkdown>
+        ),
+      )}
     </div>
   );
 }
@@ -63,6 +184,16 @@ export function MarkdownEditor({
   const insertMarkdown = useCallback((before: string, after = "") => {
     editorRef.current?.insert(before, after);
   }, []);
+
+  function handleImageWidthChange(src: string, newWidth: number) {
+    setContent((prev) => {
+      const esc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return prev.replace(
+        new RegExp(`(<img[^>]*src="${esc}"[^>]*?)width="[^"]*"`, "g"),
+        `$1width="${Math.round(newWidth)}"`,
+      );
+    });
+  }
 
   async function handleImageUpload(file: File) {
     setUploading(true);
@@ -283,7 +414,7 @@ export function MarkdownEditor({
             <div
               className={`${mode === "split" ? "w-1/2" : "w-full"} overflow-y-auto`}
             >
-              <PreviewPane content={content} />
+              <PreviewPane content={content} onImageWidthChange={handleImageWidthChange} />
             </div>
           )}
         </div>
