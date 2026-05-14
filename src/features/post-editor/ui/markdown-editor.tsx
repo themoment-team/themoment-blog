@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
+import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { CodeMirrorEditorHandle } from "./codemirror-editor";
@@ -34,7 +35,7 @@ function PreviewPane({ content }: { content: string }) {
 
   return (
     <div className="prose dark:prose-invert max-w-none p-8 pt-10 text-fg">
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>{content}</ReactMarkdown>
     </div>
   );
 }
