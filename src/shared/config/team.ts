@@ -22,7 +22,7 @@ export const MEMBERS: Member[] = [
   { name: "김태은", githubId: "snowykte0426",     role: "Server"   },
   { name: "이세민", githubId: "wwwcomcomcomcom",  role: "Server"   },
   { name: "배재현", githubId: "ZaMan0806",  role: "Server"   },
-  { name:" 홍지민", githubId: "hongjm0912",  role: "Server"   },
+  { name: "홍지민", githubId: "hongjm0912",  role: "Server"   },
   { name: "이승제", githubId: "frorong",          role: "Frontend" },
   { name: "유시온", githubId: "yoosion030",       role: "Frontend" },
   { name: "전예빈", githubId: "yebin0310",        role: "Frontend" },
