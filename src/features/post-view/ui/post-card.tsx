@@ -35,14 +35,14 @@ export function PostCard({
       <div className="flex gap-6 items-start">
         <div className="flex-1 min-w-0 space-y-2">
           <Link href={`/posts/${slug}`} className="block">
-            <h2 className="text-xl font-bold tracking-[-0.03em] leading-[1.2] text-fg group-hover:text-accent transition-colors line-clamp-2">
+            <h2 className="text-xl font-bold tracking-heading leading-tight text-fg group-hover:text-accent transition-colors line-clamp-2">
               {title}
             </h2>
           </Link>
 
           {excerpt && (
             <p className="text-sm text-fg-muted leading-relaxed line-clamp-2">
-              {excerpt}
+              {excerpt.replace(/<[^>]+>/g, "").replace(/\s{2,}/g, " ").trim()}
             </p>
           )}
 
@@ -52,7 +52,7 @@ export function PostCard({
                 <Link
                   key={tag.slug}
                   href={`/tags/${tag.slug}`}
-                  className="text-[11px] font-medium uppercase tracking-[0.06em] text-fg-muted hover:text-accent transition-colors"
+                  className="text-[11px] font-medium uppercase tracking-label text-fg-muted hover:text-accent transition-colors"
                 >
                   {tag.name}
                 </Link>
