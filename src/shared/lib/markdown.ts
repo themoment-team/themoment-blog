@@ -128,5 +128,9 @@ export function extractHeadings(
 
 export function generateExcerpt(content: string, maxLength = 200): string {
   const tree = fromMarkdown(content);
-  return mdastToString(tree).replace(/\s+/g, " ").trim().slice(0, maxLength);
+  return mdastToString(tree)
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
 }

@@ -42,7 +42,7 @@ export function PostCard({
 
           {excerpt && (
             <p className="text-sm text-fg-muted leading-relaxed line-clamp-2">
-              {excerpt}
+              {excerpt.replace(/<[^>]+>/g, "").trim()}
             </p>
           )}
 
