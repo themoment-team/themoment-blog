@@ -4,9 +4,40 @@ import { users } from "@entities/user";
 import { db } from "@shared/lib/db";
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 
+export type PostSortKey = "latest" | "views" | "likes";
+
 // ── 포스트 조회 ────────────────────────────────────────────────
 
-export async function getPublishedPosts(limit = 20, offset = 0) {
+export async function getPublishedPosts(
+  limit = 20,
+  offset = 0,
+  sort: PostSortKey = "latest",
+  tag?: string,
+) {
+  const likeCountExpr = sql<number>`(select count(*) from ${likes} where ${likes.postId} = ${posts.id})`;
+
+  const orderExpr =
+    sort === "views"
+      ? desc(posts.viewCount)
+      : sort === "likes"
+        ? desc(likeCountExpr)
+        : desc(posts.publishedAt);
+
+  const tagSubquery = tag
+    ? inArray(
+        posts.id,
+        db
+          .select({ id: postTags.postId })
+          .from(postTags)
+          .innerJoin(tags, eq(postTags.tagId, tags.id))
+          .where(eq(tags.slug, tag)),
+      )
+    : undefined;
+
+  const whereClause = tagSubquery
+    ? and(eq(posts.published, true), tagSubquery)
+    : eq(posts.published, true);
+
   return db
     .select({
       id: posts.id,
@@ -21,8 +52,8 @@ export async function getPublishedPosts(limit = 20, offset = 0) {
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
-    .where(eq(posts.published, true))
-    .orderBy(desc(posts.publishedAt))
+    .where(whereClause)
+    .orderBy(orderExpr)
     .limit(limit)
     .offset(offset);
 }
