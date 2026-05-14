@@ -1,9 +1,18 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import type { CodeMirrorEditorHandle } from "./codemirror-editor";
 import { EditorToolbar } from "./editor-toolbar";
 import { PublishModal } from "./publish-modal";
+
+const CodeMirrorEditor = dynamic(
+  () => import("./codemirror-editor").then((m) => m.CodeMirrorEditor),
+  { ssr: false, loading: () => <div className="h-full" /> },
+);
 
 interface MarkdownEditorProps {
   initialTitle?: string;
@@ -15,50 +24,18 @@ type Mode = "write" | "split" | "preview";
 
 // ── 미리보기 패널 ─────────────────────────────────────────────
 function PreviewPane({ content }: { content: string }) {
-  const [html, setHtml] = useState("");
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
-
-    if (!content.trim()) {
-      setHtml("");
-      return;
-    }
-
-    timerRef.current = setTimeout(async () => {
-      try {
-        const res = await fetch("/api/preview", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
-        });
-        const data: { html: string } = await res.json();
-        setHtml(data.html);
-      } catch {
-        // 요청 실패 시 이전 HTML 유지
-      }
-    }, 500);
-
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [content]);
-
   if (!content.trim()) {
     return (
-      <div className="p-8 text-fg-muted text-sm uppercase tracking-[0.06em]">
+      <div className="p-8 text-fg-muted text-sm uppercase tracking-label">
         미리볼 내용이 없습니다
       </div>
     );
   }
 
   return (
-    <div
-      className="prose dark:prose-invert max-w-none p-8 pt-10 text-fg"
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: /api/preview에서 Shiki로 렌더링한 안전한 HTML
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+    <div className="prose dark:prose-invert max-w-none p-8 pt-10 text-fg">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    </div>
   );
 }
 
@@ -69,7 +46,7 @@ export function MarkdownEditor({
   slug,
 }: MarkdownEditorProps) {
   const router = useRouter();
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const editorRef = useRef<CodeMirrorEditorHandle | null>(null);
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
   const [mode, setMode] = useState<Mode>("split");
@@ -83,40 +60,7 @@ export function MarkdownEditor({
   const draftSlugRef = useRef<string | undefined>(slug);
 
   const insertMarkdown = useCallback((before: string, after = "") => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const sel = ta.value.slice(start, end);
-    const full = ta.value;
-
-    // 선택 영역이 이미 마커로 감싸져 있으면 제거 (토글 off)
-    const wrappedInside = sel.startsWith(before) && sel.endsWith(after) && sel.length >= before.length + after.length;
-    const wrappedOutside =
-      full.slice(start - before.length, start) === before &&
-      full.slice(end, end + after.length) === after;
-
-    if (wrappedInside) {
-      const inner = sel.slice(before.length, sel.length - after.length);
-      setContent(full.slice(0, start) + inner + full.slice(end));
-      requestAnimationFrame(() => {
-        ta.focus();
-        ta.setSelectionRange(start, start + inner.length);
-      });
-    } else if (wrappedOutside) {
-      const next = full.slice(0, start - before.length) + sel + full.slice(end + after.length);
-      setContent(next);
-      requestAnimationFrame(() => {
-        ta.focus();
-        ta.setSelectionRange(start - before.length, start - before.length + sel.length);
-      });
-    } else {
-      setContent(full.slice(0, start) + before + sel + after + full.slice(end));
-      requestAnimationFrame(() => {
-        ta.focus();
-        ta.setSelectionRange(start + before.length, start + before.length + sel.length);
-      });
-    }
+    editorRef.current?.insert(before, after);
   }, []);
 
   async function handleImageUpload(file: File) {
@@ -186,53 +130,6 @@ export function MarkdownEditor({
     if (hasContent && !window.confirm("작성 중인 내용이 있습니다. 나가시겠습니까?")) return;
     if (window.history.length > 1) router.back();
     else router.push("/");
-  }
-
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    const mod = e.ctrlKey || e.metaKey;
-
-    if (e.key === "Tab") {
-      e.preventDefault();
-      const ta = textareaRef.current;
-      if (!ta) return;
-      const start = ta.selectionStart;
-      const end = ta.selectionEnd;
-      const spaces = "  ";
-      setContent(ta.value.slice(0, start) + spaces + ta.value.slice(end));
-      requestAnimationFrame(() => {
-        ta.selectionStart = ta.selectionEnd = start + spaces.length;
-      });
-      return;
-    }
-
-    if (!mod) return;
-
-    if (e.key === "b") {
-      e.preventDefault();
-      insertMarkdown("**", "**");
-    } else if (e.key === "i") {
-      e.preventDefault();
-      insertMarkdown("*", "*");
-    } else if (e.key === "k") {
-      e.preventDefault();
-      insertMarkdown("[", "](url)");
-    } else if (e.key === "u") {
-      e.preventDefault();
-      insertMarkdown("<u>", "</u>");
-    } else if (e.key === "s") {
-      e.preventDefault();
-      handleSaveDraft();
-    }
-  }
-
-  function handlePaste(e: React.ClipboardEvent<HTMLTextAreaElement>) {
-    const item = Array.from(e.clipboardData.items).find((i) =>
-      i.type.startsWith("image/"),
-    );
-    if (!item) return;
-    e.preventDefault();
-    const file = item.getAsFile();
-    if (file) handleImageUpload(file);
   }
 
   function handleFileDrop(e: React.DragEvent) {
@@ -319,7 +216,7 @@ export function MarkdownEditor({
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목을 입력하세요"
-            className="w-full text-3xl font-bold tracking-[-0.03em] bg-transparent text-fg placeholder:text-fg-muted focus:outline-none"
+            className="w-full text-3xl font-bold tracking-heading bg-transparent text-fg placeholder:text-fg-muted focus:outline-none"
           />
         </div>
 
@@ -350,7 +247,7 @@ export function MarkdownEditor({
           {uploading && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-bg/85 backdrop-blur-sm">
               <div className="w-10 h-10 border-2 border-bg-subtle border-t-accent rounded-full animate-spin mb-3" />
-              <p className="text-sm font-medium text-fg uppercase tracking-[0.06em]">
+              <p className="text-sm font-medium text-fg uppercase tracking-label">
                 이미지 업로드 중
               </p>
             </div>
@@ -359,7 +256,7 @@ export function MarkdownEditor({
           {/* 드래그 오버 오버레이 */}
           {draggingOver && !uploading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg/70 pointer-events-none">
-              <p className="text-sm font-medium text-accent uppercase tracking-[0.06em]">
+              <p className="text-sm font-medium text-accent uppercase tracking-label">
                 이미지를 여기에 놓으세요
               </p>
             </div>
@@ -368,17 +265,14 @@ export function MarkdownEditor({
           {/* 편집 패널 */}
           {(mode === "write" || mode === "split") && (
             <div
-              className={`${mode === "split" ? "w-1/2 border-r border-border" : "w-full"} overflow-y-auto`}
+              className={`${mode === "split" ? "w-1/2 border-r border-border" : "w-full"} overflow-hidden`}
             >
-              <textarea
-                ref={textareaRef}
+              <CodeMirrorEditor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                onPaste={handlePaste}
-                onKeyDown={handleKeyDown}
-                placeholder="마크다운으로 내용을 작성하세요..."
-                className="w-full h-full min-h-full resize-none p-8 bg-transparent text-fg font-sans text-base leading-relaxed focus:outline-none placeholder:text-fg-muted"
-                spellCheck={false}
+                onChange={setContent}
+                onSave={handleSaveDraft}
+                onImageUpload={handleImageUpload}
+                onReady={(handle) => { editorRef.current = handle; }}
               />
             </div>
           )}
