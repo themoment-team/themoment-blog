@@ -10,12 +10,7 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/90 backdrop-blur-sm">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between gap-4">
-        <Link
-          href="/"
-          className="text-xl font-bold tracking-[-0.04em] text-fg hover:text-accent transition-colors shrink-0"
-        >
-          그순간
-        </Link>
+        <Link href="/" className="shrink-0" aria-label="홈으로" />
 
         <nav className="hidden sm:flex items-center gap-6 text-sm text-fg-muted">
           <Link href="/posts" className="hover:text-fg transition-colors">
