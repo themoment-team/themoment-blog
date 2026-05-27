@@ -15,11 +15,21 @@ export function ThemeToggle() {
 
   const isDark = theme === "dark";
 
+  function toggle() {
+    const style = document.createElement("style");
+    style.textContent = "*,*::before,*::after{transition:none!important}";
+    document.head.appendChild(style);
+    setTheme(isDark ? "light" : "dark");
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => document.head.removeChild(style));
+    });
+  }
+
   return (
     <button
       type="button"
       aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={toggle}
       className="size-8 flex items-center justify-center rounded-md text-fg-muted hover:text-fg hover:bg-bg-subtle transition-colors"
     >
       {isDark ? (
