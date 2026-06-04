@@ -36,7 +36,9 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
           // biome-ignore lint/a11y/noStaticElementInteractions: 배경 오버레이 클릭 닫기
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-            onClick={() => { if (!pending) setOpen(false); }}
+            onClick={() => {
+              if (!pending) setOpen(false);
+            }}
           >
             <div
               className="bg-bg border border-border rounded-xl shadow-lg w-full max-w-sm mx-4 p-6"

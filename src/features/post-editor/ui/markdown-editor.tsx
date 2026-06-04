@@ -37,9 +37,13 @@ function parseSegments(content: string): Segment[] {
 
   while ((m = re.exec(content)) !== null) {
     if (m.index > lastIndex) {
-      result.push({ id: `t${n++}`, type: "text", raw: content.slice(lastIndex, m.index) });
+      result.push({
+        id: `t${n++}`,
+        type: "text",
+        raw: content.slice(lastIndex, m.index),
+      });
     }
-    const src   = m[0].match(/src="([^"]*)"/)?.[1] ?? "";
+    const src = m[0].match(/src="([^"]*)"/)?.[1] ?? "";
     const width = Number(m[0].match(/width="([^"]*)"/)?.[1]) || 600;
     result.push({ id: `i${n++}`, type: "img", src, width });
     lastIndex = m.index + m[0].length;
@@ -88,7 +92,8 @@ function ResizableImage({
     document.addEventListener("mouseup", onUp);
   }
 
-  const CORNER = "absolute w-3 h-3 bg-bg border-2 border-accent rounded-sm z-10";
+  const CORNER =
+    "absolute w-3 h-3 bg-bg border-2 border-accent rounded-sm z-10";
 
   return (
     <span
@@ -105,7 +110,13 @@ function ResizableImage({
         src={src}
         alt={alt}
         draggable={false}
-        style={{ width: "100%", display: "block", WebkitUserDrag: "none" } as React.CSSProperties}
+        style={
+          {
+            width: "100%",
+            display: "block",
+            WebkitUserDrag: "none",
+          } as React.CSSProperties
+        }
       />
       {hovered && (
         <>
@@ -113,10 +124,22 @@ function ResizableImage({
           <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded pointer-events-none select-none whitespace-nowrap">
             {Math.round(w)}px
           </span>
-          <span className={`${CORNER} top-1.5 left-1.5 cursor-nw-resize`}  onMouseDown={(e) => startResize(e, true)} />
-          <span className={`${CORNER} top-1.5 right-1.5 cursor-ne-resize`} onMouseDown={(e) => startResize(e, false)} />
-          <span className={`${CORNER} bottom-1.5 left-1.5 cursor-sw-resize`}  onMouseDown={(e) => startResize(e, true)} />
-          <span className={`${CORNER} bottom-1.5 right-1.5 cursor-se-resize`} onMouseDown={(e) => startResize(e, false)} />
+          <span
+            className={`${CORNER} top-1.5 left-1.5 cursor-nw-resize`}
+            onMouseDown={(e) => startResize(e, true)}
+          />
+          <span
+            className={`${CORNER} top-1.5 right-1.5 cursor-ne-resize`}
+            onMouseDown={(e) => startResize(e, false)}
+          />
+          <span
+            className={`${CORNER} bottom-1.5 left-1.5 cursor-sw-resize`}
+            onMouseDown={(e) => startResize(e, true)}
+          />
+          <span
+            className={`${CORNER} bottom-1.5 right-1.5 cursor-se-resize`}
+            onMouseDown={(e) => startResize(e, false)}
+          />
         </>
       )}
     </span>
@@ -152,7 +175,11 @@ function PreviewPane({
             onWidthChange={onImageWidthChange}
           />
         ) : (
-          <ReactMarkdown key={seg.id} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+          <ReactMarkdown
+            key={seg.id}
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+          >
             {seg.raw}
           </ReactMarkdown>
         ),
@@ -174,7 +201,9 @@ export function MarkdownEditor({
   const [mode, setMode] = useState<Mode>("split");
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">("idle");
+  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">(
+    "idle",
+  );
   const [saveError, setSaveError] = useState("");
   const [uploading, setUploading] = useState(false);
   const [draggingOver, setDraggingOver] = useState(false);
@@ -227,13 +256,19 @@ export function MarkdownEditor({
           .toLowerCase()
           .replace(/[^a-z0-9가-힣]/g, "-")
           .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "") || "untitled");
+          .replace(/^-|-$/g, "") ||
+          "untitled");
       const method = currentSlug ? "PATCH" : "POST";
       const url = currentSlug ? `/api/posts/${currentSlug}` : "/api/posts";
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, slug: slugified, content, published: false }),
+        body: JSON.stringify({
+          title,
+          slug: slugified,
+          content,
+          published: false,
+        }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
@@ -259,7 +294,11 @@ export function MarkdownEditor({
 
   function handleBack() {
     const hasContent = title.trim() || content.trim();
-    if (hasContent && !window.confirm("작성 중인 내용이 있습니다. 나가시겠습니까?")) return;
+    if (
+      hasContent &&
+      !window.confirm("작성 중인 내용이 있습니다. 나가시겠습니까?")
+    )
+      return;
     if (window.history.length > 1) router.back();
     else router.push("/");
   }
@@ -404,7 +443,9 @@ export function MarkdownEditor({
                 onChange={setContent}
                 onSave={handleSaveDraft}
                 onImageUpload={handleImageUpload}
-                onReady={(handle) => { editorRef.current = handle; }}
+                onReady={(handle) => {
+                  editorRef.current = handle;
+                }}
               />
             </div>
           )}
@@ -414,7 +455,10 @@ export function MarkdownEditor({
             <div
               className={`${mode === "split" ? "w-1/2" : "w-full"} overflow-y-auto`}
             >
-              <PreviewPane content={content} onImageWidthChange={handleImageWidthChange} />
+              <PreviewPane
+                content={content}
+                onImageWidthChange={handleImageWidthChange}
+              />
             </div>
           )}
         </div>

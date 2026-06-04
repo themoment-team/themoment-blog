@@ -29,7 +29,16 @@ export function UserMenu({ name }: UserMenuProps) {
         onClick={() => setOpen((v) => !v)}
         className="flex items-center gap-2 text-sm text-fg-muted hover:text-fg transition-colors"
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="size-5 shrink-0" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.8}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="size-5 shrink-0"
+          aria-hidden="true"
+        >
           <circle cx="12" cy="8" r="4" />
           <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
         </svg>

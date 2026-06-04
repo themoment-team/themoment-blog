@@ -15,7 +15,11 @@ interface PostFiltersProps {
   tags: TagItem[];
 }
 
-export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps) {
+export function PostFilters({
+  currentSort,
+  currentTag,
+  tags,
+}: PostFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,7 +60,9 @@ export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps)
             <button
               key={tag.slug}
               type="button"
-              onClick={() => update({ tag: currentTag === tag.slug ? null : tag.slug })}
+              onClick={() =>
+                update({ tag: currentTag === tag.slug ? null : tag.slug })
+              }
               className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
                 currentTag === tag.slug
                   ? "bg-fg text-bg border-fg"

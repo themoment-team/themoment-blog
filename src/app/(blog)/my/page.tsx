@@ -25,7 +25,9 @@ export default async function MyPostsPage() {
     getDraftPosts(session.user.id),
   ]);
 
-  const myPublished = allPublished.filter((p) => p.author.id === session.user.id);
+  const myPublished = allPublished.filter(
+    (p) => p.author.id === session.user.id,
+  );
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -40,11 +42,16 @@ export default async function MyPostsPage() {
         </h2>
 
         {drafts.length === 0 ? (
-          <p className="text-sm text-fg-muted py-6">임시저장된 글이 없습니다.</p>
+          <p className="text-sm text-fg-muted py-6">
+            임시저장된 글이 없습니다.
+          </p>
         ) : (
           <ul className="divide-y divide-border">
             {drafts.map((post) => (
-              <li key={post.id} className="py-4 flex items-center justify-between gap-4">
+              <li
+                key={post.id}
+                className="py-4 flex items-center justify-between gap-4"
+              >
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-fg truncate">
                     {post.title || "(제목 없음)"}
@@ -79,9 +86,14 @@ export default async function MyPostsPage() {
         ) : (
           <ul className="divide-y divide-border">
             {myPublished.map((post) => (
-              <li key={post.id} className="py-4 flex items-center justify-between gap-4">
+              <li
+                key={post.id}
+                className="py-4 flex items-center justify-between gap-4"
+              >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-fg truncate">{post.title}</p>
+                  <p className="text-sm font-medium text-fg truncate">
+                    {post.title}
+                  </p>
                   <p className="text-xs text-fg-muted mt-0.5">
                     {formatDate(post.publishedAt)} 발행
                   </p>
