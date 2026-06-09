@@ -33,7 +33,16 @@ export async function PATCH(
   }
 
   const body = await req.json();
-  const { title, content, excerpt, coverImage, published, tagNames } = body;
+  const {
+    title,
+    content,
+    excerpt,
+    coverImage,
+    published,
+    tagNames,
+    seriesTitle,
+    seriesOrder,
+  } = body;
 
   const validatedTagNames = Array.isArray(tagNames)
     ? (tagNames as string[]).filter((t) =>
@@ -48,6 +57,10 @@ export async function PATCH(
     coverImage,
     published,
     tagNames: validatedTagNames,
+    ...("seriesTitle" in body && {
+      seriesTitle: seriesTitle ?? null,
+      seriesOrder: typeof seriesOrder === "number" ? seriesOrder : null,
+    }),
   });
 
   return NextResponse.json({ slug: updated.slug });

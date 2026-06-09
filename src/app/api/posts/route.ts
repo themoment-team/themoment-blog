@@ -11,8 +11,17 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json();
-  const { title, slug, content, excerpt, coverImage, published, tagNames } =
-    body;
+  const {
+    title,
+    slug,
+    content,
+    excerpt,
+    coverImage,
+    published,
+    tagNames,
+    seriesTitle,
+    seriesOrder,
+  } = body;
 
   if (!title || !slug || !content) {
     return NextResponse.json(
@@ -36,6 +45,8 @@ export async function POST(req: Request) {
     authorId: session.user.id,
     published: published ?? false,
     tagNames: validatedTagNames,
+    seriesTitle: seriesTitle ?? undefined,
+    seriesOrder: typeof seriesOrder === "number" ? seriesOrder : undefined,
   });
 
   return NextResponse.json({ slug: post.slug }, { status: 201 });

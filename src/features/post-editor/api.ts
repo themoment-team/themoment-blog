@@ -1,7 +1,30 @@
 import { posts, postTags } from "@entities/post";
+import { series } from "@entities/series";
 import { getTagIdsByNames } from "@features/post-view/api";
 import { db } from "@shared/lib/db";
 import { eq } from "drizzle-orm";
+
+export async function upsertSeries(title: string): Promise<string> {
+  const slug = title
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+
+  const [existing] = await db
+    .select({ id: series.id })
+    .from(series)
+    .where(eq(series.slug, slug))
+    .limit(1);
+
+  if (existing) return existing.id;
+
+  const [created] = await db
+    .insert(series)
+    .values({ title, slug })
+    .returning({ id: series.id });
+  return created.id;
+}
 
 export async function createPost(data: {
   title: string;
@@ -12,13 +35,22 @@ export async function createPost(data: {
   authorId: string;
   published: boolean;
   tagNames?: string[];
+  seriesTitle?: string;
+  seriesOrder?: number;
 }) {
-  const { tagNames, ...postData } = data;
+  const { tagNames, seriesTitle, seriesOrder, ...postData } = data;
+
+  let seriesId: string | null = null;
+  if (seriesTitle?.trim()) {
+    seriesId = await upsertSeries(seriesTitle.trim());
+  }
 
   const [post] = await db
     .insert(posts)
     .values({
       ...postData,
+      seriesId,
+      seriesOrder: seriesId ? (seriesOrder ?? null) : null,
       publishedAt: postData.published ? new Date() : null,
     })
     .returning();
@@ -44,14 +76,27 @@ export async function updatePost(
     coverImage: string;
     published: boolean;
     tagNames: string[];
+    seriesTitle: string | null;
+    seriesOrder: number | null;
   }>,
 ) {
-  const { tagNames, ...postData } = data;
+  const { tagNames, seriesTitle, seriesOrder, ...postData } = data;
 
   const updateData: Record<string, unknown> = {
     ...postData,
     updatedAt: new Date(),
   };
+
+  if ("seriesTitle" in data) {
+    if (seriesTitle) {
+      updateData.seriesId = await upsertSeries(seriesTitle.trim());
+      updateData.seriesOrder = seriesOrder ?? null;
+    } else {
+      updateData.seriesId = null;
+      updateData.seriesOrder = null;
+    }
+  }
+
   if (postData.published === true) {
     updateData.publishedAt = new Date();
   }
