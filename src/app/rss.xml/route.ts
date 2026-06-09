@@ -28,14 +28,14 @@ export async function GET() {
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
       <description>${excerpt}</description>
-      <author>${escapeXml(post.author.name)}</author>
+      <dc:creator>${escapeXml(post.author.name)}</dc:creator>
       <pubDate>${pubDate}</pubDate>
     </item>`;
     })
     .join("");
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
     <title>${escapeXml(SITE_NAME)}</title>
     <link>${SITE_URL}</link>

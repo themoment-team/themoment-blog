@@ -5,6 +5,14 @@ import { db } from "@shared/lib/db";
 import { eq } from "drizzle-orm";
 
 export async function upsertSeries(title: string): Promise<string> {
+  const [existing] = await db
+    .select({ id: series.id })
+    .from(series)
+    .where(eq(series.title, title))
+    .limit(1);
+
+  if (existing) return existing.id;
+
   let slug = title
     .toLowerCase()
     .replace(/[^a-z0-9가-힣]/g, "-")
@@ -15,10 +23,19 @@ export async function upsertSeries(title: string): Promise<string> {
     slug = `series-${Math.random().toString(36).slice(2, 8)}`;
   }
 
+  const [slugConflict] = await db
+    .select({ id: series.id })
+    .from(series)
+    .where(eq(series.slug, slug))
+    .limit(1);
+
+  if (slugConflict) {
+    slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+  }
+
   const [created] = await db
     .insert(series)
     .values({ title, slug })
-    .onConflictDoUpdate({ target: series.slug, set: { title } })
     .returning({ id: series.id });
 
   return created.id;
@@ -86,8 +103,9 @@ export async function updatePost(
   };
 
   if ("seriesTitle" in data) {
-    if (seriesTitle) {
-      updateData.seriesId = await upsertSeries(seriesTitle.trim());
+    const trimmedSeriesTitle = seriesTitle?.trim();
+    if (trimmedSeriesTitle) {
+      updateData.seriesId = await upsertSeries(trimmedSeriesTitle);
       updateData.seriesOrder = seriesOrder ?? null;
     } else {
       updateData.seriesId = null;

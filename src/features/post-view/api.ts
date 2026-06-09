@@ -3,7 +3,7 @@ import { series } from "@entities/series";
 import { tags } from "@entities/tag";
 import { users } from "@entities/user";
 import { db } from "@shared/lib/db";
-import { and, asc, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 
 export type PostSortKey = "latest" | "views" | "likes";
 
@@ -58,11 +58,7 @@ export async function getPublishedPosts(
     .limit(limit)
     .offset(offset);
 
-  if (postList.length === 0)
-    return postList.map((p) => ({
-      ...p,
-      tags: [] as { name: string; slug: string }[],
-    }));
+  if (postList.length === 0) return [];
 
   const postIds = postList.map((p) => p.id);
   const allTagRows = await db
@@ -272,7 +268,7 @@ export async function getAllSeries() {
       count: sql<number>`cast(count(*) as int)`,
     })
     .from(posts)
-    .where(and(eq(posts.published, true), sql`${posts.seriesId} is not null`))
+    .where(and(eq(posts.published, true), isNotNull(posts.seriesId)))
     .groupBy(posts.seriesId);
 
   const countMap = new Map(postCounts.map((r) => [r.seriesId, r.count]));
@@ -317,7 +313,7 @@ export async function getSeriesNavData(postId: string, seriesId: string) {
 
   const idx = data.posts.findIndex((p) => p.id === postId);
   const prevPost = idx > 0 ? data.posts[idx - 1] : null;
-  const nextPost = idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
+  const nextPost = idx !== -1 && idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
 
   return {
     series: { id: data.id, title: data.title, slug: data.slug },
