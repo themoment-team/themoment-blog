@@ -5,6 +5,7 @@ export default defineConfig({
     "./src/entities/post/model.ts",
     "./src/entities/user/model.ts",
     "./src/entities/tag/model.ts",
+    "./src/entities/series/model.ts",
   ],
   out: "./drizzle",
   dialect: "postgresql",

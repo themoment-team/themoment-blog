@@ -1,3 +1,4 @@
+import { series } from "@entities/series";
 import { tags } from "@entities/tag";
 import { users } from "@entities/user";
 import { blog } from "@shared/lib/db";
@@ -22,6 +23,10 @@ export const posts = blog.table("tb_posts", {
   authorId: uuid("author_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  seriesId: uuid("series_id").references(() => series.id, {
+    onDelete: "set null",
+  }),
+  seriesOrder: integer("series_order"),
   viewCount: integer("view_count").notNull().default(0),
   published: boolean("published").notNull().default(false),
   publishedAt: timestamp("published_at"),
