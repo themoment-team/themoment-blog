@@ -16,6 +16,9 @@ export async function Header() {
           <Link href="/posts" className="hover:text-fg transition-colors">
             포스트
           </Link>
+          <Link href="/series" className="hover:text-fg transition-colors">
+            시리즈
+          </Link>
           <Link href="/about" className="hover:text-fg transition-colors">
             더모먼트
           </Link>
