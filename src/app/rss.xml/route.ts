@@ -24,10 +24,10 @@ export async function GET() {
       const excerpt = post.excerpt ? escapeXml(post.excerpt.replace(/<[^>]+>/g, "")) : "";
       return `
     <item>
-      <title><![CDATA[${post.title}]]></title>
+      <title>${escapeXml(post.title)}</title>
       <link>${link}</link>
       <guid isPermaLink="true">${link}</guid>
-      <description><![CDATA[${excerpt}]]></description>
+      <description>${excerpt}</description>
       <author>${escapeXml(post.author.name)}</author>
       <pubDate>${pubDate}</pubDate>
     </item>`;
@@ -37,9 +37,9 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title><![CDATA[${SITE_NAME}]]></title>
+    <title>${escapeXml(SITE_NAME)}</title>
     <link>${SITE_URL}</link>
-    <description><![CDATA[${SITE_DESCRIPTION}]]></description>
+    <description>${escapeXml(SITE_DESCRIPTION)}</description>
     <language>ko</language>
     <atom:link href="${SITE_URL}/rss.xml" rel="self" type="application/rss+xml" />
     ${items}

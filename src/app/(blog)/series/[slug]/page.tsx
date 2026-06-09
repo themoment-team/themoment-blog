@@ -9,13 +9,13 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const s = await getSeriesBySlug(slug);
+  const s = await getSeriesBySlug(decodeURIComponent(slug));
   return { title: s ? s.title : "시리즈" };
 }
 
 export default async function SeriesDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const s = await getSeriesBySlug(slug);
+  const s = await getSeriesBySlug(decodeURIComponent(slug));
   if (!s) notFound();
 
   const data = await getSeriesWithPosts(s.id);

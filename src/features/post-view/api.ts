@@ -306,7 +306,7 @@ export async function getSeriesWithPosts(seriesId: string) {
     })
     .from(posts)
     .where(and(eq(posts.seriesId, seriesId), eq(posts.published, true)))
-    .orderBy(asc(posts.seriesOrder));
+    .orderBy(asc(posts.seriesOrder), asc(posts.createdAt));
 
   return { ...s, posts: seriesPosts };
 }

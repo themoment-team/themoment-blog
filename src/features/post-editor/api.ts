@@ -5,24 +5,22 @@ import { db } from "@shared/lib/db";
 import { eq } from "drizzle-orm";
 
 export async function upsertSeries(title: string): Promise<string> {
-  const slug = title
+  let slug = title
     .toLowerCase()
     .replace(/[^a-z0-9가-힣]/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
-  const [existing] = await db
-    .select({ id: series.id })
-    .from(series)
-    .where(eq(series.slug, slug))
-    .limit(1);
-
-  if (existing) return existing.id;
+  if (!slug) {
+    slug = `series-${Math.random().toString(36).slice(2, 8)}`;
+  }
 
   const [created] = await db
     .insert(series)
     .values({ title, slug })
+    .onConflictDoUpdate({ target: series.slug, set: { title } })
     .returning({ id: series.id });
+
   return created.id;
 }
 
