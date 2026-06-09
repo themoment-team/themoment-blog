@@ -38,7 +38,7 @@ export async function getPublishedPosts(
     ? and(eq(posts.published, true), tagSubquery)
     : eq(posts.published, true);
 
-  return db
+  const postList = await db
     .select({
       id: posts.id,
       title: posts.title,
@@ -56,6 +56,28 @@ export async function getPublishedPosts(
     .orderBy(orderExpr)
     .limit(limit)
     .offset(offset);
+
+  if (postList.length === 0)
+    return postList.map((p) => ({
+      ...p,
+      tags: [] as { name: string; slug: string }[],
+    }));
+
+  const postIds = postList.map((p) => p.id);
+  const allTagRows = await db
+    .select({ postId: postTags.postId, name: tags.name, slug: tags.slug })
+    .from(postTags)
+    .innerJoin(tags, eq(postTags.tagId, tags.id))
+    .where(inArray(postTags.postId, postIds));
+
+  const tagsByPost = new Map<string, { name: string; slug: string }[]>();
+  for (const row of allTagRows) {
+    const arr = tagsByPost.get(row.postId) ?? [];
+    arr.push({ name: row.name, slug: row.slug });
+    tagsByPost.set(row.postId, arr);
+  }
+
+  return postList.map((p) => ({ ...p, tags: tagsByPost.get(p.id) ?? [] }));
 }
 
 export async function getDraftPosts(authorId: string) {

@@ -59,6 +59,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
             viewCount={post.viewCount}
             publishedAt={post.publishedAt}
             author={post.author}
+            tags={post.tags}
           />
         ))
       )}

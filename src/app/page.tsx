@@ -72,6 +72,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                   viewCount={post.viewCount}
                   publishedAt={post.publishedAt}
                   author={post.author}
+                  tags={post.tags}
                 />
               ))}
               <div className="pt-4 pb-2 border-t border-border">
