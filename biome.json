@@ -50,6 +50,14 @@
       "correctness": {
         "noUnusedVariables": "error",
         "noUnusedImports": "error"
+      },
+      "nursery": {
+        "useSortedClasses": {
+          "level": "error",
+          "options": {
+            "functions": ["clsx", "cva", "cn", "tw"]
+          }
+        }
       }
     },
     "domains": {
