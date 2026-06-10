@@ -1,35 +1,33 @@
-import { DeletePostButton } from "@features/post-editor/ui/delete-post-button";
-import { auth } from "@features/auth/config";
-import { getDraftPosts, getPublishedPosts } from "@features/post-view";
-import type { Metadata } from "next";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { auth } from '@features/auth/config';
+import { DeletePostButton } from '@features/post-editor/ui/delete-post-button';
+import { getDraftPosts, getPublishedPosts } from '@features/post-view';
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = { title: "내 글 목록" };
+export const metadata: Metadata = { title: '내 글 목록' };
 
 function formatDate(date: Date | string | null) {
-  if (!date) return "-";
-  return new Intl.DateTimeFormat("ko-KR", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  if (!date) return '-';
+  return new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   }).format(new Date(date));
 }
 
 export default async function MyPostsPage() {
   const session = await auth();
-  if (!session?.user.isMomentMember) redirect("/");
+  if (!session?.user.isMomentMember) redirect('/');
 
   const [myPublished, drafts] = await Promise.all([
-    getPublishedPosts(200, 0, "latest", undefined, session.user.id),
+    getPublishedPosts(200, 0, 'latest', undefined, session.user.id),
     getDraftPosts(session.user.id),
   ]);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold tracking-[-0.03em] text-fg mb-10">
-        내 글 목록
-      </h1>
+      <h1 className="text-3xl font-bold tracking-[-0.03em] text-fg mb-10">내 글 목록</h1>
 
       {/* 임시저장 */}
       <section className="mb-12">
@@ -38,23 +36,16 @@ export default async function MyPostsPage() {
         </h2>
 
         {drafts.length === 0 ? (
-          <p className="text-sm text-fg-muted py-6">
-            임시저장된 글이 없습니다.
-          </p>
+          <p className="text-sm text-fg-muted py-6">임시저장된 글이 없습니다.</p>
         ) : (
           <ul className="divide-y divide-border">
             {drafts.map((post) => (
-              <li
-                key={post.id}
-                className="py-4 flex items-center justify-between gap-4"
-              >
+              <li key={post.id} className="py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-fg truncate">
-                    {post.title || "(제목 없음)"}
+                    {post.title || '(제목 없음)'}
                   </p>
-                  <p className="text-xs text-fg-muted mt-0.5">
-                    {formatDate(post.updatedAt)} 수정
-                  </p>
+                  <p className="text-xs text-fg-muted mt-0.5">{formatDate(post.updatedAt)} 수정</p>
                 </div>
                 <div className="flex items-center gap-3 shrink-0">
                   <DeletePostButton postId={post.id} published={false} />
@@ -82,14 +73,9 @@ export default async function MyPostsPage() {
         ) : (
           <ul className="divide-y divide-border">
             {myPublished.map((post) => (
-              <li
-                key={post.id}
-                className="py-4 flex items-center justify-between gap-4"
-              >
+              <li key={post.id} className="py-4 flex items-center justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-fg truncate">
-                    {post.title}
-                  </p>
+                  <p className="text-sm font-medium text-fg truncate">{post.title}</p>
                   <p className="text-xs text-fg-muted mt-0.5">
                     {formatDate(post.publishedAt)} 발행
                   </p>

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import dynamic from "next/dynamic";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import rehypeRaw from "rehype-raw";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import type { CodeMirrorEditorHandle } from "./codemirror-editor";
-import { EditorToolbar } from "./editor-toolbar";
-import { PublishModal } from "./publish-modal";
+import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from 'rehype-raw';
+import remarkGfm from 'remark-gfm';
+import type { CodeMirrorEditorHandle } from './codemirror-editor';
+import { EditorToolbar } from './editor-toolbar';
+import { PublishModal } from './publish-modal';
 
 const CodeMirrorEditor = dynamic(
-  () => import("./codemirror-editor").then((m) => m.CodeMirrorEditor),
+  () => import('./codemirror-editor').then((m) => m.CodeMirrorEditor),
   { ssr: false, loading: () => <div className="h-full" /> },
 );
 
@@ -21,35 +21,36 @@ interface MarkdownEditorProps {
   slug?: string;
 }
 
-type Mode = "write" | "split" | "preview";
+type Mode = 'write' | 'split' | 'preview';
 
 // ── 세그먼트 파서 ─────────────────────────────────────────────
 type Segment =
-  | { id: string; type: "img"; src: string; width: number }
-  | { id: string; type: "text"; raw: string };
+  | { id: string; type: 'img'; src: string; width: number }
+  | { id: string; type: 'text'; raw: string };
 
 function parseSegments(content: string): Segment[] {
   const result: Segment[] = [];
   let lastIndex = 0;
   let n = 0;
   const re = /<img\b[^>]*\/>/g;
-  let m: RegExpExecArray | null;
+  let m = re.exec(content);
 
-  while ((m = re.exec(content)) !== null) {
+  while (m !== null) {
     if (m.index > lastIndex) {
       result.push({
         id: `t${n++}`,
-        type: "text",
+        type: 'text',
         raw: content.slice(lastIndex, m.index),
       });
     }
-    const src = m[0].match(/src="([^"]*)"/)?.[1] ?? "";
+    const src = m[0].match(/src="([^"]*)"/)?.[1] ?? '';
     const width = Number(m[0].match(/width="([^"]*)"/)?.[1]) || 600;
-    result.push({ id: `i${n++}`, type: "img", src, width });
+    result.push({ id: `i${n++}`, type: 'img', src, width });
     lastIndex = m.index + m[0].length;
+    m = re.exec(content);
   }
   if (lastIndex < content.length) {
-    result.push({ id: `t${n++}`, type: "text", raw: content.slice(lastIndex) });
+    result.push({ id: `t${n++}`, type: 'text', raw: content.slice(lastIndex) });
   }
   return result;
 }
@@ -58,7 +59,7 @@ function parseSegments(content: string): Segment[] {
 function ResizableImage({
   src,
   width: initialWidth,
-  alt = "이미지",
+  alt = '이미지',
   onWidthChange,
 }: {
   src: string;
@@ -85,36 +86,36 @@ function ResizableImage({
     }
     function onUp() {
       onWidthChange(src, currentW.current);
-      document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
     }
-    document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
   }
 
-  const CORNER =
-    "absolute w-3 h-3 bg-bg border-2 border-accent rounded-sm z-10";
+  const CORNER = 'absolute w-3 h-3 bg-bg border-2 border-accent rounded-sm z-10';
 
   return (
+    // biome-ignore lint/a11y/noStaticElementInteractions: 이미지 호버 상태 추적용 컨테이너
     <span
       className="relative inline-block my-2 select-none"
-      style={{ width: w, maxWidth: "100%" }}
+      style={{ width: w, maxWidth: '100%' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={(e) => {
         if (e.currentTarget.contains(e.relatedTarget as Node)) return;
         setHovered(false);
       }}
     >
-      {/* biome-ignore lint/a11y/useAltText: alt prop으로 전달됨 */}
+      {/* biome-ignore lint/performance/noImgElement: 에디터 미리보기 이미지, next/image 사용 불가 */}
       <img
         src={src}
         alt={alt}
         draggable={false}
         style={
           {
-            width: "100%",
-            display: "block",
-            WebkitUserDrag: "none",
+            width: '100%',
+            display: 'block',
+            WebkitUserDrag: 'none',
           } as React.CSSProperties
         }
       />
@@ -124,18 +125,22 @@ function ResizableImage({
           <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded pointer-events-none select-none whitespace-nowrap">
             {Math.round(w)}px
           </span>
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
           <span
             className={`${CORNER} top-1.5 left-1.5 cursor-nw-resize`}
             onMouseDown={(e) => startResize(e, true)}
           />
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
           <span
             className={`${CORNER} top-1.5 right-1.5 cursor-ne-resize`}
             onMouseDown={(e) => startResize(e, false)}
           />
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
           <span
             className={`${CORNER} bottom-1.5 left-1.5 cursor-sw-resize`}
             onMouseDown={(e) => startResize(e, true)}
           />
+          {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
           <span
             className={`${CORNER} bottom-1.5 right-1.5 cursor-se-resize`}
             onMouseDown={(e) => startResize(e, false)}
@@ -167,7 +172,7 @@ function PreviewPane({
   return (
     <div className="prose dark:prose-invert max-w-none p-8 pt-10 text-fg">
       {segments.map((seg) =>
-        seg.type === "img" ? (
+        seg.type === 'img' ? (
           <ResizableImage
             key={seg.id}
             src={seg.src}
@@ -175,11 +180,7 @@ function PreviewPane({
             onWidthChange={onImageWidthChange}
           />
         ) : (
-          <ReactMarkdown
-            key={seg.id}
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-          >
+          <ReactMarkdown key={seg.id} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
             {seg.raw}
           </ReactMarkdown>
         ),
@@ -190,21 +191,19 @@ function PreviewPane({
 
 // ── 메인 에디터 ───────────────────────────────────────────────
 export function MarkdownEditor({
-  initialTitle = "",
-  initialContent = "",
+  initialTitle = '',
+  initialContent = '',
   slug,
 }: MarkdownEditorProps) {
   const router = useRouter();
   const editorRef = useRef<CodeMirrorEditorHandle | null>(null);
   const [title, setTitle] = useState(initialTitle);
   const [content, setContent] = useState(initialContent);
-  const [mode, setMode] = useState<Mode>("split");
+  const [mode, setMode] = useState<Mode>('split');
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saved" | "error">(
-    "idle",
-  );
-  const [saveError, setSaveError] = useState("");
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saved' | 'error'>('idle');
+  const [saveError, setSaveError] = useState('');
   const [uploading, setUploading] = useState(false);
   const [draggingOver, setDraggingOver] = useState(false);
   // 첫 임시저장 후 생성된 slug를 보관 (중복 POST 방지)
@@ -214,11 +213,11 @@ export function MarkdownEditor({
     const handler = (e: BeforeUnloadEvent) => {
       if (title.trim() || content.trim()) e.preventDefault();
     };
-    window.addEventListener("beforeunload", handler);
-    return () => window.removeEventListener("beforeunload", handler);
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
   }, [title, content]);
 
-  const insertMarkdown = useCallback((before: string, after = "") => {
+  const insertMarkdown = useCallback((before: string, after = '') => {
     editorRef.current?.insert(before, after);
   }, []);
 
@@ -227,7 +226,7 @@ export function MarkdownEditor({
       prev.replace(/<img\b[^>]*>/g, (match) => {
         if (!match.includes(`src="${src}"`)) return match;
         const widthAttr = `width="${Math.round(newWidth)}"`;
-        if (match.includes("width=")) {
+        if (match.includes('width=')) {
           return match.replace(/width="[^"]*"/, widthAttr);
         }
         return match.replace(/(\s*\/?>)$/, ` ${widthAttr}$1`);
@@ -238,12 +237,11 @@ export function MarkdownEditor({
   async function handleImageUpload(file: File) {
     setUploading(true);
     const fd = new FormData();
-    fd.append("file", file);
+    fd.append('file', file);
     try {
-      const r = await fetch("/api/upload", { method: "POST", body: fd });
+      const r = await fetch('/api/upload', { method: 'POST', body: fd });
       const data: { url?: string } = await r.json();
-      if (data.url)
-        insertMarkdown(`<img src="${data.url}" width="600" alt="이미지" />\n`);
+      if (data.url) insertMarkdown(`<img src="${data.url}" width="600" alt="이미지" />\n`);
     } catch {
     } finally {
       setUploading(false);
@@ -252,28 +250,28 @@ export function MarkdownEditor({
 
   async function handleSaveDraft() {
     if (!title.trim()) {
-      setSaveStatus("error");
-      setSaveError("제목을 입력해주세요");
+      setSaveStatus('error');
+      setSaveError('제목을 입력해주세요');
       return;
     }
     setSaving(true);
-    setSaveStatus("idle");
-    setSaveError("");
+    setSaveStatus('idle');
+    setSaveError('');
     try {
       const currentSlug = draftSlugRef.current;
       const slugified =
         currentSlug ??
         (title
           .toLowerCase()
-          .replace(/[^a-z0-9가-힣]/g, "-")
-          .replace(/-+/g, "-")
-          .replace(/^-|-$/g, "") ||
-          "untitled");
-      const method = currentSlug ? "PATCH" : "POST";
-      const url = currentSlug ? `/api/posts/${currentSlug}` : "/api/posts";
+          .replace(/[^a-z0-9가-힣]/g, '-')
+          .replace(/-+/g, '-')
+          .replace(/^-|-$/g, '') ||
+          'untitled');
+      const method = currentSlug ? 'PATCH' : 'POST';
+      const url = currentSlug ? `/api/posts/${currentSlug}` : '/api/posts';
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           slug: slugified,
@@ -283,21 +281,21 @@ export function MarkdownEditor({
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setSaveStatus("error");
-        setSaveError((d as { error?: string }).error ?? "저장 실패");
+        setSaveStatus('error');
+        setSaveError((d as { error?: string }).error ?? '저장 실패');
         return;
       }
       if (!currentSlug) {
         const data: { slug: string } = await res.json();
         draftSlugRef.current = data.slug;
       }
-      setSaveStatus("saved");
-      setSaveError("");
-      setTimeout(() => setSaveStatus("idle"), 2000);
+      setSaveStatus('saved');
+      setSaveError('');
+      setTimeout(() => setSaveStatus('idle'), 2000);
     } catch (err) {
-      console.error("[임시저장]", err);
-      setSaveStatus("error");
-      setSaveError("네트워크 오류");
+      console.error('[임시저장]', err);
+      setSaveStatus('error');
+      setSaveError('네트워크 오류');
     } finally {
       setSaving(false);
     }
@@ -305,28 +303,22 @@ export function MarkdownEditor({
 
   function handleBack() {
     const hasContent = title.trim() || content.trim();
-    if (
-      hasContent &&
-      !window.confirm("작성 중인 내용이 있습니다. 나가시겠습니까?")
-    )
-      return;
+    if (hasContent && !window.confirm('작성 중인 내용이 있습니다. 나가시겠습니까?')) return;
     if (window.history.length > 1) router.back();
-    else router.push("/");
+    else router.push('/');
   }
 
   function handleFileDrop(e: React.DragEvent) {
     e.preventDefault();
     setDraggingOver(false);
-    const file = Array.from(e.dataTransfer.files).find((f) =>
-      f.type.startsWith("image/"),
-    );
+    const file = Array.from(e.dataTransfer.files).find((f) => f.type.startsWith('image/'));
     if (file) handleImageUpload(file);
   }
 
   const modeButtons: { key: Mode; label: string }[] = [
-    { key: "write", label: "편집" },
-    { key: "split", label: "분할" },
-    { key: "preview", label: "미리보기" },
+    { key: 'write', label: '편집' },
+    { key: 'split', label: '분할' },
+    { key: 'preview', label: '미리보기' },
   ];
 
   return (
@@ -348,7 +340,7 @@ export function MarkdownEditor({
                   key={key}
                   type="button"
                   onClick={() => setMode(key)}
-                  className={`px-3 py-1 transition-colors ${mode === key ? "bg-fg text-bg" : "text-fg-muted hover:text-fg"}`}
+                  className={`px-3 py-1 transition-colors ${mode === key ? 'bg-fg text-bg' : 'text-fg-muted hover:text-fg'}`}
                 >
                   {label}
                 </button>
@@ -362,22 +354,22 @@ export function MarkdownEditor({
                 onClick={handleSaveDraft}
                 disabled={saving}
                 className={`text-sm transition-colors disabled:opacity-50 ${
-                  saveStatus === "saved"
-                    ? "text-green-500"
-                    : saveStatus === "error"
-                      ? "text-red-500"
-                      : "text-fg-muted hover:text-fg"
+                  saveStatus === 'saved'
+                    ? 'text-green-500'
+                    : saveStatus === 'error'
+                      ? 'text-red-500'
+                      : 'text-fg-muted hover:text-fg'
                 }`}
               >
                 {saving
-                  ? "저장 중..."
-                  : saveStatus === "saved"
-                    ? "저장됨 ✓"
-                    : saveStatus === "error"
-                      ? "저장 실패"
-                      : "임시저장"}
+                  ? '저장 중...'
+                  : saveStatus === 'saved'
+                    ? '저장됨 ✓'
+                    : saveStatus === 'error'
+                      ? '저장 실패'
+                      : '임시저장'}
               </button>
-              {saveStatus === "error" && saveError && (
+              {saveStatus === 'error' && saveError && (
                 <span className="text-xs text-red-400">{saveError}</span>
               )}
             </div>
@@ -403,17 +395,14 @@ export function MarkdownEditor({
         </div>
 
         {/* 툴바 */}
-        {mode !== "preview" && (
-          <EditorToolbar
-            onInsert={insertMarkdown}
-            onImageUpload={handleImageUpload}
-          />
+        {mode !== 'preview' && (
+          <EditorToolbar onInsert={insertMarkdown} onImageUpload={handleImageUpload} />
         )}
 
         {/* 에디터 영역 */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop file upload zone */}
         <div
-          className={`flex flex-1 overflow-hidden relative transition-shadow ${draggingOver && !uploading ? "ring-2 ring-inset ring-accent" : ""}`}
+          className={`flex flex-1 overflow-hidden relative transition-shadow ${draggingOver && !uploading ? 'ring-2 ring-inset ring-accent' : ''}`}
           onDrop={handleFileDrop}
           onDragOver={(e) => {
             e.preventDefault();
@@ -445,9 +434,9 @@ export function MarkdownEditor({
           )}
 
           {/* 편집 패널 */}
-          {(mode === "write" || mode === "split") && (
+          {(mode === 'write' || mode === 'split') && (
             <div
-              className={`${mode === "split" ? "w-1/2 border-r border-border" : "w-full"} overflow-hidden`}
+              className={`${mode === 'split' ? 'w-1/2 border-r border-border' : 'w-full'} overflow-hidden`}
             >
               <CodeMirrorEditor
                 value={content}
@@ -462,14 +451,9 @@ export function MarkdownEditor({
           )}
 
           {/* 미리보기 패널 */}
-          {(mode === "preview" || mode === "split") && (
-            <div
-              className={`${mode === "split" ? "w-1/2" : "w-full"} overflow-y-auto`}
-            >
-              <PreviewPane
-                content={content}
-                onImageWidthChange={handleImageWidthChange}
-              />
+          {(mode === 'preview' || mode === 'split') && (
+            <div className={`${mode === 'split' ? 'w-1/2' : 'w-full'} overflow-y-auto`}>
+              <PreviewPane content={content} onImageWidthChange={handleImageWidthChange} />
             </div>
           )}
         </div>

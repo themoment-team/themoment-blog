@@ -19,7 +19,7 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
       await deletePostAction(postId);
       setOpen(false);
     } catch (err) {
-      console.error("[DeletePostButton] 삭제 실패:", err);
+      console.error('[DeletePostButton] 삭제 실패:', err);
     } finally {
       setPending(false);
     }
@@ -45,6 +45,8 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
               if (!pending) setOpen(false);
             }}
           >
+            {/* biome-ignore lint/a11y/useKeyWithClickEvents: 이벤트 전파 차단 전용, 키보드 처리 불필요 */}
+            {/* biome-ignore lint/a11y/noStaticElementInteractions: 배경 클릭 이벤트 전파 차단용 */}
             <div
               className="bg-bg border border-border rounded-xl shadow-lg w-full max-w-sm mx-4 p-6"
               onClick={(e) => e.stopPropagation()}

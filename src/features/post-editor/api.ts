@@ -1,8 +1,8 @@
-import { posts, postTags } from "@entities/post";
-import { series } from "@entities/series";
-import { getTagIdsByNames } from "@features/post-view/api";
-import { db } from "@shared/lib/db";
-import { eq } from "drizzle-orm";
+import { posts, postTags } from '@entities/post';
+import { series } from '@entities/series';
+import { getTagIdsByNames } from '@features/post-view/api';
+import { db } from '@shared/lib/db';
+import { eq } from 'drizzle-orm';
 
 export async function upsertSeries(title: string): Promise<string> {
   const [existing] = await db
@@ -15,9 +15,9 @@ export async function upsertSeries(title: string): Promise<string> {
 
   let slug = title
     .toLowerCase()
-    .replace(/[^a-z0-9가-힣]/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/[^a-z0-9가-힣]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 
   if (!slug) {
     slug = `series-${Math.random().toString(36).slice(2, 8)}`;
@@ -75,9 +75,7 @@ export async function createPost(data: {
   if (tagNames?.length) {
     const tagIds = await getTagIdsByNames(tagNames);
     if (tagIds.length > 0) {
-      await db
-        .insert(postTags)
-        .values(tagIds.map((tagId) => ({ postId: post.id, tagId })));
+      await db.insert(postTags).values(tagIds.map((tagId) => ({ postId: post.id, tagId })));
     }
   }
 
@@ -104,7 +102,7 @@ export async function updatePost(
     updatedAt: new Date(),
   };
 
-  if ("seriesTitle" in data) {
+  if ('seriesTitle' in data) {
     const trimmedSeriesTitle = seriesTitle?.trim();
     if (trimmedSeriesTitle) {
       updateData.seriesId = await upsertSeries(trimmedSeriesTitle);
@@ -121,20 +119,14 @@ export async function updatePost(
     updateData.publishedAt = null;
   }
 
-  const [post] = await db
-    .update(posts)
-    .set(updateData)
-    .where(eq(posts.id, postId))
-    .returning();
+  const [post] = await db.update(posts).set(updateData).where(eq(posts.id, postId)).returning();
 
   if (tagNames !== undefined) {
     await db.delete(postTags).where(eq(postTags.postId, postId));
     if (tagNames.length > 0) {
       const tagIds = await getTagIdsByNames(tagNames);
       if (tagIds.length > 0) {
-        await db
-          .insert(postTags)
-          .values(tagIds.map((tagId) => ({ postId, tagId })));
+        await db.insert(postTags).values(tagIds.map((tagId) => ({ postId, tagId })));
       }
     }
   }

@@ -23,7 +23,7 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
         setLiked(data.liked);
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.name === "AbortError") return;
+        if (err instanceof Error && err.name === 'AbortError') return;
       });
     return () => controller.abort();
   }, [slug]);

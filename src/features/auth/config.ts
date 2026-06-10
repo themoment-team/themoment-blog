@@ -35,13 +35,13 @@ async function checkMomentMembership(email: string): Promise<boolean | null> {
   }
 }
 
+const clientId = process.env.DATAGSM_CLIENT_ID;
+const clientSecret = process.env.DATAGSM_CLIENT_SECRET;
+if (!clientId || !clientSecret)
+  throw new Error('DATAGSM_CLIENT_ID, DATAGSM_CLIENT_SECRET 환경변수가 설정되지 않았습니다');
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  providers: [
-    DataGSMProvider({
-      clientId: process.env.DATAGSM_CLIENT_ID!,
-      clientSecret: process.env.DATAGSM_CLIENT_SECRET!,
-    }),
-  ],
+  providers: [DataGSMProvider({ clientId, clientSecret })],
   session: {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60,

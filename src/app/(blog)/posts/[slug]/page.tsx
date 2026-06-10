@@ -1,4 +1,3 @@
-import { SITE_URL } from '@shared/config/site';
 import {
   getLikeCount,
   getPostBySlug,
@@ -10,6 +9,7 @@ import {
   TagBadge,
   ViewCounter,
 } from '@features/post-view';
+import { SITE_URL } from '@shared/config/site';
 import { extractHeadings } from '@shared/lib/markdown';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -58,7 +58,7 @@ export default async function PostPage({ params }: PageProps) {
   const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
 
-  if (!post || !post.published) notFound();
+  if (!post?.published) notFound();
 
   const headings = extractHeadings(post.content);
   const [likeCount, seriesNav] = await Promise.all([
@@ -94,6 +94,7 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <>
+      {/* biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD 구조화 데이터, 서버에서 이스케이프 처리됨 */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd }} />
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="flex gap-12 items-start">
