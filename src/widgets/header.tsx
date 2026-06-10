@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { auth } from '@/features/auth/config';
 import { LoginButton, UserMenu } from '@/features/auth';
+import { auth } from '@/features/auth/config';
 import { ThemeToggle } from '@/features/theme';
 
 export async function Header() {

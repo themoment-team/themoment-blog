@@ -36,7 +36,10 @@ export default [
         {
           default: 'disallow',
           rules: [
-            { from: 'app', allow: ['app', 'views', 'widgets', 'feature-auth', 'features', 'entities', 'shared'] },
+            {
+              from: 'app',
+              allow: ['app', 'views', 'widgets', 'feature-auth', 'features', 'entities', 'shared'],
+            },
             { from: 'views', allow: ['widgets', 'feature-auth', 'features', 'entities', 'shared'] },
             { from: 'widgets', allow: ['feature-auth', 'features', 'entities', 'shared'] },
             // features는 auth feature를 cross-cutting 인증 인프라로 취급해 허용
