@@ -14,14 +14,18 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fp = getFingerprint();
-    fetch(`/api/posts/${slug}/likes?fp=${fp}`)
+    fetch(`/api/posts/${slug}/likes?fp=${fp}`, { signal: controller.signal })
       .then((r) => r.json())
       .then((data: { count: number; liked: boolean }) => {
         setCount(data.count);
         setLiked(data.liked);
       })
-      .catch(() => {});
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === "AbortError") return;
+      });
+    return () => controller.abort();
   }, [slug]);
 
   async function toggle() {
@@ -44,6 +48,7 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
         headers: body ? { "Content-Type": "application/json" } : {},
         body,
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data: { count: number; liked: boolean } = await res.json();
       setCount(data.count);
       setLiked(data.liked);

@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import rehypeRaw from "rehype-raw";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -210,18 +210,25 @@ export function MarkdownEditor({
   // 첫 임시저장 후 생성된 slug를 보관 (중복 POST 방지)
   const draftSlugRef = useRef<string | undefined>(slug);
 
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      if (title.trim() || content.trim()) e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [title, content]);
+
   const insertMarkdown = useCallback((before: string, after = "") => {
     editorRef.current?.insert(before, after);
   }, []);
 
   function handleImageWidthChange(src: string, newWidth: number) {
-    setContent((prev) => {
-      const esc = src.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      return prev.replace(
-        new RegExp(`(<img[^>]*src="${esc}"[^>]*?)width="[^"]*"`, "g"),
-        `$1width="${Math.round(newWidth)}"`,
-      );
-    });
+    setContent((prev) =>
+      prev.replace(/<img\b[^>]*\/>/g, (match) => {
+        if (!match.includes(`src="${src}"`)) return match;
+        return match.replace(/width="[^"]*"/, `width="${Math.round(newWidth)}"`);
+      }),
+    );
   }
 
   async function handleImageUpload(file: File) {

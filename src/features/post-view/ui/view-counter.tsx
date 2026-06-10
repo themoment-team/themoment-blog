@@ -14,9 +14,11 @@ export function ViewCounter({ slug, initialCount }: ViewCounterProps) {
     const key = `viewed-${slug}`;
     if (sessionStorage.getItem(key)) return;
 
-    sessionStorage.setItem(key, "1");
     fetch(`/api/posts/${slug}/views`, { method: "POST" })
-      .then(() => setCount((c) => c + 1))
+      .then(() => {
+        sessionStorage.setItem(key, "1");
+        setCount((c) => c + 1);
+      })
       .catch(() => {});
   }, [slug]);
 
