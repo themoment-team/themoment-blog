@@ -174,7 +174,7 @@ export function CodeMirrorEditor({ value, onChange, onSave, onImageUpload, onRea
       placeholder('마크다운으로 내용을 작성하세요...'),
     ],
     [],
-  ); // eslint-disable-line react-hooks/exhaustive-deps
+  );
 
   return (
     <CodeMirror
