@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getPostsByTag, getTagBySlug, PostCard } from '@/features/post-view';
+import { getTagBySlug } from '@/entities/tag';
+import { getPostsByTag, PostCard } from '@/features/post-view';
 
 interface PageProps {
   params: Promise<{ slug: string }>;

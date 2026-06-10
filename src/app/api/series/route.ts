@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/features/auth/config';
 import { upsertSeries } from '@/features/post-editor';
-import { getAllSeries } from '@/features/post-view';
+import { getAllSeries } from '@/entities/series';
 
 export async function GET() {
   const allSeries = await getAllSeries();

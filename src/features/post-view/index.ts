@@ -1,6 +1,5 @@
 export {
   addLike,
-  getAllSeries,
   getAllTags,
   getDraftPosts,
   getLikeCount,
@@ -8,11 +7,6 @@ export {
   getPostForEdit,
   getPostsByTag,
   getPublishedPosts,
-  getSeriesBySlug,
-  getSeriesNavData,
-  getSeriesWithPosts,
-  getTagBySlug,
-  getTagIdsByNames,
   hasLiked,
   incrementViewCount,
   type PostSortKey,

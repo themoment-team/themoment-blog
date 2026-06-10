@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm';
 import { posts, postTags } from '@/entities/post';
 import { series } from '@/entities/series';
-import { getTagIdsByNames } from '@/features/post-view/api';
+import { getTagIdsByNames } from '@/entities/tag';
 import { db } from '@/shared/lib/db';
 
 export async function upsertSeries(title: string): Promise<string> {
