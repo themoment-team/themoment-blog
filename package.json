@@ -23,6 +23,7 @@
     "@uiw/react-codemirror": "^4.25.10",
     "cloudinary": "^2.10.0",
     "drizzle-orm": "^0.45.2",
+    "github-slugger": "^2.0.0",
     "highlight.js": "^11.11.1",
     "mdast-util-from-markdown": "^2.0.3",
     "mdast-util-to-string": "^4.0.0",

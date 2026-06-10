@@ -11,9 +11,10 @@ interface PageProps {
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
-  const { slug } = await params;
+  const [session, { slug }] = await Promise.all([auth(), params]);
   const post = await getPostForEdit(decodeURIComponent(slug));
-  return { title: post ? `수정: ${post.title}` : "포스트 수정" };
+  if (!post || post.authorId !== session?.user.id) return { title: "포스트 수정" };
+  return { title: `수정: ${post.title}` };
 }
 
 export default async function EditPage({ params }: PageProps) {

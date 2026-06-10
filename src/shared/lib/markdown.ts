@@ -9,12 +9,14 @@ import remarkRehype from "remark-rehype";
 import { createHighlighter, type Highlighter } from "shiki";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
+import GithubSlugger from "github-slugger";
 
-let highlighter: Highlighter | null = null;
+// Promise를 캐싱해 동시 요청 시 중복 초기화를 방지한다.
+let highlighterPromise: Promise<Highlighter> | null = null;
 
-async function getHighlighter(): Promise<Highlighter> {
-  if (!highlighter) {
-    highlighter = await createHighlighter({
+function getHighlighter(): Promise<Highlighter> {
+  if (!highlighterPromise) {
+    highlighterPromise = createHighlighter({
       themes: ["github-light", "github-dark"],
       langs: [
         "typescript",
@@ -37,7 +39,7 @@ async function getHighlighter(): Promise<Highlighter> {
       ],
     });
   }
-  return highlighter;
+  return highlighterPromise;
 }
 
 function rehypeShiki(hl: Highlighter) {
@@ -112,14 +114,13 @@ export function extractHeadings(
 ): Array<{ depth: 1 | 2 | 3; text: string; id: string }> {
   const headingRegex = /^(#{1,3})\s+(.+)$/gm;
   const headings: Array<{ depth: 1 | 2 | 3; text: string; id: string }> = [];
+  // rehype-slug도 내부적으로 GithubSlugger를 사용하므로 동일한 인스턴스를 써야 ID가 일치한다.
+  const slugger = new GithubSlugger();
 
   for (const match of content.matchAll(headingRegex)) {
     const depth = match[1].length as 1 | 2 | 3;
     const text = match[2].trim();
-    const id = text
-      .toLowerCase()
-      .replace(/[^\w\s가-힣]/g, "")
-      .replace(/\s+/g, "-");
+    const id = slugger.slug(text);
     headings.push({ depth, text, id });
   }
 

@@ -14,6 +14,7 @@ export async function getPublishedPosts(
   offset = 0,
   sort: PostSortKey = "latest",
   tag?: string,
+  authorId?: string,
 ) {
   const likeCountExpr = sql<number>`(select count(*) from ${likes} where ${likes.postId} = ${posts.id})`;
 
@@ -35,9 +36,12 @@ export async function getPublishedPosts(
       )
     : undefined;
 
-  const whereClause = tagSubquery
-    ? and(eq(posts.published, true), tagSubquery)
-    : eq(posts.published, true);
+  const conditions = [
+    eq(posts.published, true),
+    ...(tagSubquery ? [tagSubquery] : []),
+    ...(authorId ? [eq(posts.authorId, authorId)] : []),
+  ];
+  const whereClause = and(...conditions);
 
   const postList = await db
     .select({

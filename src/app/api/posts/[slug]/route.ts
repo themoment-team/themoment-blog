@@ -12,6 +12,14 @@ export async function GET(
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+  if (!post.published) {
+    const session = await auth();
+    if (session?.user.id !== post.author.id) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+  }
+
   return NextResponse.json(post);
 }
 
@@ -59,7 +67,7 @@ export async function PATCH(
     tagNames: validatedTagNames,
     ...("seriesTitle" in body && {
       seriesTitle: seriesTitle ?? null,
-      seriesOrder: typeof seriesOrder === "number" ? seriesOrder : null,
+      seriesOrder: typeof seriesOrder === "number" && !Number.isNaN(seriesOrder) ? seriesOrder : null,
     }),
   });
 

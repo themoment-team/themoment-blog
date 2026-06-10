@@ -15,9 +15,14 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
 
   async function handleConfirm() {
     setPending(true);
-    await deletePostAction(postId);
-    setPending(false);
-    setOpen(false);
+    try {
+      await deletePostAction(postId);
+      setOpen(false);
+    } catch (err) {
+      console.error("[DeletePostButton] 삭제 실패:", err);
+    } finally {
+      setPending(false);
+    }
   }
 
   return (
