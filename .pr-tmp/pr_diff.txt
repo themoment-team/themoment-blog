@@ -1,0 +1,1009 @@
+diff --git a/eslint.config.js b/eslint.config.js
+index b80fe1c..036e9b9 100644
+--- a/eslint.config.js
++++ b/eslint.config.js
+@@ -13,10 +13,18 @@ export default [
+     },
+     plugins: { boundaries },
+     settings: {
++      'import/resolver': {
++        typescript: {
++          alwaysTryTypes: true,
++          project: './tsconfig.json',
++        },
++      },
+       'boundaries/elements': [
+         { type: 'app', pattern: 'src/app/**/*' },
+         { type: 'views', pattern: 'src/views/**/*' },
+         { type: 'widgets', pattern: 'src/widgets/**/*' },
++        // feature-auth는 features보다 먼저 선언해야 우선 매칭된다
++        { type: 'feature-auth', pattern: 'src/features/auth/**' },
+         { type: 'features', pattern: 'src/features/**/*' },
+         { type: 'entities', pattern: 'src/entities/**/*' },
+         { type: 'shared', pattern: 'src/shared/**/*' },
+@@ -28,10 +36,15 @@ export default [
+         {
+           default: 'disallow',
+           rules: [
+-            { from: 'app', allow: ['views', 'widgets', 'features', 'entities', 'shared'] },
+-            { from: 'views', allow: ['widgets', 'features', 'entities', 'shared'] },
+-            { from: 'widgets', allow: ['features', 'entities', 'shared'] },
+-            { from: 'features', allow: ['entities', 'shared'] },
++            {
++              from: 'app',
++              allow: ['app', 'views', 'widgets', 'feature-auth', 'features', 'entities', 'shared'],
++            },
++            { from: 'views', allow: ['widgets', 'feature-auth', 'features', 'entities', 'shared'] },
++            { from: 'widgets', allow: ['feature-auth', 'features', 'entities', 'shared'] },
++            // features는 auth feature를 cross-cutting 인증 인프라로 취급해 허용
++            { from: 'features', allow: ['feature-auth', 'entities', 'shared'] },
++            { from: 'feature-auth', allow: ['entities', 'shared'] },
+             { from: 'entities', allow: ['entities', 'shared'] },
+             { from: 'shared', allow: [] },
+           ],
+diff --git a/package.json b/package.json
+index b11e10d..1d57a3b 100644
+--- a/package.json
++++ b/package.json
+@@ -58,6 +58,7 @@
+     "dotenv-cli": "^11.0.0",
+     "drizzle-kit": "^0.31.10",
+     "eslint": "^9.39.4",
++    "eslint-import-resolver-typescript": "^4.4.5",
+     "eslint-plugin-boundaries": "^6.0.2",
+     "tailwindcss": "^4",
+     "typescript": "^5"
+diff --git a/pnpm-lock.yaml b/pnpm-lock.yaml
+index 5879062..a6a930e 100644
+--- a/pnpm-lock.yaml
++++ b/pnpm-lock.yaml
+@@ -144,9 +144,12 @@ importers:
+       eslint:
+         specifier: ^9.39.4
+         version: 9.39.4(jiti@2.7.0)
++      eslint-import-resolver-typescript:
++        specifier: ^4.4.5
++        version: 4.4.5(eslint@9.39.4(jiti@2.7.0))
+       eslint-plugin-boundaries:
+         specifier: ^6.0.2
+-        version: 6.0.2(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0))
++        version: 6.0.2(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+       tailwindcss:
+         specifier: ^4
+         version: 4.3.0
+@@ -335,9 +338,18 @@ packages:
+   '@drizzle-team/brocli@0.10.2':
+     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+ 
++  '@emnapi/core@1.10.0':
++    resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
++
++  '@emnapi/runtime@1.10.0':
++    resolution: {integrity: sha512-ewvYlk86xUoGI0zQRNq/mC+16R1QeDlKQy21Ki3oSYXNgLb45GV1P6A0M+/s6nyCuNDqe5VpaY84BzXGwVbwFA==}
++
+   '@emnapi/runtime@1.11.0':
+     resolution: {integrity: sha512-55coeOFKHv1ywEcUXJtWU5f+Jr/W5tZDvZig8DLKSwUN1JpROQ4rk/SNOQiFWmaR/VKF4zuFyW1B8JduOSv6Pg==}
+ 
++  '@emnapi/wasi-threads@1.2.1':
++    resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
++
+   '@esbuild-kit/core-utils@3.3.2':
+     resolution: {integrity: sha512-sPRAnw9CdSsRmEtnsl2WXWdyquogVpB3yZ3dgwJfe8zrOzTsV7cJvmwrKVa+0ma5BoiGJ+BoqkMvawbayKUsqQ==}
+     deprecated: 'Merged into tsx: https://tsx.is'
+@@ -1074,6 +1086,12 @@ packages:
+   '@marijn/find-cluster-break@1.0.2':
+     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
+ 
++  '@napi-rs/wasm-runtime@1.1.4':
++    resolution: {integrity: sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow==}
++    peerDependencies:
++      '@emnapi/core': ^1.7.1
++      '@emnapi/runtime': ^1.7.1
++
+   '@neondatabase/serverless@1.1.0':
+     resolution: {integrity: sha512-r3ZZhRjEcfEdKIZnoB1RusNgvHuaBRqfCzV4Gi+5A9yUX0S4HTws/ASWqt13wL4y4I+0rqsWGdA2w7EQXHi3+Q==}
+     engines: {node: '>=19.0.0'}
+@@ -1262,6 +1280,9 @@ packages:
+   '@tailwindcss/postcss@4.3.0':
+     resolution: {integrity: sha512-Jm05Tjx+9yCLGv5qw1c+84Psds8MnyrEQYCB+FFk2lgGiUjlRqdxke4mVTuYrj2xnVZqKim2Apr5ySuQRYAw/w==}
+ 
++  '@tybys/wasm-util@0.10.2':
++    resolution: {integrity: sha512-RoBvJ2X0wuKlWFIjrwffGw1IqZHKQqzIchKaadZZfnNpsAYp2mM0h36JtPCjNDAHGgYez/15uMBpfGwchhiMgg==}
++
+   '@types/debug@4.1.13':
+     resolution: {integrity: sha512-KSVgmQmzMwPlmtljOomayoR89W4FynCAi3E8PPs7vmDVPe84hT+vGPKkJfThkmXs0x0jAaa9U8uW8bbfyS2fWw==}
+ 
+@@ -1365,6 +1386,126 @@ packages:
+   '@ungap/structured-clone@1.3.1':
+     resolution: {integrity: sha512-mUFwbeTqrVgDQxFveS+df2yfap6iuP20NAKAsBt5jDEoOTDew+zwLAOilHCeQJOVSvmgCX4ogqIrA0mnyr08yQ==}
+ 
++  '@unrs/resolver-binding-android-arm-eabi@1.12.2':
++    resolution: {integrity: sha512-g5T90pqg1bo/7mytQx6F4iBNC0Wsh9cu+z9veDbFjc7HjpesJFWD7QMS0NGStXM075+7dJPPVvBbpZlnrdpi/w==}
++    cpu: [arm]
++    os: [android]
++
++  '@unrs/resolver-binding-android-arm64@1.12.2':
++    resolution: {integrity: sha512-YGCRZv/9GLhwmz6mYDeTsm/92BAyR28l6c2ReweVW5pWgfsitWLY8upvfRlGdoyD8HjeTHSYJWyZGD4KJA/nFQ==}
++    cpu: [arm64]
++    os: [android]
++
++  '@unrs/resolver-binding-darwin-arm64@1.12.2':
++    resolution: {integrity: sha512-u9DiNT1auQMO20A9SyTuG3wUgQWB9Z7KjAg0uFuCDR1FsAY8A0CG2S6JpHS1xwm/w1G08bjXZDcyOCjv1WAm2w==}
++    cpu: [arm64]
++    os: [darwin]
++
++  '@unrs/resolver-binding-darwin-x64@1.12.2':
++    resolution: {integrity: sha512-f7rPLi/T1HVKZu/u6t87lroib16n8vrSzcyxI7lg4BGO9UF26KhQL44sd9eOUgrTYhvRXtWOIZT5PejdPyJfUA==}
++    cpu: [x64]
++    os: [darwin]
++
++  '@unrs/resolver-binding-freebsd-x64@1.12.2':
++    resolution: {integrity: sha512-BpcOjWCJub6nRZUS2zA20pmLvjtqAtGejETaIyRLiZiQf++cbrjltLA5NN/xaXfqeOBOSlMFbemIl5/S5tljmg==}
++    cpu: [x64]
++    os: [freebsd]
++
++  '@unrs/resolver-binding-linux-arm-gnueabihf@1.12.2':
++    resolution: {integrity: sha512-vZTDvdSISZjJx66OzJqtsOhzifbqRjbmI1Mnu49fQDwog5GtDI4QidRiEAYbZCRj9C8YZEW+3ZjqsyS9GR4k2A==}
++    cpu: [arm]
++    os: [linux]
++
++  '@unrs/resolver-binding-linux-arm-musleabihf@1.12.2':
++    resolution: {integrity: sha512-BiPI+IrIlwcW4nLLMM21+B1dFPzd55yAVgVGrdgDjNef+ch03GdxrcyaIz8X9SsQirh/kCQ7mviyWlMxdh2D7g==}
++    cpu: [arm]
++    os: [linux]
++
++  '@unrs/resolver-binding-linux-arm64-gnu@1.12.2':
++    resolution: {integrity: sha512-zJc0H99FEPoFfSrNpa91HYfxzfAJCr502oxNK1cfdC9hlaFI43RT+JFCann9JUgZmLzzntChHyn13Sgn9ljHNg==}
++    cpu: [arm64]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-arm64-musl@1.12.2':
++    resolution: {integrity: sha512-KQ3Lki6l+Pz1k/eBipN41ES+YUK30beLGb9YqcB1O542cyLCNE6GaxrfcY3T6EezmGGk84wb5XyO9loTM9tkcA==}
++    cpu: [arm64]
++    os: [linux]
++    libc: [musl]
++
++  '@unrs/resolver-binding-linux-loong64-gnu@1.12.2':
++    resolution: {integrity: sha512-3SJGEh1DborhG6pyxvhPzCT4bbSIVihsvgJc13P1bHG7KLdNDaF9T3gsTwFc7Jw/5Y5/iWOjkEx7Zy0NvCGX3Q==}
++    cpu: [loong64]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-loong64-musl@1.12.2':
++    resolution: {integrity: sha512-jiuG/Obbel7uw1PwHNFfrkiKhLAF6mnyZ6aWlOAVN9WqKm8v0OFGnciJIHu8+CMvXLQ8AD51LPzAoUfT21D5Ew==}
++    cpu: [loong64]
++    os: [linux]
++    libc: [musl]
++
++  '@unrs/resolver-binding-linux-ppc64-gnu@1.12.2':
++    resolution: {integrity: sha512-q7xRvVpmcfeL+LlZg8Pbbo6QaTZwDU5BaGZbwfhkEsXJn3Was8xYfE0RBH266xZt0rM6B7i8xAYIvjthuUIWHg==}
++    cpu: [ppc64]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-riscv64-gnu@1.12.2':
++    resolution: {integrity: sha512-0CVdx6lcnT3Q9inOH8tsMIOJ6ImndllMjqJHg8RLVdB7Vq4SfkEXl9mCSsVNuNA4MCYycRicCUxPCabVHJRr6A==}
++    cpu: [riscv64]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-riscv64-musl@1.12.2':
++    resolution: {integrity: sha512-iOwlRo9vnp6R6ohHQS11n0NnfdXx/omhkocmIfaPRpQhKZ+3BDMkkdRVh53qjkFkpPddf+FETA28NwGN7l5l+w==}
++    cpu: [riscv64]
++    os: [linux]
++    libc: [musl]
++
++  '@unrs/resolver-binding-linux-s390x-gnu@1.12.2':
++    resolution: {integrity: sha512-HYJtLfXq94q8iZNFT1lknx258wlkkWhZeUXJRqzKBBUJ00CvZ+N33zgbCqimLjsyw5Va6uUxhVa12mI+kaveEw==}
++    cpu: [s390x]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-x64-gnu@1.12.2':
++    resolution: {integrity: sha512-mPsUhunKKDih5O96Y6enDQyHc1SqBPlY1E/SfMWDM3EdJ95Z9CArPeCVwCCqbP45ljvivdEk8Fxn+SIb1rDAJQ==}
++    cpu: [x64]
++    os: [linux]
++    libc: [glibc]
++
++  '@unrs/resolver-binding-linux-x64-musl@1.12.2':
++    resolution: {integrity: sha512-azrt6+5ydLd8Vt210AAFis/lZevSfPw93EJRIJG+xPu4WCJ8K0kppCTpMyLPcKT7H15M4Jnt2tMp5bOvCkRC6A==}
++    cpu: [x64]
++    os: [linux]
++    libc: [musl]
++
++  '@unrs/resolver-binding-openharmony-arm64@1.12.2':
++    resolution: {integrity: sha512-YZ9hP4O0X9PQb8eO980qmLNGH4zT3I9+SZTdt0Pr0YyuGQhYKoOZkV02VzrzyOZJ5xIJ3UFIenKkUkGg8GjgWQ==}
++    cpu: [arm64]
++    os: [openharmony]
++
++  '@unrs/resolver-binding-wasm32-wasi@1.12.2':
++    resolution: {integrity: sha512-tYFDIkMxSflfEc/h92ZWNsZlHSwgimbNHSO3PL2JWQHfCuC2q316jMyYU9TIWZsFK2bQwyK5VAdYgn8ygPj69A==}
++    engines: {node: '>=14.0.0'}
++    cpu: [wasm32]
++
++  '@unrs/resolver-binding-win32-arm64-msvc@1.12.2':
++    resolution: {integrity: sha512-qzNyg3xL0VPQmCaUh+N5jSitce6k+uCBfMDesWRnlULOZaqUkaJ0ybdT+UqlAWJoQjuqfIU/0Ptx9bteN4D82g==}
++    cpu: [arm64]
++    os: [win32]
++
++  '@unrs/resolver-binding-win32-ia32-msvc@1.12.2':
++    resolution: {integrity: sha512-WD9sY00OfpHVGfsnHZoA8jVT+esS/Bg8z8jzxp5BnDCjjwsuKsPQrzswwpFy4J1AUJbXPRfkpcX0mXrzeXW79g==}
++    cpu: [ia32]
++    os: [win32]
++
++  '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
++    resolution: {integrity: sha512-nAB74NfSNKknqQ1RrYj6uz8FcXEomu/MATJZxh/x+BArzN2U3JbOYC0APYzUIGhVY3m5hRxA8VPNdPBoG8txlA==}
++    cpu: [x64]
++    os: [win32]
++
+   acorn-jsx@5.3.2:
+     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
+     peerDependencies:
+@@ -1654,9 +1795,31 @@ packages:
+     resolution: {integrity: sha512-/veY75JbMK4j1yjvuUxuVsiS/hr/4iHs9FTT6cgTexxdE0Ly/glccBAkloH/DofkjRbZU3bnoj38mOmhkZ0lHw==}
+     engines: {node: '>=12'}
+ 
++  eslint-import-context@0.1.9:
++    resolution: {integrity: sha512-K9Hb+yRaGAGUbwjhFNHvSmmkZs9+zbuoe3kFQ4V1wYjrepUFYM2dZAfNtjbbj3qsPfUfsA68Bx/ICWQMi+C8Eg==}
++    engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
++    peerDependencies:
++      unrs-resolver: ^1.0.0
++    peerDependenciesMeta:
++      unrs-resolver:
++        optional: true
++
+   eslint-import-resolver-node@0.3.9:
+     resolution: {integrity: sha512-WFj2isz22JahUv+B788TlO3N6zL3nNJGU8CcZbPZvVEkBPaJdCV4vy5wyghty5ROFbCRnm132v8BScu5/1BQ8g==}
+ 
++  eslint-import-resolver-typescript@4.4.5:
++    resolution: {integrity: sha512-nbE5XLph6TLtGYcu/U6e6ZVXyKBhbDWK5cLGk76eJ7NdZpwf1P9EFkpt1Z01mNZNrrilsAYWKH6zUkL4reoXbw==}
++    engines: {node: ^16.17.0 || >=18.6.0}
++    peerDependencies:
++      eslint: '*'
++      eslint-plugin-import: '*'
++      eslint-plugin-import-x: '*'
++    peerDependenciesMeta:
++      eslint-plugin-import:
++        optional: true
++      eslint-plugin-import-x:
++        optional: true
++
+   eslint-module-utils@2.12.1:
+     resolution: {integrity: sha512-L8jSWTze7K2mTg0vos/RuLRS5soomksDPoJLXIslC7c8Wmut3bx7CPpJijDcBZtxQ5lrbUdM+s0OlNbz0DCDNw==}
+     engines: {node: '>=4'}
+@@ -1875,6 +2038,9 @@ packages:
+   is-alphanumerical@2.0.1:
+     resolution: {integrity: sha512-hmbYhX/9MUMF5uh7tOXyK/n0ZvWpad5caBA17GsC6vyuCqaWliRG5K1qS9inmUhEMaOBIW7/whAnSwveW/LtZw==}
+ 
++  is-bun-module@2.0.0:
++    resolution: {integrity: sha512-gNCGbnnnnFAUGKeZ9PdbyeGYJqewpmc2aKHUEMO5nQPWU9lOmv7jcmQIv+qHD8fXW6W7qfuCwX4rY9LNRjXrkQ==}
++
+   is-core-module@2.16.1:
+     resolution: {integrity: sha512-UfoeMA6fIJ8wTYFEUjelnaGI67v6+N7qXJEvQuIGa99l4xsCruSYOVSQ0uPANn4dAzm8lkYPaKLrrijLq7x23w==}
+     engines: {node: '>= 0.4'}
+@@ -2179,6 +2345,11 @@ packages:
+     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+     hasBin: true
+ 
++  napi-postinstall@0.3.4:
++    resolution: {integrity: sha512-PHI5f1O0EP5xJ9gQmFGMS6IZcrVvTjpXjz7Na41gTE7eE2hK11lg04CECCYEEjdc17EV4DO+fkGEtt7TpTaTiQ==}
++    engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
++    hasBin: true
++
+   natural-compare@1.4.0:
+     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
+ 
+@@ -2414,6 +2585,10 @@ packages:
+   space-separated-tokens@2.0.2:
+     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
+ 
++  stable-hash-x@0.2.0:
++    resolution: {integrity: sha512-o3yWv49B/o4QZk5ZcsALc6t0+eCelPc44zZsLtCQnZPDwFpDYSWcDnrv2TtMmMbQ7uKo3J0HTURCqckw23czNQ==}
++    engines: {node: '>=12.0.0'}
++
+   stringify-entities@4.0.4:
+     resolution: {integrity: sha512-IwfBptatlO+QCJUo19AqvrPNqlVMpW9YEL2LIVY+Rpv2qsjCGxaDLNRgeGsQWJhfItebuJhsGSLjaBbNSQ+ieg==}
+ 
+@@ -2521,6 +2696,9 @@ packages:
+   unist-util-visit@5.1.0:
+     resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
+ 
++  unrs-resolver@1.12.2:
++    resolution: {integrity: sha512-dmlRxBJJayXjqTwC+JtF1HhJmgf3ftQ3YejFcZrf4+KKtJv0qDsK1pjqaaVjG7wJ5NJ6UVP1OqRMQ71Z4C3rxQ==}
++
+   uri-js@4.4.1:
+     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+ 
+@@ -2611,10 +2789,10 @@ snapshots:
+   '@biomejs/cli-win32-x64@2.4.16':
+     optional: true
+ 
+-  '@boundaries/elements@2.0.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0))':
++  '@boundaries/elements@2.0.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))':
+     dependencies:
+       eslint-import-resolver-node: 0.3.9
+-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.7.0))
++      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+       handlebars: 4.7.9
+       is-core-module: 2.16.1
+       micromatch: 4.0.8
+@@ -2885,11 +3063,27 @@ snapshots:
+ 
+   '@drizzle-team/brocli@0.10.2': {}
+ 
++  '@emnapi/core@1.10.0':
++    dependencies:
++      '@emnapi/wasi-threads': 1.2.1
++      tslib: 2.8.1
++    optional: true
++
++  '@emnapi/runtime@1.10.0':
++    dependencies:
++      tslib: 2.8.1
++    optional: true
++
+   '@emnapi/runtime@1.11.0':
+     dependencies:
+       tslib: 2.8.1
+     optional: true
+ 
++  '@emnapi/wasi-threads@1.2.1':
++    dependencies:
++      tslib: 2.8.1
++    optional: true
++
+   '@esbuild-kit/core-utils@3.3.2':
+     dependencies:
+       esbuild: 0.18.20
+@@ -3397,6 +3591,13 @@ snapshots:
+ 
+   '@marijn/find-cluster-break@1.0.2': {}
+ 
++  '@napi-rs/wasm-runtime@1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
++    dependencies:
++      '@emnapi/core': 1.10.0
++      '@emnapi/runtime': 1.10.0
++      '@tybys/wasm-util': 0.10.2
++    optional: true
++
+   '@neondatabase/serverless@1.1.0': {}
+ 
+   '@next/env@16.2.7': {}
+@@ -3540,6 +3741,11 @@ snapshots:
+       postcss: 8.5.15
+       tailwindcss: 4.3.0
+ 
++  '@tybys/wasm-util@0.10.2':
++    dependencies:
++      tslib: 2.8.1
++    optional: true
++
+   '@types/debug@4.1.13':
+     dependencies:
+       '@types/ms': 2.1.0
+@@ -3661,6 +3867,76 @@ snapshots:
+ 
+   '@ungap/structured-clone@1.3.1': {}
+ 
++  '@unrs/resolver-binding-android-arm-eabi@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-android-arm64@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-darwin-arm64@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-darwin-x64@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-freebsd-x64@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-arm-gnueabihf@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-arm-musleabihf@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-arm64-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-arm64-musl@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-loong64-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-loong64-musl@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-ppc64-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-riscv64-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-riscv64-musl@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-s390x-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-x64-gnu@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-linux-x64-musl@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-openharmony-arm64@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-wasm32-wasi@1.12.2':
++    dependencies:
++      '@emnapi/core': 1.10.0
++      '@emnapi/runtime': 1.10.0
++      '@napi-rs/wasm-runtime': 1.1.4(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
++    optional: true
++
++  '@unrs/resolver-binding-win32-arm64-msvc@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-win32-ia32-msvc@1.12.2':
++    optional: true
++
++  '@unrs/resolver-binding-win32-x64-msvc@1.12.2':
++    optional: true
++
+   acorn-jsx@5.3.2(acorn@8.16.0):
+     dependencies:
+       acorn: 8.16.0
+@@ -3902,6 +4178,13 @@ snapshots:
+ 
+   escape-string-regexp@5.0.0: {}
+ 
++  eslint-import-context@0.1.9(unrs-resolver@1.12.2):
++    dependencies:
++      get-tsconfig: 4.14.0
++      stable-hash-x: 0.2.0
++    optionalDependencies:
++      unrs-resolver: 1.12.2
++
+   eslint-import-resolver-node@0.3.9:
+     dependencies:
+       debug: 3.2.7
+@@ -3910,23 +4193,37 @@ snapshots:
+     transitivePeerDependencies:
+       - supports-color
+ 
+-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.7.0)):
++  eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)):
++    dependencies:
++      debug: 4.4.3
++      eslint: 9.39.4(jiti@2.7.0)
++      eslint-import-context: 0.1.9(unrs-resolver@1.12.2)
++      get-tsconfig: 4.14.0
++      is-bun-module: 2.0.0
++      stable-hash-x: 0.2.0
++      tinyglobby: 0.2.17
++      unrs-resolver: 1.12.2
++    transitivePeerDependencies:
++      - supports-color
++
++  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
+     dependencies:
+       debug: 3.2.7
+     optionalDependencies:
+       '@typescript-eslint/parser': 8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3)
+       eslint: 9.39.4(jiti@2.7.0)
+       eslint-import-resolver-node: 0.3.9
++      eslint-import-resolver-typescript: 4.4.5(eslint@9.39.4(jiti@2.7.0))
+     transitivePeerDependencies:
+       - supports-color
+ 
+-  eslint-plugin-boundaries@6.0.2(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0)):
++  eslint-plugin-boundaries@6.0.2(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0)):
+     dependencies:
+-      '@boundaries/elements': 2.0.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint@9.39.4(jiti@2.7.0))
++      '@boundaries/elements': 2.0.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+       chalk: 4.1.2
+       eslint: 9.39.4(jiti@2.7.0)
+       eslint-import-resolver-node: 0.3.9
+-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint@9.39.4(jiti@2.7.0))
++      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.61.0(eslint@9.39.4(jiti@2.7.0))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@4.4.5(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))
+       handlebars: 4.7.9
+       micromatch: 4.0.8
+     transitivePeerDependencies:
+@@ -4196,6 +4493,10 @@ snapshots:
+       is-alphabetical: 2.0.1
+       is-decimal: 2.0.1
+ 
++  is-bun-module@2.0.0:
++    dependencies:
++      semver: 7.8.2
++
+   is-core-module@2.16.1:
+     dependencies:
+       hasown: 2.0.4
+@@ -4671,6 +4972,8 @@ snapshots:
+ 
+   nanoid@3.3.12: {}
+ 
++  napi-postinstall@0.3.4: {}
++
+   natural-compare@1.4.0: {}
+ 
+   neo-async@2.6.2: {}
+@@ -4968,6 +5271,8 @@ snapshots:
+ 
+   space-separated-tokens@2.0.2: {}
+ 
++  stable-hash-x@0.2.0: {}
++
+   stringify-entities@4.0.4:
+     dependencies:
+       character-entities-html4: 2.1.0
+@@ -5069,6 +5374,33 @@ snapshots:
+       unist-util-is: 6.0.1
+       unist-util-visit-parents: 6.0.2
+ 
++  unrs-resolver@1.12.2:
++    dependencies:
++      napi-postinstall: 0.3.4
++    optionalDependencies:
++      '@unrs/resolver-binding-android-arm-eabi': 1.12.2
++      '@unrs/resolver-binding-android-arm64': 1.12.2
++      '@unrs/resolver-binding-darwin-arm64': 1.12.2
++      '@unrs/resolver-binding-darwin-x64': 1.12.2
++      '@unrs/resolver-binding-freebsd-x64': 1.12.2
++      '@unrs/resolver-binding-linux-arm-gnueabihf': 1.12.2
++      '@unrs/resolver-binding-linux-arm-musleabihf': 1.12.2
++      '@unrs/resolver-binding-linux-arm64-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-arm64-musl': 1.12.2
++      '@unrs/resolver-binding-linux-loong64-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-loong64-musl': 1.12.2
++      '@unrs/resolver-binding-linux-ppc64-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-riscv64-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-riscv64-musl': 1.12.2
++      '@unrs/resolver-binding-linux-s390x-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-x64-gnu': 1.12.2
++      '@unrs/resolver-binding-linux-x64-musl': 1.12.2
++      '@unrs/resolver-binding-openharmony-arm64': 1.12.2
++      '@unrs/resolver-binding-wasm32-wasi': 1.12.2
++      '@unrs/resolver-binding-win32-arm64-msvc': 1.12.2
++      '@unrs/resolver-binding-win32-ia32-msvc': 1.12.2
++      '@unrs/resolver-binding-win32-x64-msvc': 1.12.2
++
+   uri-js@4.4.1:
+     dependencies:
+       punycode: 2.3.1
+diff --git a/pnpm-workspace.yaml b/pnpm-workspace.yaml
+index 86a37d7..7f53983 100644
+--- a/pnpm-workspace.yaml
++++ b/pnpm-workspace.yaml
+@@ -1,6 +1,7 @@
+ allowBuilds:
+   esbuild: true
+   sharp: true
++  unrs-resolver: true
+ minimumReleaseAgeExclude:
+   - '@typescript-eslint/parser@8.61.0'
+   - '@typescript-eslint/project-service@8.61.0'
+diff --git a/src/app/(blog)/layout.tsx b/src/app/(blog)/layout.tsx
+index bfee76f..1016ed9 100644
+--- a/src/app/(blog)/layout.tsx
++++ b/src/app/(blog)/layout.tsx
+@@ -1,6 +1,6 @@
+ import type { ReactNode } from 'react';
+-import { Footer } from '../_components/footer';
+-import { Header } from '../_components/header';
++import { Footer } from '@/widgets/footer';
++import { Header } from '@/widgets/header';
+ 
+ export default function BlogLayout({ children }: { children: ReactNode }) {
+   return (
+diff --git a/src/app/(blog)/posts/[slug]/page.tsx b/src/app/(blog)/posts/[slug]/page.tsx
+index cf1fb76..48a1b97 100644
+--- a/src/app/(blog)/posts/[slug]/page.tsx
++++ b/src/app/(blog)/posts/[slug]/page.tsx
+@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
+ import Image from 'next/image';
+ import Link from 'next/link';
+ import { notFound } from 'next/navigation';
++import { getSeriesNavData } from '@/entities/series';
+ import {
+   getLikeCount,
+   getPostBySlug,
+-  getSeriesNavData,
+   LikeButton,
+   PostContent,
+   SeriesNav,
+diff --git a/src/app/(blog)/series/[slug]/page.tsx b/src/app/(blog)/series/[slug]/page.tsx
+index 27d0765..15cecda 100644
+--- a/src/app/(blog)/series/[slug]/page.tsx
++++ b/src/app/(blog)/series/[slug]/page.tsx
+@@ -1,7 +1,7 @@
+ import type { Metadata } from 'next';
+ import Link from 'next/link';
+ import { notFound } from 'next/navigation';
+-import { getSeriesBySlug, getSeriesWithPosts } from '@/features/post-view';
++import { getSeriesBySlug, getSeriesWithPosts } from '@/entities/series';
+ 
+ interface PageProps {
+   params: Promise<{ slug: string }>;
+diff --git a/src/app/(blog)/series/page.tsx b/src/app/(blog)/series/page.tsx
+index 6d5e82c..de23392 100644
+--- a/src/app/(blog)/series/page.tsx
++++ b/src/app/(blog)/series/page.tsx
+@@ -1,6 +1,6 @@
+ import type { Metadata } from 'next';
+ import Link from 'next/link';
+-import { getAllSeries } from '@/features/post-view';
++import { getAllSeries } from '@/entities/series';
+ 
+ export const metadata: Metadata = { title: '시리즈' };
+ 
+diff --git a/src/app/(blog)/tags/[slug]/page.tsx b/src/app/(blog)/tags/[slug]/page.tsx
+index 0663b84..6b86b6a 100644
+--- a/src/app/(blog)/tags/[slug]/page.tsx
++++ b/src/app/(blog)/tags/[slug]/page.tsx
+@@ -1,6 +1,7 @@
+ import type { Metadata } from 'next';
+ import { notFound } from 'next/navigation';
+-import { getPostsByTag, getTagBySlug, PostCard } from '@/features/post-view';
++import { getTagBySlug } from '@/entities/tag';
++import { getPostsByTag, PostCard } from '@/features/post-view';
+ 
+ interface PageProps {
+   params: Promise<{ slug: string }>;
+diff --git a/src/app/api/series/[slug]/route.ts b/src/app/api/series/[slug]/route.ts
+index 4aee726..6ac462f 100644
+--- a/src/app/api/series/[slug]/route.ts
++++ b/src/app/api/series/[slug]/route.ts
+@@ -1,5 +1,5 @@
+ import { NextResponse } from 'next/server';
+-import { getSeriesBySlug, getSeriesWithPosts } from '@/features/post-view';
++import { getSeriesBySlug, getSeriesWithPosts } from '@/entities/series';
+ 
+ export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+   const { slug } = await params;
+diff --git a/src/app/api/series/route.ts b/src/app/api/series/route.ts
+index 26adcd4..946eaaa 100644
+--- a/src/app/api/series/route.ts
++++ b/src/app/api/series/route.ts
+@@ -1,7 +1,7 @@
+ import { NextResponse } from 'next/server';
++import { getAllSeries } from '@/entities/series';
+ import { auth } from '@/features/auth/config';
+ import { upsertSeries } from '@/features/post-editor';
+-import { getAllSeries } from '@/features/post-view';
+ 
+ export async function GET() {
+   const allSeries = await getAllSeries();
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 5022384..e589752 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -7,8 +7,8 @@ import {
+   PostFilters,
+   type PostSortKey,
+ } from '@/features/post-view';
+-import { Footer } from './_components/footer';
+-import { Header } from './_components/header';
++import { Footer } from '@/widgets/footer';
++import { Header } from '@/widgets/header';
+ 
+ interface HomePageProps {
+   searchParams: Promise<{ sort?: string; tag?: string }>;
+diff --git a/src/app/rss.xml/route.ts b/src/app/rss.xml/route.ts
+index fde0811..aaea98b 100644
+--- a/src/app/rss.xml/route.ts
++++ b/src/app/rss.xml/route.ts
+@@ -1,7 +1,7 @@
+ import { getPublishedPosts } from '@/features/post-view';
+ import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/shared/config/site';
+ 
+-export const revalidate = 3600;
++export const dynamic = 'force-dynamic';
+ 
+ function escapeXml(str: string): string {
+   return str
+diff --git a/src/app/sitemap.ts b/src/app/sitemap.ts
+index 211a1b8..228a643 100644
+--- a/src/app/sitemap.ts
++++ b/src/app/sitemap.ts
+@@ -1,8 +1,9 @@
+ import type { MetadataRoute } from 'next';
+-import { getAllSeries, getAllTags, getPublishedPosts } from '@/features/post-view';
++import { getAllSeries } from '@/entities/series';
++import { getAllTags, getPublishedPosts } from '@/features/post-view';
+ import { SITE_URL } from '@/shared/config/site';
+ 
+-export const revalidate = 3600;
++export const dynamic = 'force-dynamic';
+ 
+ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+   const [posts, allSeries, tags] = await Promise.all([
+diff --git a/src/entities/series/api.ts b/src/entities/series/api.ts
+new file mode 100644
+index 0000000..7c5450a
+--- /dev/null
++++ b/src/entities/series/api.ts
+@@ -0,0 +1,63 @@
++import { and, asc, eq, isNotNull, sql } from 'drizzle-orm';
++import { posts } from '@/entities/post';
++import { db } from '@/shared/lib/db';
++import { series } from './model';
++
++export async function getAllSeries() {
++  const allSeries = await db.select().from(series).orderBy(series.createdAt);
++
++  if (allSeries.length === 0) return [];
++
++  const postCounts = await db
++    .select({
++      seriesId: posts.seriesId,
++      count: sql<number>`cast(count(*) as int)`,
++    })
++    .from(posts)
++    .where(and(eq(posts.published, true), isNotNull(posts.seriesId)))
++    .groupBy(posts.seriesId);
++
++  const countMap = new Map(postCounts.map((r) => [r.seriesId, r.count]));
++
++  return allSeries.map((s) => ({ ...s, postCount: countMap.get(s.id) ?? 0 }));
++}
++
++export async function getSeriesBySlug(slug: string) {
++  const [s] = await db.select().from(series).where(eq(series.slug, slug)).limit(1);
++  return s ?? null;
++}
++
++export async function getSeriesWithPosts(seriesId: string) {
++  const [s] = await db.select().from(series).where(eq(series.id, seriesId)).limit(1);
++  if (!s) return null;
++
++  const seriesPosts = await db
++    .select({
++      id: posts.id,
++      title: posts.title,
++      slug: posts.slug,
++      seriesOrder: posts.seriesOrder,
++    })
++    .from(posts)
++    .where(and(eq(posts.seriesId, seriesId), eq(posts.published, true)))
++    .orderBy(asc(posts.seriesOrder), asc(posts.createdAt));
++
++  return { ...s, posts: seriesPosts };
++}
++
++export async function getSeriesNavData(postId: string, seriesId: string) {
++  const data = await getSeriesWithPosts(seriesId);
++  if (!data) return null;
++
++  const idx = data.posts.findIndex((p) => p.id === postId);
++  const prevPost = idx > 0 ? data.posts[idx - 1] : null;
++  const nextPost = idx !== -1 && idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
++
++  return {
++    series: { id: data.id, title: data.title, slug: data.slug },
++    posts: data.posts,
++    currentIndex: idx,
++    prevPost,
++    nextPost,
++  };
++}
+diff --git a/src/entities/series/index.ts b/src/entities/series/index.ts
+index be0ede1..0e82c69 100644
+--- a/src/entities/series/index.ts
++++ b/src/entities/series/index.ts
+@@ -1 +1,2 @@
++export { getAllSeries, getSeriesBySlug, getSeriesNavData, getSeriesWithPosts } from './api';
+ export { type NewSeries, type Series, series } from './model';
+diff --git a/src/entities/tag/api.ts b/src/entities/tag/api.ts
+new file mode 100644
+index 0000000..0a855f7
+--- /dev/null
++++ b/src/entities/tag/api.ts
+@@ -0,0 +1,14 @@
++import { eq, inArray } from 'drizzle-orm';
++import { db } from '@/shared/lib/db';
++import { tags } from './model';
++
++export async function getTagBySlug(slug: string) {
++  const [tag] = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1);
++  return tag ?? null;
++}
++
++export async function getTagIdsByNames(names: string[]): Promise<string[]> {
++  if (names.length === 0) return [];
++  const rows = await db.select({ id: tags.id }).from(tags).where(inArray(tags.name, names));
++  return rows.map((r) => r.id);
++}
+diff --git a/src/entities/tag/index.ts b/src/entities/tag/index.ts
+index 3e84581..eb04fb4 100644
+--- a/src/entities/tag/index.ts
++++ b/src/entities/tag/index.ts
+@@ -1 +1,2 @@
++export { getTagBySlug, getTagIdsByNames } from './api';
+ export { type NewTag, type Tag, tags } from './model';
+diff --git a/src/features/auth/index.ts b/src/features/auth/index.ts
+index ff9b4c0..1688a4e 100644
+--- a/src/features/auth/index.ts
++++ b/src/features/auth/index.ts
+@@ -1 +1,4 @@
+ export { loginWithDataGSM, logout } from './actions';
++export { LoginButton } from './ui/login-button';
++export { LoginModal } from './ui/login-modal';
++export { UserMenu } from './ui/user-menu';
+diff --git a/src/app/_components/login-button.tsx b/src/features/auth/ui/login-button.tsx
+similarity index 100%
+rename from src/app/_components/login-button.tsx
+rename to src/features/auth/ui/login-button.tsx
+diff --git a/src/app/_components/login-modal.tsx b/src/features/auth/ui/login-modal.tsx
+similarity index 100%
+rename from src/app/_components/login-modal.tsx
+rename to src/features/auth/ui/login-modal.tsx
+diff --git a/src/app/_components/user-menu.tsx b/src/features/auth/ui/user-menu.tsx
+similarity index 100%
+rename from src/app/_components/user-menu.tsx
+rename to src/features/auth/ui/user-menu.tsx
+diff --git a/src/features/post-editor/api.ts b/src/features/post-editor/api.ts
+index 983e45c..ff0af5e 100644
+--- a/src/features/post-editor/api.ts
++++ b/src/features/post-editor/api.ts
+@@ -1,7 +1,7 @@
+ import { eq } from 'drizzle-orm';
+ import { posts, postTags } from '@/entities/post';
+ import { series } from '@/entities/series';
+-import { getTagIdsByNames } from '@/features/post-view/api';
++import { getTagIdsByNames } from '@/entities/tag';
+ import { db } from '@/shared/lib/db';
+ 
+ export async function upsertSeries(title: string): Promise<string> {
+diff --git a/src/features/post-editor/ui/codemirror-editor.tsx b/src/features/post-editor/ui/codemirror-editor.tsx
+index 674166e..bb2d598 100644
+--- a/src/features/post-editor/ui/codemirror-editor.tsx
++++ b/src/features/post-editor/ui/codemirror-editor.tsx
+@@ -174,7 +174,7 @@ export function CodeMirrorEditor({ value, onChange, onSave, onImageUpload, onRea
+       placeholder('마크다운으로 내용을 작성하세요...'),
+     ],
+     [],
+-  ); // eslint-disable-line react-hooks/exhaustive-deps
++  );
+ 
+   return (
+     <CodeMirror
+diff --git a/src/features/post-view/api.ts b/src/features/post-view/api.ts
+index bb63fc9..ed294d6 100644
+--- a/src/features/post-view/api.ts
++++ b/src/features/post-view/api.ts
+@@ -1,6 +1,5 @@
+-import { and, asc, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
++import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+ import { likes, posts, postTags } from '@/entities/post';
+-import { series } from '@/entities/series';
+ import { tags } from '@/entities/tag';
+ import { users } from '@/entities/user';
+ import { db } from '@/shared/lib/db';
+@@ -224,75 +223,3 @@ export async function getAllTags() {
+     .groupBy(tags.id)
+     .orderBy(desc(sql`count(${postTags.postId})`));
+ }
+-
+-export async function getTagBySlug(slug: string) {
+-  const [tag] = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1);
+-  return tag ?? null;
+-}
+-
+-export async function getTagIdsByNames(names: string[]): Promise<string[]> {
+-  if (names.length === 0) return [];
+-  const rows = await db.select({ id: tags.id }).from(tags).where(inArray(tags.name, names));
+-  return rows.map((r) => r.id);
+-}
+-
+-// ── 시리즈 ────────────────────────────────────────────────────────
+-
+-export async function getAllSeries() {
+-  const allSeries = await db.select().from(series).orderBy(series.createdAt);
+-
+-  if (allSeries.length === 0) return [];
+-
+-  const postCounts = await db
+-    .select({
+-      seriesId: posts.seriesId,
+-      count: sql<number>`cast(count(*) as int)`,
+-    })
+-    .from(posts)
+-    .where(and(eq(posts.published, true), isNotNull(posts.seriesId)))
+-    .groupBy(posts.seriesId);
+-
+-  const countMap = new Map(postCounts.map((r) => [r.seriesId, r.count]));
+-
+-  return allSeries.map((s) => ({ ...s, postCount: countMap.get(s.id) ?? 0 }));
+-}
+-
+-export async function getSeriesBySlug(slug: string) {
+-  const [s] = await db.select().from(series).where(eq(series.slug, slug)).limit(1);
+-  return s ?? null;
+-}
+-
+-export async function getSeriesWithPosts(seriesId: string) {
+-  const [s] = await db.select().from(series).where(eq(series.id, seriesId)).limit(1);
+-  if (!s) return null;
+-
+-  const seriesPosts = await db
+-    .select({
+-      id: posts.id,
+-      title: posts.title,
+-      slug: posts.slug,
+-      seriesOrder: posts.seriesOrder,
+-    })
+-    .from(posts)
+-    .where(and(eq(posts.seriesId, seriesId), eq(posts.published, true)))
+-    .orderBy(asc(posts.seriesOrder), asc(posts.createdAt));
+-
+-  return { ...s, posts: seriesPosts };
+-}
+-
+-export async function getSeriesNavData(postId: string, seriesId: string) {
+-  const data = await getSeriesWithPosts(seriesId);
+-  if (!data) return null;
+-
+-  const idx = data.posts.findIndex((p) => p.id === postId);
+-  const prevPost = idx > 0 ? data.posts[idx - 1] : null;
+-  const nextPost = idx !== -1 && idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
+-
+-  return {
+-    series: { id: data.id, title: data.title, slug: data.slug },
+-    posts: data.posts,
+-    currentIndex: idx,
+-    prevPost,
+-    nextPost,
+-  };
+-}
+diff --git a/src/features/post-view/index.ts b/src/features/post-view/index.ts
+index 1bacba3..8e7b9ec 100644
+--- a/src/features/post-view/index.ts
++++ b/src/features/post-view/index.ts
+@@ -1,6 +1,5 @@
+ export {
+   addLike,
+-  getAllSeries,
+   getAllTags,
+   getDraftPosts,
+   getLikeCount,
+@@ -8,11 +7,6 @@ export {
+   getPostForEdit,
+   getPostsByTag,
+   getPublishedPosts,
+-  getSeriesBySlug,
+-  getSeriesNavData,
+-  getSeriesWithPosts,
+-  getTagBySlug,
+-  getTagIdsByNames,
+   hasLiked,
+   incrementViewCount,
+   type PostSortKey,
+diff --git a/src/app/_components/footer.tsx b/src/widgets/footer.tsx
+similarity index 100%
+rename from src/app/_components/footer.tsx
+rename to src/widgets/footer.tsx
+diff --git a/src/app/_components/header.tsx b/src/widgets/header.tsx
+similarity index 93%
+rename from src/app/_components/header.tsx
+rename to src/widgets/header.tsx
+index ed0f905..07be4ed 100644
+--- a/src/app/_components/header.tsx
++++ b/src/widgets/header.tsx
+@@ -1,8 +1,7 @@
+ import Link from 'next/link';
++import { LoginButton, UserMenu } from '@/features/auth';
+ import { auth } from '@/features/auth/config';
+ import { ThemeToggle } from '@/features/theme';
+-import { LoginButton } from './login-button';
+-import { UserMenu } from './user-menu';
+ 
+ export async function Header() {
+   const session = await auth();

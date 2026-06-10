@@ -1,5 +1,6 @@
-import { and, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { likes, posts, postTags } from '@/entities/post';
+import { series } from '@/entities/series';
 import { tags } from '@/entities/tag';
 import { users } from '@/entities/user';
 import { db } from '@/shared/lib/db';
@@ -206,6 +207,59 @@ export async function addLike(postId: string, fingerprint: string, userId?: stri
 
 export async function removeLike(postId: string, fingerprint: string) {
   await db.delete(likes).where(and(eq(likes.postId, postId), eq(likes.fingerprint, fingerprint)));
+}
+
+// ── 시리즈 ────────────────────────────────────────────────────────
+
+export async function getAllSeries() {
+  return db
+    .select({
+      id: series.id,
+      title: series.title,
+      slug: series.slug,
+      description: series.description,
+      createdAt: series.createdAt,
+      postCount: sql<number>`cast(count(${posts.id}) as int)`,
+    })
+    .from(series)
+    .leftJoin(posts, and(eq(series.id, posts.seriesId), eq(posts.published, true)))
+    .groupBy(series.id)
+    .orderBy(series.createdAt);
+}
+
+export async function getSeriesWithPosts(seriesId: string) {
+  const [s] = await db.select().from(series).where(eq(series.id, seriesId)).limit(1);
+  if (!s) return null;
+
+  const seriesPosts = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      seriesOrder: posts.seriesOrder,
+    })
+    .from(posts)
+    .where(and(eq(posts.seriesId, seriesId), eq(posts.published, true)))
+    .orderBy(asc(posts.seriesOrder), asc(posts.createdAt));
+
+  return { ...s, posts: seriesPosts };
+}
+
+export async function getSeriesNavData(postId: string, seriesId: string) {
+  const data = await getSeriesWithPosts(seriesId);
+  if (!data) return null;
+
+  const idx = data.posts.findIndex((p) => p.id === postId);
+  const prevPost = idx > 0 ? data.posts[idx - 1] : null;
+  const nextPost = idx !== -1 && idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
+
+  return {
+    series: { id: data.id, title: data.title, slug: data.slug },
+    posts: data.posts,
+    currentIndex: idx,
+    prevPost,
+    nextPost,
+  };
 }
 
 // ── 태그 ─────────────────────────────────────────────────────────

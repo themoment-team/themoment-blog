@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getAllSeries } from '@/entities/series';
+import { getAllSeries } from '@/features/post-view';
 import { auth } from '@/features/auth/config';
 import { upsertSeries } from '@/features/post-editor';
 

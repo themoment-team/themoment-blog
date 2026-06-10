@@ -1,0 +1,8 @@
+fd854ef27c45617e4a09564ca5c0b000e6d63d84 fd854ef fix: rss.xml, sitemap 빌드 시 DB 연결 오류 해소 (force-dynamic)
+42bd12e9b9e5eac973e35470eb5c7685a3d00cdb 42bd12e refactor: eslint 규칙 정리 및 Header 컴포넌트의 import 순서 조정
+3982dece44d89fc366264385ae11ad62bed333c5 3982dec refactor: widgets 레이어 도입 및 auth UI 컴포넌트를 features/auth/ui로 이동
+3452198546b1a8c920116ca8d1d760f1b19ccb72 3452198 fix: 미설치 react-hooks 플러그인 참조 eslint-disable 주석 제거
+6dc7c2cdcab5ec6b9832482854d0e67f9d18c94d 6dc7c2c update: feature-auth를 별도 element 타입으로 분리하여 cross-feature auth import 허용
+6464ae17744e1b426902017557393ba5a1adc3d5 6464ae1 refactor: import 순서 정리 및 export 문 위치 조정
+38d0134cb50ac3d5f821a2be996a101505f0d97c 38d0134 add: eslint-plugin-boundaries에 TypeScript resolver 추가로 FSD 위반 감지 활성화
+6f70193e40fdbdf6eb3a51c74f0e1cba564571df 6f70193 refactor: tag/series 쿼리 함수를 entities 레이어로 이동하여 FSD 위반 해소

@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getAllSeries } from '@/entities/series';
-import { getAllTags, getPublishedPosts } from '@/features/post-view';
+import { getAllSeries, getAllTags, getPublishedPosts } from '@/features/post-view';
 import { SITE_URL } from '@/shared/config/site';
 
 export const dynamic = 'force-dynamic';
