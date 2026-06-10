@@ -2,12 +2,13 @@
   "name": "themoment-blog",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@11.5.2",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "biome check",
+    "check": "biome check && eslint src/",
     "check:fix": "biome check --write --unsafe"
   },
   "dependencies": {
