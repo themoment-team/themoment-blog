@@ -67,7 +67,7 @@ export async function PATCH(
     tagNames: validatedTagNames,
     ...("seriesTitle" in body && {
       seriesTitle: seriesTitle ?? null,
-      seriesOrder: typeof seriesOrder === "number" ? seriesOrder : null,
+      seriesOrder: typeof seriesOrder === "number" && !Number.isNaN(seriesOrder) ? seriesOrder : null,
     }),
   });
 

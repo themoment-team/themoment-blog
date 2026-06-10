@@ -224,9 +224,13 @@ export function MarkdownEditor({
 
   function handleImageWidthChange(src: string, newWidth: number) {
     setContent((prev) =>
-      prev.replace(/<img\b[^>]*\/>/g, (match) => {
+      prev.replace(/<img\b[^>]*>/g, (match) => {
         if (!match.includes(`src="${src}"`)) return match;
-        return match.replace(/width="[^"]*"/, `width="${Math.round(newWidth)}"`);
+        const widthAttr = `width="${Math.round(newWidth)}"`;
+        if (match.includes("width=")) {
+          return match.replace(/width="[^"]*"/, widthAttr);
+        }
+        return match.replace(/(\s*\/?>)$/, ` ${widthAttr}$1`);
       }),
     );
   }

@@ -37,7 +37,7 @@ export async function upsertSeries(title: string): Promise<string> {
   const [created] = await db
     .insert(series)
     .values({ title, slug })
-    .onConflictDoUpdate({ target: series.slug, set: { title } })
+    .onConflictDoUpdate({ target: series.slug, set: { id: series.id } })
     .returning({ id: series.id });
 
   return created.id;

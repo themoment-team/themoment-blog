@@ -62,8 +62,8 @@ export default async function PostPage({ params }: PageProps) {
 
   if (!post || !post.published) notFound();
 
-  const [headings, likeCount, seriesNav] = await Promise.all([
-    Promise.resolve(extractHeadings(post.content)),
+  const headings = extractHeadings(post.content);
+  const [likeCount, seriesNav] = await Promise.all([
     getLikeCount(post.id),
     post.seriesId ? getSeriesNavData(post.id, post.seriesId) : null,
   ]);

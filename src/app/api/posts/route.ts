@@ -46,7 +46,7 @@ export async function POST(req: Request) {
     published: published ?? false,
     tagNames: validatedTagNames,
     seriesTitle: seriesTitle ?? undefined,
-    seriesOrder: typeof seriesOrder === "number" ? seriesOrder : undefined,
+    seriesOrder: typeof seriesOrder === "number" && !Number.isNaN(seriesOrder) ? seriesOrder : undefined,
   });
 
   return NextResponse.json({ slug: post.slug }, { status: 201 });
