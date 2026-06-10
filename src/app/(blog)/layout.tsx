@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { Footer } from "../_components/footer";
-import { Header } from "../_components/header";
+import type { ReactNode } from 'react';
+import { Footer } from '../_components/footer';
+import { Header } from '../_components/header';
 
 export default function BlogLayout({ children }: { children: ReactNode }) {
   return (

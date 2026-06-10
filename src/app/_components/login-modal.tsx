@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { loginWithDataGSM } from "@features/auth";
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { loginWithDataGSM } from '@features/auth';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -11,10 +11,10 @@ interface LoginModalProps {
 export function LoginModal({ onClose }: LoginModalProps) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
   return createPortal(
@@ -27,22 +27,20 @@ export function LoginModal({ onClose }: LoginModalProps) {
       {/* biome-ignore lint/a11y/noStaticElementInteractions: stop propagation only */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: same */}
       <div
-        className="bg-bg border border-border rounded-lg w-full max-w-sm p-8 space-y-6 mx-4"
+        className="mx-4 w-full max-w-sm space-y-6 rounded-lg border border-border bg-bg p-8"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-display leading-tight text-fg">
-              그순간
-            </h2>
-            <p className="text-xs text-fg-muted uppercase tracking-label mt-1">
+            <h2 className="font-bold text-2xl text-fg leading-tight tracking-display">그순간</h2>
+            <p className="mt-1 text-fg-muted text-xs uppercase tracking-label">
               더모먼트 기술블로그
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="text-fg-muted hover:text-fg transition-colors text-lg leading-none"
+            className="text-fg-muted text-lg leading-none transition-colors hover:text-fg"
           >
             ✕
           </button>
@@ -51,7 +49,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
         <form action={loginWithDataGSM}>
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-4 h-10 px-3 bg-fg text-bg text-sm font-medium rounded-lg transition-opacity duration-150 hover:opacity-80"
+            className="flex h-10 w-full items-center justify-center gap-4 rounded-lg bg-fg px-3 font-medium text-bg text-sm transition-opacity duration-150 hover:opacity-80"
           >
             <svg
               width="14"
@@ -78,7 +76,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
           </button>
         </form>
 
-        <p className="text-center text-xs text-fg-muted leading-relaxed">
+        <p className="text-center text-fg-muted text-xs leading-relaxed">
           광주소프트웨어마이스터고등학교 학생만
           <br />
           로그인할 수 있습니다.

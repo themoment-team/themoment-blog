@@ -1,1 +1,1 @@
-export { type NewUser, type User, users } from "./model";
+export { type NewUser, type User, users } from './model';

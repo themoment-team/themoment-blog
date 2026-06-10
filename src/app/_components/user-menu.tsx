@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { logout } from "@features/auth";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { logout } from '@features/auth';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 interface UserMenuProps {
   name: string;
@@ -18,8 +18,8 @@ export function UserMenu({ name }: UserMenuProps) {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   return (
@@ -27,7 +27,7 @@ export function UserMenu({ name }: UserMenuProps) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 text-sm text-fg-muted hover:text-fg transition-colors"
+        className="flex items-center gap-2 text-fg-muted text-sm transition-colors hover:text-fg"
       >
         <svg
           viewBox="0 0 24 24"
@@ -42,7 +42,7 @@ export function UserMenu({ name }: UserMenuProps) {
           <circle cx="12" cy="8" r="4" />
           <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
         </svg>
-        <span className="hidden sm:block max-w-[6rem] truncate">{name}</span>
+        <span className="hidden max-w-[6rem] truncate sm:block">{name}</span>
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -50,7 +50,7 @@ export function UserMenu({ name }: UserMenuProps) {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`size-3.5 shrink-0 opacity-60 transition-transform duration-150 ${open ? "-rotate-180" : ""}`}
+          className={`size-3.5 shrink-0 opacity-60 transition-transform duration-150 ${open ? '-rotate-180' : ''}`}
           aria-hidden="true"
         >
           <path d="M6 9l6 6 6-6" />
@@ -58,21 +58,21 @@ export function UserMenu({ name }: UserMenuProps) {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-44 bg-bg border border-border rounded-lg overflow-hidden z-[100]">
-          <div className="px-4 py-3 border-b border-border">
-            <p className="text-sm font-medium text-fg truncate">{name}</p>
+        <div className="absolute top-full right-0 z-[100] mt-2 w-44 overflow-hidden rounded-lg border border-border bg-bg">
+          <div className="border-border border-b px-4 py-3">
+            <p className="truncate font-medium text-fg text-sm">{name}</p>
           </div>
           <Link
             href="/my"
             onClick={() => setOpen(false)}
-            className="block w-full px-4 py-2.5 text-sm text-fg-muted hover:text-fg hover:bg-bg-subtle transition-colors"
+            className="block w-full px-4 py-2.5 text-fg-muted text-sm transition-colors hover:bg-bg-subtle hover:text-fg"
           >
             내 글 목록
           </Link>
           <form action={logout}>
             <button
               type="submit"
-              className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:text-red-500 hover:bg-red-500/5 transition-colors"
+              className="w-full px-4 py-2.5 text-left text-red-400 text-sm transition-colors hover:bg-red-500/5 hover:text-red-500"
             >
               로그아웃
             </button>

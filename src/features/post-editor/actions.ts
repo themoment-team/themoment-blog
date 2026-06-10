@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { auth } from "@features/auth/config";
-import { db } from "@shared/lib/db";
-import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { posts } from "@entities/post";
-import { deletePost } from "./api";
+import { posts } from '@entities/post';
+import { auth } from '@features/auth/config';
+import { db } from '@shared/lib/db';
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+import { deletePost } from './api';
 
 export async function deletePostAction(postId: string) {
   const session = await auth();
-  if (!session?.user.isMomentMember) redirect("/");
+  if (!session?.user.isMomentMember) redirect('/');
 
   const [post] = await db
     .select({ authorId: posts.authorId })
@@ -18,8 +18,8 @@ export async function deletePostAction(postId: string) {
     .where(eq(posts.id, postId))
     .limit(1);
 
-  if (!post || post.authorId !== session.user.id) redirect("/");
+  if (!post || post.authorId !== session.user.id) redirect('/');
 
   await deletePost(postId);
-  revalidatePath("/my");
+  revalidatePath('/my');
 }

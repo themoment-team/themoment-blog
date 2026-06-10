@@ -1,35 +1,31 @@
-import { signIn } from "@features/auth/config";
-import type { Metadata } from "next";
+import { signIn } from '@features/auth/config';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "로그인",
+  title: '로그인',
 };
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4">
       <div className="w-full max-w-sm space-y-10">
         {/* 로고 */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-[-0.04em] leading-[1.0] text-fg">
-            그순간
-          </h1>
-          <p className="text-sm text-fg-muted uppercase tracking-[0.06em]">
-            더모먼트 기술블로그
-          </p>
+        <div className="space-y-2 text-center">
+          <h1 className="font-bold text-4xl text-fg leading-[1.0] tracking-[-0.04em]">그순간</h1>
+          <p className="text-fg-muted text-sm uppercase tracking-[0.06em]">더모먼트 기술블로그</p>
         </div>
 
         {/* 로그인 폼 */}
         <div className="space-y-4">
           <form
             action={async () => {
-              "use server";
-              await signIn("datagsm", { redirectTo: "/" });
+              'use server';
+              await signIn('datagsm', { redirectTo: '/' });
             }}
           >
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-4 h-10 px-3 bg-fg text-bg text-sm font-medium rounded-lg transition-opacity duration-150 hover:opacity-80"
+              className="flex h-10 w-full items-center justify-center gap-4 rounded-lg bg-fg px-3 font-medium text-bg text-sm transition-opacity duration-150 hover:opacity-80"
             >
               <svg
                 width="14"
@@ -57,7 +53,7 @@ export default function LoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-fg-muted leading-relaxed">
+        <p className="text-center text-fg-muted text-xs leading-relaxed">
           광주소프트웨어마이스터고등학교 학생만 로그인할 수 있습니다.
           <br />
           더모먼트 부원은 로그인 후 글을 작성할 수 있습니다.

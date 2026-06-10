@@ -7,20 +7,19 @@ import {
   ROLE_LABEL,
   ROLE_ORDER,
   type Role,
-} from "@shared/config/team";
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+} from '@shared/config/team';
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 
-export const metadata: Metadata = { title: "더모먼트 소개" };
+export const metadata: Metadata = { title: '더모먼트 소개' };
 
 const VALUES = [
   {
-    keyword: "Professional",
-    title: "전문성을 갖춘 인재",
-    description:
-      "자신의 분야에서 최고가 되기 위해\n끊임없이 학습하고 역량을 키우는 인재",
-    tags: ["#넘치는책임감", "#끊임없이노력하는"],
+    keyword: 'Professional',
+    title: '전문성을 갖춘 인재',
+    description: '자신의 분야에서 최고가 되기 위해\n끊임없이 학습하고 역량을 키우는 인재',
+    tags: ['#넘치는책임감', '#끊임없이노력하는'],
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -38,10 +37,10 @@ const VALUES = [
     ),
   },
   {
-    keyword: "Communication",
-    title: "소통하고 협력하는 인재",
-    description: "열린 태도와 신뢰를 바탕으로\n서로를 존중하고 협력하는 인재",
-    tags: ["#수평적인문화", "#존중은편견없이"],
+    keyword: 'Communication',
+    title: '소통하고 협력하는 인재',
+    description: '열린 태도와 신뢰를 바탕으로\n서로를 존중하고 협력하는 인재',
+    tags: ['#수평적인문화', '#존중은편견없이'],
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -58,10 +57,10 @@ const VALUES = [
     ),
   },
   {
-    keyword: "Passion",
-    title: "열정적으로 도전하는 인재",
-    description: "창의적 사고로 변화와 도전을\n두려워하지 않는 열정적인 인재",
-    tags: ["#도전은누구나", "#열정은힘이다"],
+    keyword: 'Passion',
+    title: '열정적으로 도전하는 인재',
+    description: '창의적 사고로 변화와 도전을\n두려워하지 않는 열정적인 인재',
+    tags: ['#도전은누구나', '#열정은힘이다'],
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -88,12 +87,7 @@ function groupByRole(members: typeof MEMBERS) {
 
 function GitHubIcon() {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className="size-4"
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="currentColor" className="size-4" aria-hidden="true">
       <path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.021C22 6.484 17.522 2 12 2z" />
     </svg>
   );
@@ -139,32 +133,28 @@ export default function AboutPage() {
   const groups = groupByRole(MEMBERS);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16 space-y-24">
+    <div className="mx-auto max-w-4xl space-y-24 px-4 py-16">
       {/* Hero */}
       <section>
-        <p className="text-xs font-medium uppercase tracking-[0.1em] text-accent mb-4">
+        <p className="mb-4 font-medium text-accent text-xs uppercase tracking-[0.1em]">
           The Moment
         </p>
-        <h1 className="text-4xl font-bold tracking-[-0.04em] text-fg mb-6">
-          더모먼트
-        </h1>
-        <p className="text-fg-muted text-base leading-relaxed max-w-2xl">
-          더모먼트는 광주소프트웨어마이스터고등학교 재학생들로 구성된 개발
-          팀입니다. 주로 학교에 필요한 서비스를 개발하고 있어요. 본교
-          입학지원시스템부터 교내 학생의 정보를 관리하는 서비스, 프로젝트 관리
-          서비스를 만들어요.
+        <h1 className="mb-6 font-bold text-4xl text-fg tracking-[-0.04em]">더모먼트</h1>
+        <p className="max-w-2xl text-base text-fg-muted leading-relaxed">
+          더모먼트는 광주소프트웨어마이스터고등학교 재학생들로 구성된 개발 팀입니다. 주로 학교에
+          필요한 서비스를 개발하고 있어요. 본교 입학지원시스템부터 교내 학생의 정보를 관리하는
+          서비스, 프로젝트 관리 서비스를 만들어요.
         </p>
-        <p className="mt-3 text-fg-muted text-base leading-relaxed max-w-2xl">
-          가장 빠르게 트렌드를 파악하고 새로운 기술을 도입하며, 항상 새로운
-          비즈니스 모델에 대해 고민하고 기술을 통해 사용자의 경험을 향상시키려
-          노력해요.
+        <p className="mt-3 max-w-2xl text-base text-fg-muted leading-relaxed">
+          가장 빠르게 트렌드를 파악하고 새로운 기술을 도입하며, 항상 새로운 비즈니스 모델에 대해
+          고민하고 기술을 통해 사용자의 경험을 향상시키려 노력해요.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href={GITHUB_ORG}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-fg-muted hover:text-fg hover:border-fg/30 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-fg-muted text-sm transition-colors hover:border-fg/30 hover:text-fg"
           >
             <GitHubIcon />
             themoment-team
@@ -173,7 +163,7 @@ export default function AboutPage() {
             href={INSTAGRAM}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm text-fg-muted hover:text-fg hover:border-fg/30 transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2 text-fg-muted text-sm transition-colors hover:border-fg/30 hover:text-fg"
           >
             <InstagramIcon />
             Instagram
@@ -183,29 +173,26 @@ export default function AboutPage() {
 
       {/* What we want */}
       <section>
-        <h2 className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted mb-8">
+        <h2 className="mb-8 font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">
           What we want
         </h2>
-        <div className="grid sm:grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-3">
           {VALUES.map((v) => (
             <div
               key={v.keyword}
-              className="p-6 rounded-xl border border-border bg-bg-subtle flex flex-col gap-3"
+              className="flex flex-col gap-3 rounded-xl border border-border bg-bg-subtle p-6"
             >
-              <p className="text-xs font-medium tracking-widest text-fg-muted uppercase">
+              <p className="font-medium text-fg-muted text-xs uppercase tracking-widest">
                 {v.keyword}
               </p>
               {v.icon}
-              <h3 className="text-sm font-semibold text-fg">{v.title}</h3>
-              <p className="text-xs text-fg-muted leading-relaxed whitespace-pre-line">
+              <h3 className="font-semibold text-fg text-sm">{v.title}</h3>
+              <p className="whitespace-pre-line text-fg-muted text-xs leading-relaxed">
                 {v.description}
               </p>
-              <div className="flex flex-wrap gap-1.5 mt-auto pt-2">
+              <div className="mt-auto flex flex-wrap gap-1.5 pt-2">
                 {v.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[10px] text-fg-muted font-medium"
-                  >
+                  <span key={tag} className="font-medium text-[10px] text-fg-muted">
                     {tag}
                   </span>
                 ))}
@@ -217,19 +204,19 @@ export default function AboutPage() {
 
       {/* Projects */}
       <section>
-        <h2 className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted mb-8">
+        <h2 className="mb-8 font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">
           Projects
         </h2>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {PROJECTS.map((project) => (
             <Link
               key={project.name}
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group rounded-xl border border-border hover:border-accent/40 overflow-hidden transition-all"
+              className="group overflow-hidden rounded-xl border border-border transition-all hover:border-accent/40"
             >
-              <div className="relative w-full aspect-video bg-bg-subtle overflow-hidden">
+              <div className="relative aspect-video w-full overflow-hidden bg-bg-subtle">
                 <Image
                   src={project.banner}
                   alt={project.name}
@@ -238,16 +225,16 @@ export default function AboutPage() {
                   sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 />
               </div>
-              <div className="p-4 flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2 p-4">
                 <div>
-                  <p className="text-sm font-semibold text-fg group-hover:text-accent transition-colors">
+                  <p className="font-semibold text-fg text-sm transition-colors group-hover:text-accent">
                     {project.name}
                   </p>
-                  <p className="text-xs text-fg-muted mt-0.5 leading-relaxed">
+                  <p className="mt-0.5 text-fg-muted text-xs leading-relaxed">
                     {project.description}
                   </p>
                 </div>
-                <span className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5 text-fg-muted">
+                <span className="mt-0.5 shrink-0 text-fg-muted opacity-0 transition-opacity group-hover:opacity-100">
                   <ExternalLinkIcon />
                 </span>
               </div>
@@ -258,21 +245,21 @@ export default function AboutPage() {
 
       {/* Members */}
       <section>
-        <h2 className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted mb-10">
+        <h2 className="mb-10 font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">
           Members · {MEMBERS.length}
         </h2>
         <div className="space-y-12">
           {groups.map(({ role, members }) => (
             <div key={role}>
-              <p className="text-xs text-fg-muted mb-4 flex items-center gap-2">
+              <p className="mb-4 flex items-center gap-2 text-fg-muted text-xs">
                 <span
-                  className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium ${ROLE_COLOR[role as Role]}`}
+                  className={`inline-block rounded-full px-2 py-0.5 font-medium text-[10px] ${ROLE_COLOR[role as Role]}`}
                 >
                   {ROLE_LABEL[role as Role]}
                 </span>
                 {members.length}명
               </p>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
+              <div className="grid grid-cols-4 gap-4 sm:grid-cols-6 md:grid-cols-8">
                 {members.map((member) => (
                   <Link
                     key={member.githubId}
@@ -281,7 +268,7 @@ export default function AboutPage() {
                     rel="noopener noreferrer"
                     className="group flex flex-col items-center gap-2"
                   >
-                    <div className="relative size-12 rounded-full overflow-hidden ring-2 ring-border group-hover:ring-accent/50 transition-all">
+                    <div className="relative size-12 overflow-hidden rounded-full ring-2 ring-border transition-all group-hover:ring-accent/50">
                       <Image
                         src={`https://avatars.githubusercontent.com/${member.githubId}`}
                         alt={member.name}
@@ -290,7 +277,7 @@ export default function AboutPage() {
                         sizes="48px"
                       />
                     </div>
-                    <p className="text-[11px] font-medium text-fg-muted group-hover:text-fg transition-colors text-center leading-tight">
+                    <p className="text-center font-medium text-[11px] text-fg-muted leading-tight transition-colors group-hover:text-fg">
                       {member.name}
                     </p>
                   </Link>

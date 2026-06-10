@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { getFingerprint } from "@shared/lib/fingerprint";
-import { useEffect, useState } from "react";
+import { getFingerprint } from '@shared/lib/fingerprint';
+import { useEffect, useState } from 'react';
 
 interface LikeButtonProps {
   slug: string;
@@ -23,7 +23,7 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
         setLiked(data.liked);
       })
       .catch((err: unknown) => {
-        if (err instanceof Error && err.name === "AbortError") return;
+        if (err instanceof Error && err.name === 'AbortError') return;
       });
     return () => controller.abort();
   }, [slug]);
@@ -33,10 +33,8 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
     setLoading(true);
 
     const fp = getFingerprint();
-    const method = liked ? "DELETE" : "POST";
-    const url = liked
-      ? `/api/posts/${slug}/likes?fp=${fp}`
-      : `/api/posts/${slug}/likes`;
+    const method = liked ? 'DELETE' : 'POST';
+    const url = liked ? `/api/posts/${slug}/likes?fp=${fp}` : `/api/posts/${slug}/likes`;
     const body = liked ? undefined : JSON.stringify({ fingerprint: fp });
 
     setLiked(!liked);
@@ -45,7 +43,7 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
     try {
       const res = await fetch(url, {
         method,
-        headers: body ? { "Content-Type": "application/json" } : {},
+        headers: body ? { 'Content-Type': 'application/json' } : {},
         body,
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -65,14 +63,14 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
       type="button"
       onClick={toggle}
       disabled={loading}
-      className={`flex items-center gap-2 text-sm px-3 py-1.5 border rounded transition-colors ${
+      className={`flex items-center gap-2 rounded border px-3 py-1.5 text-sm transition-colors ${
         liked
-          ? "border-accent text-accent"
-          : "border-border text-fg-muted hover:border-fg hover:text-fg"
+          ? 'border-accent text-accent'
+          : 'border-border text-fg-muted hover:border-fg hover:text-fg'
       } disabled:opacity-50`}
-      aria-label={liked ? "좋아요 취소" : "좋아요"}
+      aria-label={liked ? '좋아요 취소' : '좋아요'}
     >
-      <span>{liked ? "♥" : "♡"}</span>
+      <span>{liked ? '♥' : '♡'}</span>
       <span>{count.toLocaleString()}</span>
     </button>
   );

@@ -1,5 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface PostCardProps {
   title: string;
@@ -23,26 +23,26 @@ export function PostCard({
   tags,
 }: PostCardProps) {
   const dateStr = publishedAt
-    ? new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+    ? new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       }).format(new Date(publishedAt))
     : null;
 
   return (
-    <article className="group border-b border-border py-8 last:border-none">
-      <div className="flex gap-6 items-start">
-        <div className="flex-1 min-w-0 space-y-2">
+    <article className="group border-border border-b py-8 last:border-none">
+      <div className="flex items-start gap-6">
+        <div className="min-w-0 flex-1 space-y-2">
           <Link href={`/posts/${slug}`} className="block">
-            <h2 className="text-xl font-bold tracking-heading leading-tight text-fg group-hover:text-accent transition-colors line-clamp-2">
+            <h2 className="line-clamp-2 font-bold text-fg text-xl leading-tight tracking-heading transition-colors group-hover:text-accent">
               {title}
             </h2>
           </Link>
 
           {excerpt && (
-            <p className="text-sm text-fg-muted leading-relaxed line-clamp-2">
-              {excerpt.replace(/<[^>]+>/g, "").trim()}
+            <p className="line-clamp-2 text-fg-muted text-sm leading-relaxed">
+              {excerpt.replace(/<[^>]+>/g, '').trim()}
             </p>
           )}
 
@@ -52,7 +52,7 @@ export function PostCard({
                 <Link
                   key={tag.slug}
                   href={`/tags/${tag.slug}`}
-                  className="text-[11px] font-medium uppercase tracking-label text-fg-muted hover:text-accent transition-colors"
+                  className="font-medium text-[11px] text-fg-muted uppercase tracking-label transition-colors hover:text-accent"
                 >
                   {tag.name}
                 </Link>
@@ -60,7 +60,7 @@ export function PostCard({
             </div>
           )}
 
-          <div className="flex items-center gap-3 text-xs text-fg-muted pt-1">
+          <div className="flex items-center gap-3 pt-1 text-fg-muted text-xs">
             <span>{author.name}</span>
             {dateStr && (
               <>
@@ -76,14 +76,14 @@ export function PostCard({
         {coverImage && (
           <Link
             href={`/posts/${slug}`}
-            className="flex-none w-28 h-20 sm:w-36 sm:h-24 overflow-hidden rounded"
+            className="h-20 w-28 flex-none overflow-hidden rounded sm:h-24 sm:w-36"
           >
             <Image
               src={coverImage}
               alt={title}
               width={144}
               height={96}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
           </Link>
         )}

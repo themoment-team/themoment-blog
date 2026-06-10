@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useRef } from "react";
+import { useRef } from 'react';
 
 interface EditorToolbarProps {
   onInsert: (before: string, after?: string) => void;
@@ -8,15 +8,15 @@ interface EditorToolbarProps {
 }
 
 const TOOLS = [
-  { label: "H1", before: "# ", tip: "제목 1" },
-  { label: "H2", before: "## ", tip: "제목 2" },
-  { label: "H3", before: "### ", tip: "제목 3" },
-  { label: "B", before: "**", after: "**", tip: "굵게" },
-  { label: "I", before: "_", after: "_", tip: "기울임" },
-  { label: "`", before: "`", after: "`", tip: "인라인 코드" },
-  { label: "```", before: "```\n", after: "\n```", tip: "코드 블록" },
-  { label: "—", before: "\n---\n", tip: "수평선" },
-  { label: "[]", before: "[", after: "](url)", tip: "링크" },
+  { label: 'H1', before: '# ', tip: '제목 1' },
+  { label: 'H2', before: '## ', tip: '제목 2' },
+  { label: 'H3', before: '### ', tip: '제목 3' },
+  { label: 'B', before: '**', after: '**', tip: '굵게' },
+  { label: 'I', before: '_', after: '_', tip: '기울임' },
+  { label: '`', before: '`', after: '`', tip: '인라인 코드' },
+  { label: '```', before: '```\n', after: '\n```', tip: '코드 블록' },
+  { label: '—', before: '\n---\n', tip: '수평선' },
+  { label: '[]', before: '[', after: '](url)', tip: '링크' },
 ];
 
 export function EditorToolbar({ onInsert, onImageUpload }: EditorToolbarProps) {
@@ -25,28 +25,28 @@ export function EditorToolbar({ onInsert, onImageUpload }: EditorToolbarProps) {
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (file) onImageUpload(file);
-    e.target.value = "";
+    e.target.value = '';
   }
 
   return (
-    <div className="flex items-center gap-1 px-4 py-2 border-b border-border overflow-x-auto shrink-0">
+    <div className="flex shrink-0 items-center gap-1 overflow-x-auto border-border border-b px-4 py-2">
       {TOOLS.map((tool) => (
         <button
           key={tool.label}
           type="button"
           title={tool.tip}
           onClick={() => onInsert(tool.before, tool.after)}
-          className="flex-none px-2.5 py-1 text-xs font-mono text-fg-muted hover:text-fg hover:bg-bg-subtle rounded transition-colors"
+          className="flex-none rounded px-2.5 py-1 font-mono text-fg-muted text-xs transition-colors hover:bg-bg-subtle hover:text-fg"
         >
           {tool.label}
         </button>
       ))}
-      <div className="w-px h-4 bg-border mx-1 shrink-0" />
+      <div className="mx-1 h-4 w-px shrink-0 bg-border" />
       <button
         type="button"
         title="이미지 삽입"
         onClick={() => fileInputRef.current?.click()}
-        className="flex-none px-2.5 py-1 text-xs text-fg-muted hover:text-fg hover:bg-bg-subtle rounded transition-colors"
+        className="flex-none rounded px-2.5 py-1 text-fg-muted text-xs transition-colors hover:bg-bg-subtle hover:text-fg"
       >
         이미지
       </button>

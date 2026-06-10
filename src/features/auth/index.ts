@@ -1,1 +1,1 @@
-export { loginWithDataGSM, logout } from "./actions";
+export { loginWithDataGSM, logout } from './actions';

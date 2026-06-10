@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import type { PostSortKey } from "../api";
+import { useRouter, useSearchParams } from 'next/navigation';
+import type { PostSortKey } from '../api';
 
 interface TagItem {
   name: string;
@@ -15,24 +15,20 @@ interface PostFiltersProps {
   tags: TagItem[];
 }
 
-export function PostFilters({
-  currentSort,
-  currentTag,
-  tags,
-}: PostFiltersProps) {
+export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   function update(patch: { sort?: PostSortKey; tag?: string | null }) {
     const params = new URLSearchParams(searchParams.toString());
 
-    if ("sort" in patch) {
-      if (patch.sort === "latest") params.delete("sort");
-      else if (patch.sort) params.set("sort", patch.sort);
+    if ('sort' in patch) {
+      if (patch.sort === 'latest') params.delete('sort');
+      else if (patch.sort) params.set('sort', patch.sort);
     }
-    if ("tag" in patch) {
-      if (!patch.tag) params.delete("tag");
-      else params.set("tag", patch.tag);
+    if ('tag' in patch) {
+      if (!patch.tag) params.delete('tag');
+      else params.set('tag', patch.tag);
     }
 
     router.push(`?${params.toString()}`);
@@ -48,10 +44,10 @@ export function PostFilters({
           <button
             type="button"
             onClick={() => update({ tag: null })}
-            className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+            className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
               !currentTag
-                ? "bg-fg text-bg border-fg"
-                : "border-border text-fg-muted hover:text-fg hover:border-fg-muted"
+                ? 'border-fg bg-fg text-bg'
+                : 'border-border text-fg-muted hover:border-fg-muted hover:text-fg'
             }`}
           >
             전체
@@ -60,13 +56,11 @@ export function PostFilters({
             <button
               key={tag.slug}
               type="button"
-              onClick={() =>
-                update({ tag: currentTag === tag.slug ? null : tag.slug })
-              }
-              className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
+              onClick={() => update({ tag: currentTag === tag.slug ? null : tag.slug })}
+              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
                 currentTag === tag.slug
-                  ? "bg-fg text-bg border-fg"
-                  : "border-border text-fg-muted hover:text-fg hover:border-fg-muted"
+                  ? 'border-fg bg-fg text-bg'
+                  : 'border-border text-fg-muted hover:border-fg-muted hover:text-fg'
               }`}
             >
               {tag.name}
@@ -82,7 +76,7 @@ export function PostFilters({
           <select
             value={currentSort}
             onChange={(e) => update({ sort: e.target.value as PostSortKey })}
-            className="text-xs pl-2.5 pr-7 py-1.5 border border-border rounded bg-bg text-fg-muted hover:text-fg focus:outline-none focus:border-fg-muted transition-colors appearance-none cursor-pointer"
+            className="cursor-pointer appearance-none rounded border border-border bg-bg py-1.5 pr-7 pl-2.5 text-fg-muted text-xs transition-colors hover:text-fg focus:border-fg-muted focus:outline-none"
           >
             <option value="latest">최신순</option>
             <option value="views">조회수순</option>
@@ -95,7 +89,7 @@ export function PostFilters({
             strokeWidth={2}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="absolute right-2 size-3 pointer-events-none text-fg-muted"
+            className="pointer-events-none absolute right-2 size-3 text-fg-muted"
             aria-hidden="true"
           >
             <path d="M6 9l6 6 6-6" />

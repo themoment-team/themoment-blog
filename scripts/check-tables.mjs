@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 const rows = await sql`
@@ -8,4 +8,6 @@ const rows = await sql`
   ORDER BY table_name
 `;
 console.log(`blog 스키마 테이블 (${rows.length}개):`);
-rows.forEach((r) => console.log(" -", r.table_name));
+rows.forEach((r) => {
+  console.log(' -', r.table_name);
+});

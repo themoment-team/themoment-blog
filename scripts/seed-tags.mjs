@@ -1,18 +1,18 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 
 const NEW_TAGS = [
-  { name: "Frontend", slug: "frontend" },
-  { name: "Backend", slug: "backend" },
-  { name: "DevOps", slug: "devops" },
-  { name: "AI", slug: "ai" },
-  { name: "Mobile", slug: "mobile" },
-  { name: "Database", slug: "database" },
-  { name: "Infra", slug: "infra" },
-  { name: "Project", slug: "project" },
-  { name: "Career", slug: "career" },
-  { name: "ETC", slug: "etc" },
+  { name: 'Frontend', slug: 'frontend' },
+  { name: 'Backend', slug: 'backend' },
+  { name: 'DevOps', slug: 'devops' },
+  { name: 'AI', slug: 'ai' },
+  { name: 'Mobile', slug: 'mobile' },
+  { name: 'Database', slug: 'database' },
+  { name: 'Infra', slug: 'infra' },
+  { name: 'Project', slug: 'project' },
+  { name: 'Career', slug: 'career' },
+  { name: 'ETC', slug: 'etc' },
 ];
 
 for (const tag of NEW_TAGS) {
@@ -23,4 +23,4 @@ for (const tag of NEW_TAGS) {
   `;
   console.log(`✓ ${tag.name}`);
 }
-console.log("태그 시딩 완료");
+console.log('태그 시딩 완료');

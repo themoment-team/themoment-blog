@@ -43,8 +43,7 @@ html[data-theme="dark"] {
   --color-accent-active: var(--accent-active);
   --color-border: var(--border);
 
-  --font-sans:
-    "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-display: "Noto Serif KR", "Georgia", "Times New Roman", serif;
 
   --leading-display: 1;
