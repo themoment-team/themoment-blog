@@ -5,8 +5,12 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
   const session = req.auth;
 
-  // 에디터 경로: 더모먼트 부원만 접근 가능
-  if (pathname.startsWith("/write") || pathname.startsWith("/edit")) {
+  // 에디터/마이 경로: 더모먼트 부원만 접근 가능
+  if (
+    pathname.startsWith("/write") ||
+    pathname.startsWith("/edit") ||
+    pathname.startsWith("/my")
+  ) {
     if (!session) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
@@ -24,5 +28,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: ["/write", "/edit/:path*", "/login"],
+  matcher: ["/write", "/edit/:path*", "/my", "/login"],
 };

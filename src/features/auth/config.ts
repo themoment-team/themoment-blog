@@ -6,9 +6,10 @@ import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import { DataGSMProvider } from "./provider";
 
-async function checkMomentMembership(email: string): Promise<boolean> {
+// null: API 오류(기존 DB 값 보존), boolean: 실제 멤버십 결과
+async function checkMomentMembership(email: string): Promise<boolean | null> {
   const apiKey = process.env.DATAGSM_API_KEY;
-  if (!apiKey) return false;
+  if (!apiKey) return null;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 3000);
@@ -22,7 +23,7 @@ async function checkMomentMembership(email: string): Promise<boolean> {
       },
     );
 
-    if (!res.ok) return false;
+    if (!res.ok) return null;
 
     const json = await res.json();
     const student = json?.data?.students?.[0];
@@ -31,7 +32,7 @@ async function checkMomentMembership(email: string): Promise<boolean> {
       student?.majorClub?.type === "MAJOR_CLUB"
     );
   } catch {
-    return false;
+    return null;
   } finally {
     clearTimeout(timeout);
   }
@@ -55,15 +56,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async signIn({ user }) {
       if (!user.email || !user.name) return false;
 
-      const isMomentMember = await checkMomentMembership(user.email);
+      const membership = await checkMomentMembership(user.email);
 
       try {
         await db
           .insert(users)
-          .values({ email: user.email, name: user.name, isMomentMember })
+          .values({
+            email: user.email,
+            name: user.name,
+            isMomentMember: membership ?? false,
+          })
           .onConflictDoUpdate({
             target: users.email,
-            set: { name: user.name, isMomentMember },
+            // API 오류(null)면 isMomentMember를 덮어쓰지 않고 기존 DB 값 보존
+            set:
+              membership !== null
+                ? { name: user.name, isMomentMember: membership }
+                : { name: user.name },
           });
       } catch (err) {
         console.error("[auth] DB upsert 실패:", err);
