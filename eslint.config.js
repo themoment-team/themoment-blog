@@ -13,6 +13,12 @@ export default [
     },
     plugins: { boundaries },
     settings: {
+      'import/resolver': {
+        typescript: {
+          alwaysTryTypes: true,
+          project: './tsconfig.json',
+        },
+      },
       'boundaries/elements': [
         { type: 'app', pattern: 'src/app/**/*' },
         { type: 'views', pattern: 'src/views/**/*' },
@@ -28,7 +34,7 @@ export default [
         {
           default: 'disallow',
           rules: [
-            { from: 'app', allow: ['views', 'widgets', 'features', 'entities', 'shared'] },
+            { from: 'app', allow: ['app', 'views', 'widgets', 'features', 'entities', 'shared'] },
             { from: 'views', allow: ['widgets', 'features', 'entities', 'shared'] },
             { from: 'widgets', allow: ['features', 'entities', 'shared'] },
             { from: 'features', allow: ['entities', 'shared'] },
