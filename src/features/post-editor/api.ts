@@ -23,6 +23,7 @@ export async function upsertSeries(title: string): Promise<string> {
     slug = `series-${Math.random().toString(36).slice(2, 8)}`;
   }
 
+  // slug 충돌 시 접미사를 붙이되, insert 자체는 onConflictDoUpdate로 race condition을 방지한다.
   const [slugConflict] = await db
     .select({ id: series.id })
     .from(series)
@@ -36,6 +37,7 @@ export async function upsertSeries(title: string): Promise<string> {
   const [created] = await db
     .insert(series)
     .values({ title, slug })
+    .onConflictDoUpdate({ target: series.slug, set: { title } })
     .returning({ id: series.id });
 
   return created.id;
@@ -115,6 +117,8 @@ export async function updatePost(
 
   if (postData.published === true) {
     updateData.publishedAt = new Date();
+  } else if (postData.published === false) {
+    updateData.publishedAt = null;
   }
 
   const [post] = await db

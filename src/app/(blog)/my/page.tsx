@@ -20,14 +20,10 @@ export default async function MyPostsPage() {
   const session = await auth();
   if (!session?.user.isMomentMember) redirect("/");
 
-  const [allPublished, drafts] = await Promise.all([
-    getPublishedPosts(100),
+  const [myPublished, drafts] = await Promise.all([
+    getPublishedPosts(200, 0, "latest", undefined, session.user.id),
     getDraftPosts(session.user.id),
   ]);
-
-  const myPublished = allPublished.filter(
-    (p) => p.author.id === session.user.id,
-  );
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
