@@ -1,7 +1,3 @@
-import { series } from '@entities/series';
-import { tags } from '@entities/tag';
-import { users } from '@entities/user';
-import { blog } from '@shared/lib/db';
 import {
   boolean,
   integer,
@@ -12,6 +8,10 @@ import {
   uuid,
   varchar,
 } from 'drizzle-orm/pg-core';
+import { series } from '@/entities/series';
+import { tags } from '@/entities/tag';
+import { users } from '@/entities/user';
+import { blog } from '@/shared/lib/db';
 
 export const posts = blog.table('tb_posts', {
   id: uuid('id').primaryKey().defaultRandom(),

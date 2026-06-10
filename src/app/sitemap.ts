@@ -1,6 +1,6 @@
-import { getAllSeries, getAllTags, getPublishedPosts } from '@features/post-view';
-import { SITE_URL } from '@shared/config/site';
 import type { MetadataRoute } from 'next';
+import { getAllSeries, getAllTags, getPublishedPosts } from '@/features/post-view';
+import { SITE_URL } from '@/shared/config/site';
 
 export const revalidate = 3600;
 

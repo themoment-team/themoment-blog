@@ -1,9 +1,9 @@
-import { auth } from '@features/auth/config';
-import { deletePost, updatePost } from '@features/post-editor';
-import { getPostBySlug } from '@features/post-view';
-import { ALLOWED_TAGS } from '@shared/config/tags';
-import { generateExcerpt } from '@shared/lib/markdown';
 import { NextResponse } from 'next/server';
+import { auth } from '@/features/auth/config';
+import { deletePost, updatePost } from '@/features/post-editor';
+import { getPostBySlug } from '@/features/post-view';
+import { ALLOWED_TAGS } from '@/shared/config/tags';
+import { generateExcerpt } from '@/shared/lib/markdown';
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

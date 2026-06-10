@@ -1,9 +1,9 @@
-import { auth } from '@features/auth/config';
-import { DeletePostButton } from '@features/post-editor/ui/delete-post-button';
-import { getDraftPosts, getPublishedPosts } from '@features/post-view';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { auth } from '@/features/auth/config';
+import { DeletePostButton } from '@/features/post-editor/ui/delete-post-button';
+import { getDraftPosts, getPublishedPosts } from '@/features/post-view';
 
 export const metadata: Metadata = { title: '내 글 목록' };
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { ALLOWED_TAGS, type AllowedTag } from '@shared/config/tags';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { ALLOWED_TAGS, type AllowedTag } from '@/shared/config/tags';
 
 interface SeriesItem {
   id: string;

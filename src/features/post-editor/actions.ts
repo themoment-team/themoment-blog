@@ -1,11 +1,11 @@
 'use server';
 
-import { posts } from '@entities/post';
-import { auth } from '@features/auth/config';
-import { db } from '@shared/lib/db';
 import { eq } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { posts } from '@/entities/post';
+import { auth } from '@/features/auth/config';
+import { db } from '@/shared/lib/db';
 import { deletePost } from './api';
 
 export async function deletePostAction(postId: string) {

@@ -1,5 +1,5 @@
-import { blog } from '@shared/lib/db';
 import { boolean, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import { blog } from '@/shared/lib/db';
 
 export const users = blog.table('tb_users', {
   id: uuid('id').primaryKey().defaultRandom(),

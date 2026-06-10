@@ -1,9 +1,9 @@
-import { posts } from '@entities/post';
-import { auth } from '@features/auth/config';
-import { addLike, getLikeCount, hasLiked, removeLike } from '@features/post-view';
-import { db } from '@shared/lib/db';
 import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
+import { posts } from '@/entities/post';
+import { auth } from '@/features/auth/config';
+import { addLike, getLikeCount, hasLiked, removeLike } from '@/features/post-view';
+import { db } from '@/shared/lib/db';
 
 async function resolvePostId(slug: string): Promise<string | null> {
   const [post] = await db.select({ id: posts.id }).from(posts).where(eq(posts.slug, slug)).limit(1);

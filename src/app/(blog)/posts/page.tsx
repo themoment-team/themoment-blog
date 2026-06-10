@@ -1,12 +1,12 @@
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import {
   getAllTags,
   getPublishedPosts,
   PostCard,
   PostFilters,
   type PostSortKey,
-} from '@features/post-view';
-import type { Metadata } from 'next';
-import { Suspense } from 'react';
+} from '@/features/post-view';
 
 export const metadata: Metadata = { title: '포스트' };
 

@@ -1,8 +1,8 @@
 'use client';
 
-import { logout } from '@features/auth';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
+import { logout } from '@/features/auth';
 
 interface UserMenuProps {
   name: string;

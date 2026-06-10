@@ -1,5 +1,5 @@
-import { getSeriesBySlug, getSeriesWithPosts } from '@features/post-view';
 import { NextResponse } from 'next/server';
+import { getSeriesBySlug, getSeriesWithPosts } from '@/features/post-view';
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;

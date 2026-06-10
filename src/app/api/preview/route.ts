@@ -1,5 +1,5 @@
-import { auth } from '@features/auth/config';
-import { markdownToHtml } from '@shared/lib/markdown';
+import { auth } from '@/features/auth/config';
+import { markdownToHtml } from '@/shared/lib/markdown';
 
 export async function POST(req: Request) {
   const session = await auth();

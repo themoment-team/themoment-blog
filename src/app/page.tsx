@@ -1,12 +1,12 @@
+import Link from 'next/link';
+import { Suspense } from 'react';
 import {
   getAllTags,
   getPublishedPosts,
   PostCard,
   PostFilters,
   type PostSortKey,
-} from '@features/post-view';
-import Link from 'next/link';
-import { Suspense } from 'react';
+} from '@/features/post-view';
 import { Footer } from './_components/footer';
 import { Header } from './_components/header';
 

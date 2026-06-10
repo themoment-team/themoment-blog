@@ -1,5 +1,5 @@
-import { getPublishedPosts } from '@features/post-view';
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@shared/config/site';
+import { getPublishedPosts } from '@/features/post-view';
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/shared/config/site';
 
 export const revalidate = 3600;
 

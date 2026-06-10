@@ -1,8 +1,8 @@
-import { auth } from '@features/auth/config';
-import { createPost } from '@features/post-editor';
-import { ALLOWED_TAGS } from '@shared/config/tags';
-import { generateExcerpt } from '@shared/lib/markdown';
 import { NextResponse } from 'next/server';
+import { auth } from '@/features/auth/config';
+import { createPost } from '@/features/post-editor';
+import { ALLOWED_TAGS } from '@/shared/config/tags';
+import { generateExcerpt } from '@/shared/lib/markdown';
 
 export async function POST(req: Request) {
   const session = await auth();

@@ -1,9 +1,9 @@
-import { likes, posts, postTags } from '@entities/post';
-import { series } from '@entities/series';
-import { tags } from '@entities/tag';
-import { users } from '@entities/user';
-import { db } from '@shared/lib/db';
 import { and, asc, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { likes, posts, postTags } from '@/entities/post';
+import { series } from '@/entities/series';
+import { tags } from '@/entities/tag';
+import { users } from '@/entities/user';
+import { db } from '@/shared/lib/db';
 
 export type PostSortKey = 'latest' | 'views' | 'likes';
 

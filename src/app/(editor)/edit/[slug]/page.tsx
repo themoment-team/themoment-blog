@@ -1,8 +1,8 @@
-import { auth } from '@features/auth/config';
-import { MarkdownEditor } from '@features/post-editor';
-import { getPostForEdit } from '@features/post-view';
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { auth } from '@/features/auth/config';
+import { MarkdownEditor } from '@/features/post-editor';
+import { getPostForEdit } from '@/features/post-view';
 
 interface PageProps {
   params: Promise<{ slug: string }>;

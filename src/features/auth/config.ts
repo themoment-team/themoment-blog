@@ -1,9 +1,9 @@
 import 'server-only';
-import '@features/auth/types';
-import { users } from '@entities/user';
-import { db } from '@shared/lib/db';
+import '@/features/auth/types';
 import { eq } from 'drizzle-orm';
 import NextAuth from 'next-auth';
+import { users } from '@/entities/user';
+import { db } from '@/shared/lib/db';
 import { DataGSMProvider } from './provider';
 
 // null: API 오류(기존 DB 값 보존), boolean: 실제 멤버십 결과

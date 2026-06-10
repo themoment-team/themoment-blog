@@ -1,6 +1,6 @@
-import { auth } from '@features/auth/config';
-import { uploadImage } from '@shared/lib/cloudinary';
 import { NextResponse } from 'next/server';
+import { auth } from '@/features/auth/config';
+import { uploadImage } from '@/shared/lib/cloudinary';
 
 export async function POST(req: Request) {
   const session = await auth();

@@ -1,3 +1,6 @@
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
 import {
   GITHUB_ORG,
   INSTAGRAM,
@@ -7,10 +10,7 @@ import {
   ROLE_LABEL,
   ROLE_ORDER,
   type Role,
-} from '@shared/config/team';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
+} from '@/shared/config/team';
 
 export const metadata: Metadata = { title: '더모먼트 소개' };
 

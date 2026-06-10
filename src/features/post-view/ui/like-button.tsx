@@ -1,7 +1,7 @@
 'use client';
 
-import { getFingerprint } from '@shared/lib/fingerprint';
 import { useEffect, useState } from 'react';
+import { getFingerprint } from '@/shared/lib/fingerprint';
 
 interface LikeButtonProps {
   slug: string;

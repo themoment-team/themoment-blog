@@ -1,5 +1,5 @@
-import { getAllTags, TagCloud } from '@features/post-view';
 import type { Metadata } from 'next';
+import { getAllTags, TagCloud } from '@/features/post-view';
 
 export const metadata: Metadata = { title: '태그' };
 

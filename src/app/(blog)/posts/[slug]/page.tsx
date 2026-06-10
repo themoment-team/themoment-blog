@@ -1,3 +1,7 @@
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import {
   getLikeCount,
   getPostBySlug,
@@ -8,13 +12,9 @@ import {
   TableOfContents,
   TagBadge,
   ViewCounter,
-} from '@features/post-view';
-import { SITE_URL } from '@shared/config/site';
-import { extractHeadings } from '@shared/lib/markdown';
-import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+} from '@/features/post-view';
+import { SITE_URL } from '@/shared/config/site';
+import { extractHeadings } from '@/shared/lib/markdown';
 
 interface PageProps {
   params: Promise<{ slug: string }>;

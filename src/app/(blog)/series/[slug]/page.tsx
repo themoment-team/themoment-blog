@@ -1,7 +1,7 @@
-import { getSeriesBySlug, getSeriesWithPosts } from '@features/post-view';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { getSeriesBySlug, getSeriesWithPosts } from '@/features/post-view';
 
 interface PageProps {
   params: Promise<{ slug: string }>;

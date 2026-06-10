@@ -1,6 +1,6 @@
-import { getAllSeries } from '@features/post-view';
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { getAllSeries } from '@/features/post-view';
 
 export const metadata: Metadata = { title: '시리즈' };
 

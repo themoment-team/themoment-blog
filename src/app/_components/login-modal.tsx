@@ -1,8 +1,8 @@
 'use client';
 
-import { loginWithDataGSM } from '@features/auth';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { loginWithDataGSM } from '@/features/auth';
 
 interface LoginModalProps {
   onClose: () => void;

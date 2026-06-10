@@ -1,6 +1,6 @@
-import { auth } from '@features/auth/config';
-import { ThemeToggle } from '@features/theme';
 import Link from 'next/link';
+import { auth } from '@/features/auth/config';
+import { ThemeToggle } from '@/features/theme';
 import { LoginButton } from './login-button';
 import { UserMenu } from './user-menu';
 

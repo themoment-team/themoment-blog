@@ -1,8 +1,8 @@
-import { posts, postTags } from '@entities/post';
-import { series } from '@entities/series';
-import { getTagIdsByNames } from '@features/post-view/api';
-import { db } from '@shared/lib/db';
 import { eq } from 'drizzle-orm';
+import { posts, postTags } from '@/entities/post';
+import { series } from '@/entities/series';
+import { getTagIdsByNames } from '@/features/post-view/api';
+import { db } from '@/shared/lib/db';
 
 export async function upsertSeries(title: string): Promise<string> {
   const [existing] = await db
