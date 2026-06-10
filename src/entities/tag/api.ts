@@ -1,4 +1,4 @@
-import { inArray, eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { db } from '@/shared/lib/db';
 import { tags } from './model';
 
