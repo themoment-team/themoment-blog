@@ -7,8 +7,8 @@ import {
   PostFilters,
   type PostSortKey,
 } from '@/features/post-view';
-import { Footer } from './_components/footer';
-import { Header } from './_components/header';
+import { Footer } from '@/widgets/footer';
+import { Header } from '@/widgets/header';
 
 interface HomePageProps {
   searchParams: Promise<{ sort?: string; tag?: string }>;

@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { auth } from '@/features/auth/config';
+import { LoginButton, UserMenu } from '@/features/auth';
 import { ThemeToggle } from '@/features/theme';
-import { LoginButton } from './login-button';
-import { UserMenu } from './user-menu';
 
 export async function Header() {
   const session = await auth();
