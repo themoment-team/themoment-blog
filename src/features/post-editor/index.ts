@@ -1,4 +1,4 @@
-export { createPost, deletePost, updatePost } from "./api";
+export { createPost, deletePost, updatePost, upsertSeries } from "./api";
 export { deletePostAction } from "./actions";
 export { DeletePostButton } from "./ui/delete-post-button";
 export { EditorToolbar } from "./ui/editor-toolbar";

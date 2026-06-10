@@ -2,7 +2,13 @@
 
 import { ALLOWED_TAGS, type AllowedTag } from "@shared/config/tags";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+interface SeriesItem {
+  id: string;
+  title: string;
+  slug: string;
+}
 
 interface PublishModalProps {
   title: string;
@@ -24,6 +30,19 @@ export function PublishModal({
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState("");
+
+  const [seriesList, setSeriesList] = useState<SeriesItem[]>([]);
+  const [selectedSeriesId, setSelectedSeriesId] = useState("");
+  const [newSeriesTitle, setNewSeriesTitle] = useState("");
+  const [seriesOrder, setSeriesOrder] = useState("");
+  const [isNewSeries, setIsNewSeries] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/series")
+      .then((r) => r.json())
+      .then((data: SeriesItem[]) => setSeriesList(data))
+      .catch(() => {});
+  }, []);
 
   function toggleTag(tag: AllowedTag) {
     setSelectedTags((prev) =>
@@ -57,6 +76,10 @@ export function PublishModal({
       return;
     }
 
+    const seriesTitle = isNewSeries
+      ? newSeriesTitle.trim() || null
+      : (seriesList.find((s) => s.id === selectedSeriesId)?.title ?? null);
+
     setPublishing(true);
     setError("");
 
@@ -71,18 +94,22 @@ export function PublishModal({
     const method = slug ? "PATCH" : "POST";
     const url = slug ? `/api/posts/${slug}` : "/api/posts";
 
+    const body: Record<string, unknown> = {
+      title,
+      slug: newSlug,
+      content,
+      coverImage: coverImage || undefined,
+      tagNames: selectedTags,
+      published: true,
+      seriesTitle,
+      seriesOrder: seriesOrder ? Number(seriesOrder) : null,
+    };
+
     try {
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title,
-          slug: newSlug,
-          content,
-          coverImage: coverImage || undefined,
-          tagNames: selectedTags,
-          published: true,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -99,6 +126,10 @@ export function PublishModal({
       setPublishing(false);
     }
   }
+
+  const hasSeriesSelection = isNewSeries
+    ? newSeriesTitle.trim().length > 0
+    : selectedSeriesId.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
@@ -138,6 +169,77 @@ export function PublishModal({
               );
             })}
           </div>
+        </div>
+
+        {/* 시리즈 */}
+        <div className="space-y-2">
+          <p className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted">
+            시리즈
+          </p>
+          <div className="flex gap-2 mb-2">
+            <button
+              type="button"
+              onClick={() => {
+                setIsNewSeries(false);
+                setSelectedSeriesId("");
+              }}
+              className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+                !isNewSeries
+                  ? "bg-fg text-bg border-fg"
+                  : "border-border text-fg-muted hover:border-fg hover:text-fg"
+              }`}
+            >
+              기존 시리즈
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsNewSeries(true);
+                setSelectedSeriesId("");
+              }}
+              className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+                isNewSeries
+                  ? "bg-fg text-bg border-fg"
+                  : "border-border text-fg-muted hover:border-fg hover:text-fg"
+              }`}
+            >
+              새 시리즈
+            </button>
+          </div>
+
+          {isNewSeries ? (
+            <input
+              type="text"
+              placeholder="시리즈 제목 입력"
+              value={newSeriesTitle}
+              onChange={(e) => setNewSeriesTitle(e.target.value)}
+              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg-muted"
+            />
+          ) : (
+            <select
+              value={selectedSeriesId}
+              onChange={(e) => setSelectedSeriesId(e.target.value)}
+              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg focus:outline-none focus:border-fg-muted"
+            >
+              <option value="">없음</option>
+              {seriesList.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.title}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {hasSeriesSelection && (
+            <input
+              type="number"
+              placeholder="시리즈 내 순서 (예: 1)"
+              min={1}
+              value={seriesOrder}
+              onChange={(e) => setSeriesOrder(e.target.value)}
+              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg-muted"
+            />
+          )}
         </div>
 
         {/* 커버 이미지 */}

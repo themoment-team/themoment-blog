@@ -1,8 +1,9 @@
 import { likes, posts, postTags } from "@entities/post";
+import { series } from "@entities/series";
 import { tags } from "@entities/tag";
 import { users } from "@entities/user";
 import { db } from "@shared/lib/db";
-import { and, desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
 
 export type PostSortKey = "latest" | "views" | "likes";
 
@@ -38,7 +39,7 @@ export async function getPublishedPosts(
     ? and(eq(posts.published, true), tagSubquery)
     : eq(posts.published, true);
 
-  return db
+  const postList = await db
     .select({
       id: posts.id,
       title: posts.title,
@@ -56,6 +57,24 @@ export async function getPublishedPosts(
     .orderBy(orderExpr)
     .limit(limit)
     .offset(offset);
+
+  if (postList.length === 0) return [];
+
+  const postIds = postList.map((p) => p.id);
+  const allTagRows = await db
+    .select({ postId: postTags.postId, name: tags.name, slug: tags.slug })
+    .from(postTags)
+    .innerJoin(tags, eq(postTags.tagId, tags.id))
+    .where(inArray(postTags.postId, postIds));
+
+  const tagsByPost = new Map<string, { name: string; slug: string }[]>();
+  for (const row of allTagRows) {
+    const arr = tagsByPost.get(row.postId) ?? [];
+    arr.push({ name: row.name, slug: row.slug });
+    tagsByPost.set(row.postId, arr);
+  }
+
+  return postList.map((p) => ({ ...p, tags: tagsByPost.get(p.id) ?? [] }));
 }
 
 export async function getDraftPosts(authorId: string) {
@@ -102,6 +121,8 @@ export async function getPostBySlug(slug: string) {
       publishedAt: posts.publishedAt,
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
+      seriesId: posts.seriesId,
+      seriesOrder: posts.seriesOrder,
       author: { id: users.id, name: users.name },
     })
     .from(posts)
@@ -229,4 +250,76 @@ export async function getTagIdsByNames(names: string[]): Promise<string[]> {
     .from(tags)
     .where(inArray(tags.name, names));
   return rows.map((r) => r.id);
+}
+
+// ── 시리즈 ────────────────────────────────────────────────────────
+
+export async function getAllSeries() {
+  const allSeries = await db
+    .select()
+    .from(series)
+    .orderBy(series.createdAt);
+
+  if (allSeries.length === 0) return [];
+
+  const postCounts = await db
+    .select({
+      seriesId: posts.seriesId,
+      count: sql<number>`cast(count(*) as int)`,
+    })
+    .from(posts)
+    .where(and(eq(posts.published, true), isNotNull(posts.seriesId)))
+    .groupBy(posts.seriesId);
+
+  const countMap = new Map(postCounts.map((r) => [r.seriesId, r.count]));
+
+  return allSeries.map((s) => ({ ...s, postCount: countMap.get(s.id) ?? 0 }));
+}
+
+export async function getSeriesBySlug(slug: string) {
+  const [s] = await db
+    .select()
+    .from(series)
+    .where(eq(series.slug, slug))
+    .limit(1);
+  return s ?? null;
+}
+
+export async function getSeriesWithPosts(seriesId: string) {
+  const [s] = await db
+    .select()
+    .from(series)
+    .where(eq(series.id, seriesId))
+    .limit(1);
+  if (!s) return null;
+
+  const seriesPosts = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      slug: posts.slug,
+      seriesOrder: posts.seriesOrder,
+    })
+    .from(posts)
+    .where(and(eq(posts.seriesId, seriesId), eq(posts.published, true)))
+    .orderBy(asc(posts.seriesOrder), asc(posts.createdAt));
+
+  return { ...s, posts: seriesPosts };
+}
+
+export async function getSeriesNavData(postId: string, seriesId: string) {
+  const data = await getSeriesWithPosts(seriesId);
+  if (!data) return null;
+
+  const idx = data.posts.findIndex((p) => p.id === postId);
+  const prevPost = idx > 0 ? data.posts[idx - 1] : null;
+  const nextPost = idx !== -1 && idx < data.posts.length - 1 ? data.posts[idx + 1] : null;
+
+  return {
+    series: { id: data.id, title: data.title, slug: data.slug },
+    posts: data.posts,
+    currentIndex: idx,
+    prevPost,
+    nextPost,
+  };
 }
