@@ -2,20 +2,20 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-bg px-4">
-      <div className="text-center space-y-6">
-        <p className="text-[8rem] font-bold tracking-[-0.06em] leading-[1.0] text-fg opacity-10 select-none">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-bg px-4">
+      <div className="space-y-6 text-center">
+        <p className="select-none font-bold text-[8rem] text-fg leading-[1.0] tracking-[-0.06em] opacity-10">
           404
         </p>
-        <div className="space-y-2 -mt-8">
-          <h1 className="text-2xl font-bold tracking-[-0.03em] text-fg">
+        <div className="-mt-8 space-y-2">
+          <h1 className="font-bold text-2xl text-fg tracking-[-0.03em]">
             페이지를 찾을 수 없습니다
           </h1>
-          <p className="text-sm text-fg-muted">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
+          <p className="text-fg-muted text-sm">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
         </div>
         <Link
           href="/"
-          className="inline-block text-sm font-medium uppercase tracking-[0.06em] text-fg-muted border border-border px-4 py-2 rounded hover:text-fg hover:border-fg transition-colors"
+          className="inline-block rounded border border-border px-4 py-2 font-medium text-fg-muted text-sm uppercase tracking-[0.06em] transition-colors hover:border-fg hover:text-fg"
         >
           홈으로
         </Link>

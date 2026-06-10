@@ -127,17 +127,17 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-bg border border-border rounded-lg w-full max-w-md p-6 space-y-5 mx-4 max-h-[90vh] overflow-y-auto">
+      <div className="mx-4 max-h-[90vh] w-full max-w-md space-y-5 overflow-y-auto rounded-lg border border-border bg-bg p-6">
         <div className="flex items-center justify-between">
-          <h2 className="font-bold tracking-[-0.02em] text-fg">포스트 발행</h2>
-          <button type="button" onClick={onClose} className="text-fg-muted hover:text-fg text-lg">
+          <h2 className="font-bold text-fg tracking-[-0.02em]">포스트 발행</h2>
+          <button type="button" onClick={onClose} className="text-fg-muted text-lg hover:text-fg">
             ✕
           </button>
         </div>
 
         {/* 태그 */}
         <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted">태그</p>
+          <p className="font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">태그</p>
           <div className="flex flex-wrap gap-2">
             {ALLOWED_TAGS.map((tag) => {
               const active = selectedTags.includes(tag);
@@ -146,9 +146,9 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
                   key={tag}
                   type="button"
                   onClick={() => toggleTag(tag)}
-                  className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+                  className={`rounded border px-2.5 py-1 text-xs transition-colors ${
                     active
-                      ? 'bg-fg text-bg border-fg'
+                      ? 'border-fg bg-fg text-bg'
                       : 'border-border text-fg-muted hover:border-fg hover:text-fg'
                   }`}
                 >
@@ -161,17 +161,17 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
 
         {/* 시리즈 */}
         <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted">시리즈</p>
-          <div className="flex gap-2 mb-2">
+          <p className="font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">시리즈</p>
+          <div className="mb-2 flex gap-2">
             <button
               type="button"
               onClick={() => {
                 setIsNewSeries(false);
                 setSelectedSeriesId('');
               }}
-              className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+              className={`rounded border px-2.5 py-1 text-xs transition-colors ${
                 !isNewSeries
-                  ? 'bg-fg text-bg border-fg'
+                  ? 'border-fg bg-fg text-bg'
                   : 'border-border text-fg-muted hover:border-fg hover:text-fg'
               }`}
             >
@@ -183,9 +183,9 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
                 setIsNewSeries(true);
                 setSelectedSeriesId('');
               }}
-              className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+              className={`rounded border px-2.5 py-1 text-xs transition-colors ${
                 isNewSeries
-                  ? 'bg-fg text-bg border-fg'
+                  ? 'border-fg bg-fg text-bg'
                   : 'border-border text-fg-muted hover:border-fg hover:text-fg'
               }`}
             >
@@ -199,13 +199,13 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
               placeholder="시리즈 제목 입력"
               value={newSeriesTitle}
               onChange={(e) => setNewSeriesTitle(e.target.value)}
-              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg-muted"
+              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
             />
           ) : (
             <select
               value={selectedSeriesId}
               onChange={(e) => setSelectedSeriesId(e.target.value)}
-              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg focus:outline-none focus:border-fg-muted"
+              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm focus:border-fg-muted focus:outline-none"
             >
               <option value="">없음</option>
               {seriesList.map((s) => (
@@ -223,14 +223,14 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
               min={1}
               value={seriesOrder}
               onChange={(e) => setSeriesOrder(e.target.value)}
-              className="w-full text-sm border border-border rounded px-3 py-2 bg-bg text-fg placeholder:text-fg-muted focus:outline-none focus:border-fg-muted"
+              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
             />
           )}
         </div>
 
         {/* 커버 이미지 */}
         <div className="space-y-2">
-          <p className="text-xs font-medium uppercase tracking-[0.06em] text-fg-muted">
+          <p className="font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">
             커버 이미지
           </p>
           {coverImage ? (
@@ -240,18 +240,18 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
                 alt="커버 이미지"
                 width={400}
                 height={200}
-                className="w-full h-36 object-cover rounded"
+                className="h-36 w-full rounded object-cover"
               />
               <button
                 type="button"
                 onClick={() => setCoverImage('')}
-                className="absolute top-2 right-2 bg-black/60 text-white text-xs px-2 py-0.5 rounded hover:bg-black/80"
+                className="absolute top-2 right-2 rounded bg-black/60 px-2 py-0.5 text-white text-xs hover:bg-black/80"
               >
                 제거
               </button>
             </div>
           ) : (
-            <label className="flex items-center justify-center border border-dashed border-border rounded h-24 cursor-pointer hover:bg-bg-subtle transition-colors text-sm text-fg-muted">
+            <label className="flex h-24 cursor-pointer items-center justify-center rounded border border-border border-dashed text-fg-muted text-sm transition-colors hover:bg-bg-subtle">
               {uploading ? '업로드 중...' : '이미지 선택'}
               <input
                 type="file"
@@ -264,13 +264,13 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
           )}
         </div>
 
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-red-500 text-sm">{error}</p>}
 
         <button
           type="button"
           onClick={handlePublish}
           disabled={publishing}
-          className="w-full py-2.5 bg-fg text-bg text-sm font-medium rounded hover:opacity-80 transition-opacity disabled:opacity-50"
+          className="w-full rounded bg-fg py-2.5 font-medium text-bg text-sm transition-opacity hover:opacity-80 disabled:opacity-50"
         >
           {publishing ? '발행 중...' : '지금 발행'}
         </button>

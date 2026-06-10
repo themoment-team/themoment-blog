@@ -25,10 +25,10 @@ export default async function PostsPage({ searchParams }: PageProps) {
   const [postList, tags] = await Promise.all([getPublishedPosts(50, 0, sort, tag), getAllTags()]);
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-[-0.03em] leading-[1.1] text-fg">포스트</h1>
-        <p className="mt-2 text-sm text-fg-muted">{postList.length}개의 글</p>
+        <h1 className="font-bold text-3xl text-fg leading-[1.1] tracking-[-0.03em]">포스트</h1>
+        <p className="mt-2 text-fg-muted text-sm">{postList.length}개의 글</p>
       </div>
 
       <div className="mb-8">

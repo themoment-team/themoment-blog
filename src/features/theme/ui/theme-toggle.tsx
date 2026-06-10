@@ -10,7 +10,7 @@ export function ThemeToggle() {
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
-    return <span className="size-8 inline-block shrink-0" aria-hidden />;
+    return <span className="inline-block size-8 shrink-0" aria-hidden />;
   }
 
   const isDark = theme === 'dark';
@@ -30,7 +30,7 @@ export function ThemeToggle() {
       type="button"
       aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       onClick={toggle}
-      className="size-8 flex items-center justify-center rounded-md text-fg-muted hover:text-fg hover:bg-bg-subtle transition-colors"
+      className="flex size-8 items-center justify-center rounded-md text-fg-muted transition-colors hover:bg-bg-subtle hover:text-fg"
     >
       {isDark ? (
         <svg

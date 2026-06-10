@@ -22,5 +22,5 @@ export function ViewCounter({ slug, initialCount }: ViewCounterProps) {
       .catch(() => {});
   }, [slug]);
 
-  return <span className="text-sm text-fg-muted">{count.toLocaleString()} 조회</span>;
+  return <span className="text-fg-muted text-sm">{count.toLocaleString()} 조회</span>;
 }

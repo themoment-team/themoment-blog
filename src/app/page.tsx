@@ -29,22 +29,22 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <Header />
       <main className="flex-1">
         {/* 히어로 */}
-        <section className="border-b border-border">
-          <div className="max-w-5xl mx-auto px-4 py-16 sm:py-24">
-            <p className="text-xs font-medium uppercase tracking-label text-fg-muted mb-4">
+        <section className="border-border border-b">
+          <div className="mx-auto max-w-5xl px-4 py-16 sm:py-24">
+            <p className="mb-4 font-medium text-fg-muted text-xs uppercase tracking-label">
               더모먼트 기술블로그
             </p>
-            <h1 className="text-5xl sm:text-7xl font-bold tracking-display leading-[1.0] text-fg">
+            <h1 className="font-bold text-5xl text-fg leading-[1.0] tracking-display sm:text-7xl">
               그순간
             </h1>
-            <p className="mt-4 text-base text-fg-muted max-w-md leading-relaxed">
+            <p className="mt-4 max-w-md text-base text-fg-muted leading-relaxed">
               팀 더모먼트 동아리 기록하는 개발의 순간들
             </p>
           </div>
         </section>
 
         {/* 포스트 목록 */}
-        <section className="max-w-5xl mx-auto px-4 py-8">
+        <section className="mx-auto max-w-5xl px-4 py-8">
           <div className="mb-6">
             <Suspense>
               <PostFilters currentSort={sort} currentTag={tag} tags={tags} />
@@ -72,10 +72,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
                   tags={post.tags}
                 />
               ))}
-              <div className="pt-4 pb-2 border-t border-border">
+              <div className="border-border border-t pt-4 pb-2">
                 <Link
                   href="/posts"
-                  className="text-sm text-fg-muted hover:text-fg transition-colors uppercase tracking-label"
+                  className="text-fg-muted text-sm uppercase tracking-label transition-colors hover:text-fg"
                 >
                   모든 포스트 보기 →
                 </Link>

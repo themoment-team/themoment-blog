@@ -98,7 +98,7 @@ function ResizableImage({
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: 이미지 호버 상태 추적용 컨테이너
     <span
-      className="relative inline-block my-2 select-none"
+      className="relative my-2 inline-block select-none"
       style={{ width: w, maxWidth: '100%' }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={(e) => {
@@ -121,8 +121,8 @@ function ResizableImage({
       />
       {hovered && (
         <>
-          <span className="absolute inset-0 border-2 border-accent pointer-events-none" />
-          <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-xs bg-black/50 text-white px-1.5 py-0.5 rounded pointer-events-none select-none whitespace-nowrap">
+          <span className="pointer-events-none absolute inset-0 border-2 border-accent" />
+          <span className="pointer-events-none absolute bottom-2 left-1/2 -translate-x-1/2 select-none whitespace-nowrap rounded bg-black/50 px-1.5 py-0.5 text-white text-xs">
             {Math.round(w)}px
           </span>
           {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
@@ -142,7 +142,7 @@ function ResizableImage({
           />
           {/* biome-ignore lint/a11y/noStaticElementInteractions: 이미지 리사이즈 핸들 */}
           <span
-            className={`${CORNER} bottom-1.5 right-1.5 cursor-se-resize`}
+            className={`${CORNER} right-1.5 bottom-1.5 cursor-se-resize`}
             onMouseDown={(e) => startResize(e, false)}
           />
         </>
@@ -323,18 +323,18 @@ export function MarkdownEditor({
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className="flex h-full flex-col">
         {/* 상단 바 */}
-        <div className="flex items-center justify-between px-6 py-3 border-b border-border shrink-0">
+        <div className="flex shrink-0 items-center justify-between border-border border-b px-6 py-3">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={handleBack}
-              className="text-sm text-fg-muted hover:text-fg transition-colors"
+              className="text-fg-muted text-sm transition-colors hover:text-fg"
             >
               ← 나가기
             </button>
-            <div className="flex text-xs border border-border rounded overflow-hidden">
+            <div className="flex overflow-hidden rounded border border-border text-xs">
               {modeButtons.map(({ key, label }) => (
                 <button
                   key={key}
@@ -370,13 +370,13 @@ export function MarkdownEditor({
                       : '임시저장'}
               </button>
               {saveStatus === 'error' && saveError && (
-                <span className="text-xs text-red-400">{saveError}</span>
+                <span className="text-red-400 text-xs">{saveError}</span>
               )}
             </div>
             <button
               type="button"
               onClick={() => setShowPublishModal(true)}
-              className="text-sm font-medium px-4 py-1.5 bg-fg text-bg rounded hover:opacity-80 transition-opacity"
+              className="rounded bg-fg px-4 py-1.5 font-medium text-bg text-sm transition-opacity hover:opacity-80"
             >
               발행
             </button>
@@ -384,13 +384,13 @@ export function MarkdownEditor({
         </div>
 
         {/* 제목 */}
-        <div className="border-b border-border px-8 py-4 shrink-0">
+        <div className="shrink-0 border-border border-b px-8 py-4">
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목을 입력하세요"
-            className="w-full text-3xl font-bold tracking-heading bg-transparent text-fg placeholder:text-fg-muted focus:outline-none"
+            className="w-full bg-transparent font-bold text-3xl text-fg tracking-heading placeholder:text-fg-muted focus:outline-none"
           />
         </div>
 
@@ -402,7 +402,7 @@ export function MarkdownEditor({
         {/* 에디터 영역 */}
         {/* biome-ignore lint/a11y/noStaticElementInteractions: drag-and-drop file upload zone */}
         <div
-          className={`flex flex-1 overflow-hidden relative transition-shadow ${draggingOver && !uploading ? 'ring-2 ring-inset ring-accent' : ''}`}
+          className={`relative flex flex-1 overflow-hidden transition-shadow ${draggingOver && !uploading ? 'ring-2 ring-accent ring-inset' : ''}`}
           onDrop={handleFileDrop}
           onDragOver={(e) => {
             e.preventDefault();
@@ -417,8 +417,8 @@ export function MarkdownEditor({
           {/* 업로드 오버레이 */}
           {uploading && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-bg/85 backdrop-blur-sm">
-              <div className="w-10 h-10 border-2 border-bg-subtle border-t-accent rounded-full animate-spin mb-3" />
-              <p className="text-sm font-medium text-fg uppercase tracking-label">
+              <div className="mb-3 h-10 w-10 animate-spin rounded-full border-2 border-bg-subtle border-t-accent" />
+              <p className="font-medium text-fg text-sm uppercase tracking-label">
                 이미지 업로드 중
               </p>
             </div>
@@ -426,8 +426,8 @@ export function MarkdownEditor({
 
           {/* 드래그 오버 오버레이 */}
           {draggingOver && !uploading && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-bg/70 pointer-events-none">
-              <p className="text-sm font-medium text-accent uppercase tracking-label">
+            <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center bg-bg/70">
+              <p className="font-medium text-accent text-sm uppercase tracking-label">
                 이미지를 여기에 놓으세요
               </p>
             </div>
@@ -436,7 +436,7 @@ export function MarkdownEditor({
           {/* 편집 패널 */}
           {(mode === 'write' || mode === 'split') && (
             <div
-              className={`${mode === 'split' ? 'w-1/2 border-r border-border' : 'w-full'} overflow-hidden`}
+              className={`${mode === 'split' ? 'w-1/2 border-border border-r' : 'w-full'} overflow-hidden`}
             >
               <CodeMirrorEditor
                 value={content}

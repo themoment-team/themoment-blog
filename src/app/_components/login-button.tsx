@@ -11,7 +11,7 @@ export function LoginButton() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-sm font-medium text-fg border border-border px-3 py-1.5 rounded hover:bg-bg-subtle transition-colors"
+        className="rounded border border-border px-3 py-1.5 font-medium text-fg text-sm transition-colors hover:bg-bg-subtle"
       >
         로그인
       </button>

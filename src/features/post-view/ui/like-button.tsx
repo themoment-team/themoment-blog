@@ -63,7 +63,7 @@ export function LikeButton({ slug, initialCount }: LikeButtonProps) {
       type="button"
       onClick={toggle}
       disabled={loading}
-      className={`flex items-center gap-2 text-sm px-3 py-1.5 border rounded transition-colors ${
+      className={`flex items-center gap-2 rounded border px-3 py-1.5 text-sm transition-colors ${
         liked
           ? 'border-accent text-accent'
           : 'border-border text-fg-muted hover:border-fg hover:text-fg'
