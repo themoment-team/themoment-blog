@@ -1,5 +1,5 @@
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface PostCardProps {
   title: string;
@@ -23,10 +23,10 @@ export function PostCard({
   tags,
 }: PostCardProps) {
   const dateStr = publishedAt
-    ? new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+    ? new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       }).format(new Date(publishedAt))
     : null;
 
@@ -42,7 +42,7 @@ export function PostCard({
 
           {excerpt && (
             <p className="text-sm text-fg-muted leading-relaxed line-clamp-2">
-              {excerpt.replace(/<[^>]+>/g, "").trim()}
+              {excerpt.replace(/<[^>]+>/g, '').trim()}
             </p>
           )}
 

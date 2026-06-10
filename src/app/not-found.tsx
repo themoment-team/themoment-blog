@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 export default function NotFound() {
   return (
@@ -11,9 +11,7 @@ export default function NotFound() {
           <h1 className="text-2xl font-bold tracking-[-0.03em] text-fg">
             페이지를 찾을 수 없습니다
           </h1>
-          <p className="text-sm text-fg-muted">
-            요청하신 페이지가 존재하지 않거나 이동되었습니다.
-          </p>
+          <p className="text-sm text-fg-muted">요청하신 페이지가 존재하지 않거나 이동되었습니다.</p>
         </div>
         <Link
           href="/"

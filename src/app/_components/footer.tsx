@@ -2,9 +2,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border mt-auto">
       <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <span className="text-sm font-bold tracking-[-0.02em] text-fg">
-          그순간
-        </span>
+        <span className="text-sm font-bold tracking-[-0.02em] text-fg">그순간</span>
         <div className="flex items-center gap-4 text-xs text-fg-muted uppercase tracking-[0.06em]">
           <a
             href="https://github.com/themoment-team"

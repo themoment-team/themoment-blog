@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { loginWithDataGSM } from "@features/auth";
-import { useEffect } from "react";
-import { createPortal } from "react-dom";
+import { loginWithDataGSM } from '@features/auth';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 interface LoginModalProps {
   onClose: () => void;
@@ -11,10 +11,10 @@ interface LoginModalProps {
 export function LoginModal({ onClose }: LoginModalProps) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === 'Escape') onClose();
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
   return createPortal(
@@ -32,9 +32,7 @@ export function LoginModal({ onClose }: LoginModalProps) {
       >
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-2xl font-bold tracking-display leading-tight text-fg">
-              그순간
-            </h2>
+            <h2 className="text-2xl font-bold tracking-display leading-tight text-fg">그순간</h2>
             <p className="text-xs text-fg-muted uppercase tracking-label mt-1">
               더모먼트 기술블로그
             </p>

@@ -1,1 +1,1 @@
-export { series, type Series, type NewSeries } from "./model";
+export { series, type Series, type NewSeries } from './model';

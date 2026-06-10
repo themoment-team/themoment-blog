@@ -1,8 +1,8 @@
-import { auth } from "@features/auth/config";
-import { ThemeToggle } from "@features/theme";
-import Link from "next/link";
-import { LoginButton } from "./login-button";
-import { UserMenu } from "./user-menu";
+import { auth } from '@features/auth/config';
+import { ThemeToggle } from '@features/theme';
+import Link from 'next/link';
+import { LoginButton } from './login-button';
+import { UserMenu } from './user-menu';
 
 export async function Header() {
   const session = await auth();
@@ -31,11 +31,7 @@ export async function Header() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          {session ? (
-            <UserMenu name={session.user.name ?? "사용자"} />
-          ) : (
-            <LoginButton />
-          )}
+          {session ? <UserMenu name={session.user.name ?? '사용자'} /> : <LoginButton />}
         </div>
       </div>
     </header>

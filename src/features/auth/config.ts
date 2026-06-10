@@ -1,10 +1,10 @@
-import "server-only";
-import "@features/auth/types";
-import { users } from "@entities/user";
-import { db } from "@shared/lib/db";
-import { eq } from "drizzle-orm";
-import NextAuth from "next-auth";
-import { DataGSMProvider } from "./provider";
+import 'server-only';
+import '@features/auth/types';
+import { users } from '@entities/user';
+import { db } from '@shared/lib/db';
+import { eq } from 'drizzle-orm';
+import NextAuth from 'next-auth';
+import { DataGSMProvider } from './provider';
 
 // null: API 오류(기존 DB 값 보존), boolean: 실제 멤버십 결과
 async function checkMomentMembership(email: string): Promise<boolean | null> {
@@ -18,7 +18,7 @@ async function checkMomentMembership(email: string): Promise<boolean | null> {
     const res = await fetch(
       `https://openapi.datagsm.kr/v1/students?email=${encodeURIComponent(email)}`,
       {
-        headers: { "X-API-KEY": apiKey },
+        headers: { 'X-API-KEY': apiKey },
         signal: controller.signal,
       },
     );
@@ -27,10 +27,7 @@ async function checkMomentMembership(email: string): Promise<boolean | null> {
 
     const json = await res.json();
     const student = json?.data?.students?.[0];
-    return (
-      student?.majorClub?.name === "더모먼트" &&
-      student?.majorClub?.type === "MAJOR_CLUB"
-    );
+    return student?.majorClub?.name === '더모먼트' && student?.majorClub?.type === 'MAJOR_CLUB';
   } catch {
     return null;
   } finally {
@@ -46,11 +43,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
     maxAge: 24 * 60 * 60,
   },
   pages: {
-    signIn: "/login",
+    signIn: '/login',
   },
   callbacks: {
     async signIn({ user }) {
@@ -75,7 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 : { name: user.name },
           });
       } catch (err) {
-        console.error("[auth] DB upsert 실패:", err);
+        console.error('[auth] DB upsert 실패:', err);
         return false;
       }
 

@@ -1,4 +1,4 @@
-import { neon } from "@neondatabase/serverless";
+import { neon } from '@neondatabase/serverless';
 
 const sql = neon(process.env.DATABASE_URL);
 
@@ -12,7 +12,7 @@ await sql`
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
   )
 `;
-console.log("✓ tb_series 테이블 생성");
+console.log('✓ tb_series 테이블 생성');
 
 // tb_posts에 series 컬럼 추가
 await sql`
@@ -20,6 +20,6 @@ await sql`
     ADD COLUMN IF NOT EXISTS series_id UUID REFERENCES blog.tb_series(id) ON DELETE SET NULL,
     ADD COLUMN IF NOT EXISTS series_order INTEGER
 `;
-console.log("✓ tb_posts에 series_id, series_order 컬럼 추가");
+console.log('✓ tb_posts에 series_id, series_order 컬럼 추가');
 
-console.log("마이그레이션 완료");
+console.log('마이그레이션 완료');

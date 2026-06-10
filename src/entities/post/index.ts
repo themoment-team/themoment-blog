@@ -5,4 +5,4 @@ export {
   type Post,
   posts,
   postTags,
-} from "./model";
+} from './model';

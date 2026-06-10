@@ -1,4 +1,4 @@
-import { markdownToHtml } from "@shared/lib/markdown";
+import { markdownToHtml } from '@shared/lib/markdown';
 
 interface PostContentProps {
   content: string;

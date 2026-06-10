@@ -15,14 +15,11 @@ export async function POST(request: Request) {
     if (val) body[key] = val;
   }
 
-  const res = await fetch(
-    "https://oauth.authorization.datagsm.kr/v1/oauth/token",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    },
-  );
+  const res = await fetch('https://oauth.authorization.datagsm.kr/v1/oauth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
 
   const data: unknown = await res.json();
   return Response.json(data, { status: res.status });

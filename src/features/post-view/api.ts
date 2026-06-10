@@ -1,27 +1,27 @@
-import { likes, posts, postTags } from "@entities/post";
-import { series } from "@entities/series";
-import { tags } from "@entities/tag";
-import { users } from "@entities/user";
-import { db } from "@shared/lib/db";
-import { and, asc, desc, eq, inArray, isNotNull, sql } from "drizzle-orm";
+import { likes, posts, postTags } from '@entities/post';
+import { series } from '@entities/series';
+import { tags } from '@entities/tag';
+import { users } from '@entities/user';
+import { db } from '@shared/lib/db';
+import { and, asc, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
 
-export type PostSortKey = "latest" | "views" | "likes";
+export type PostSortKey = 'latest' | 'views' | 'likes';
 
 // ── 포스트 조회 ────────────────────────────────────────────────
 
 export async function getPublishedPosts(
   limit = 20,
   offset = 0,
-  sort: PostSortKey = "latest",
+  sort: PostSortKey = 'latest',
   tag?: string,
   authorId?: string,
 ) {
   const likeCountExpr = sql<number>`(select count(*) from ${likes} where ${likes.postId} = ${posts.id})`;
 
   const orderExpr =
-    sort === "views"
+    sort === 'views'
       ? desc(posts.viewCount)
-      : sort === "likes"
+      : sort === 'likes'
         ? desc(likeCountExpr)
         : desc(posts.publishedAt);
 
@@ -146,11 +146,7 @@ export async function getPostBySlug(slug: string) {
 }
 
 export async function getPostsByTag(tagSlug: string, limit = 20, offset = 0) {
-  const [tag] = await db
-    .select()
-    .from(tags)
-    .where(eq(tags.slug, tagSlug))
-    .limit(1);
+  const [tag] = await db.select().from(tags).where(eq(tags.slug, tagSlug)).limit(1);
 
   if (!tag) return [];
 
@@ -193,10 +189,7 @@ export async function getLikeCount(postId: string): Promise<number> {
   return result?.count ?? 0;
 }
 
-export async function hasLiked(
-  postId: string,
-  fingerprint: string,
-): Promise<boolean> {
+export async function hasLiked(postId: string, fingerprint: string): Promise<boolean> {
   const [like] = await db
     .select({ id: likes.id })
     .from(likes)
@@ -205,11 +198,7 @@ export async function hasLiked(
   return !!like;
 }
 
-export async function addLike(
-  postId: string,
-  fingerprint: string,
-  userId?: string,
-) {
+export async function addLike(postId: string, fingerprint: string, userId?: string) {
   await db
     .insert(likes)
     .values({ postId, fingerprint, userId: userId ?? null })
@@ -217,9 +206,7 @@ export async function addLike(
 }
 
 export async function removeLike(postId: string, fingerprint: string) {
-  await db
-    .delete(likes)
-    .where(and(eq(likes.postId, postId), eq(likes.fingerprint, fingerprint)));
+  await db.delete(likes).where(and(eq(likes.postId, postId), eq(likes.fingerprint, fingerprint)));
 }
 
 // ── 태그 ─────────────────────────────────────────────────────────
@@ -239,30 +226,20 @@ export async function getAllTags() {
 }
 
 export async function getTagBySlug(slug: string) {
-  const [tag] = await db
-    .select()
-    .from(tags)
-    .where(eq(tags.slug, slug))
-    .limit(1);
+  const [tag] = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1);
   return tag ?? null;
 }
 
 export async function getTagIdsByNames(names: string[]): Promise<string[]> {
   if (names.length === 0) return [];
-  const rows = await db
-    .select({ id: tags.id })
-    .from(tags)
-    .where(inArray(tags.name, names));
+  const rows = await db.select({ id: tags.id }).from(tags).where(inArray(tags.name, names));
   return rows.map((r) => r.id);
 }
 
 // ── 시리즈 ────────────────────────────────────────────────────────
 
 export async function getAllSeries() {
-  const allSeries = await db
-    .select()
-    .from(series)
-    .orderBy(series.createdAt);
+  const allSeries = await db.select().from(series).orderBy(series.createdAt);
 
   if (allSeries.length === 0) return [];
 
@@ -281,20 +258,12 @@ export async function getAllSeries() {
 }
 
 export async function getSeriesBySlug(slug: string) {
-  const [s] = await db
-    .select()
-    .from(series)
-    .where(eq(series.slug, slug))
-    .limit(1);
+  const [s] = await db.select().from(series).where(eq(series.slug, slug)).limit(1);
   return s ?? null;
 }
 
 export async function getSeriesWithPosts(seriesId: string) {
-  const [s] = await db
-    .select()
-    .from(series)
-    .where(eq(series.id, seriesId))
-    .limit(1);
+  const [s] = await db.select().from(series).where(eq(series.id, seriesId)).limit(1);
   if (!s) return null;
 
   const seriesPosts = await db

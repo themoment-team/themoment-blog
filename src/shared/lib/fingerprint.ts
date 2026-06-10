@@ -1,4 +1,4 @@
-const KEY = "moment-fp";
+const KEY = 'moment-fp';
 
 export function getFingerprint(): string {
   const existing = localStorage.getItem(KEY);

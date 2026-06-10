@@ -1,4 +1,4 @@
-import { TagBadge } from "./tag-badge";
+import { TagBadge } from './tag-badge';
 
 interface Tag {
   id: string;
@@ -11,12 +11,7 @@ export function TagCloud({ tags }: { tags: Tag[] }) {
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map((tag) => (
-        <TagBadge
-          key={tag.id}
-          name={tag.name}
-          slug={tag.slug}
-          count={tag.count}
-        />
+        <TagBadge key={tag.id} name={tag.name} slug={tag.slug} count={tag.count} />
       ))}
     </div>
   );

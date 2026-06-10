@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { logout } from "@features/auth";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { logout } from '@features/auth';
+import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 
 interface UserMenuProps {
   name: string;
@@ -18,8 +18,8 @@ export function UserMenu({ name }: UserMenuProps) {
         setOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
   return (
@@ -50,7 +50,7 @@ export function UserMenu({ name }: UserMenuProps) {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className={`size-3.5 shrink-0 opacity-60 transition-transform duration-150 ${open ? "-rotate-180" : ""}`}
+          className={`size-3.5 shrink-0 opacity-60 transition-transform duration-150 ${open ? '-rotate-180' : ''}`}
           aria-hidden="true"
         >
           <path d="M6 9l6 6 6-6" />

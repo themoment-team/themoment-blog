@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { LoginModal } from "./login-modal";
+import { useState } from 'react';
+import { LoginModal } from './login-modal';
 
 export function LoginButton() {
   const [open, setOpen] = useState(false);

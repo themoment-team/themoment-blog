@@ -1,16 +1,16 @@
-import { defineConfig } from "drizzle-kit";
+import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
   schema: [
-    "./src/entities/post/model.ts",
-    "./src/entities/user/model.ts",
-    "./src/entities/tag/model.ts",
-    "./src/entities/series/model.ts",
+    './src/entities/post/model.ts',
+    './src/entities/user/model.ts',
+    './src/entities/tag/model.ts',
+    './src/entities/series/model.ts',
   ],
-  out: "./drizzle",
-  dialect: "postgresql",
+  out: './drizzle',
+  dialect: 'postgresql',
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  schemaFilter: ["blog"],
+  schemaFilter: ['blog'],
 });

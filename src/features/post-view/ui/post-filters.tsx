@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useRouter, useSearchParams } from "next/navigation";
-import type { PostSortKey } from "../api";
+import { useRouter, useSearchParams } from 'next/navigation';
+import type { PostSortKey } from '../api';
 
 interface TagItem {
   name: string;
@@ -15,24 +15,20 @@ interface PostFiltersProps {
   tags: TagItem[];
 }
 
-export function PostFilters({
-  currentSort,
-  currentTag,
-  tags,
-}: PostFiltersProps) {
+export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   function update(patch: { sort?: PostSortKey; tag?: string | null }) {
     const params = new URLSearchParams(searchParams.toString());
 
-    if ("sort" in patch) {
-      if (patch.sort === "latest") params.delete("sort");
-      else if (patch.sort) params.set("sort", patch.sort);
+    if ('sort' in patch) {
+      if (patch.sort === 'latest') params.delete('sort');
+      else if (patch.sort) params.set('sort', patch.sort);
     }
-    if ("tag" in patch) {
-      if (!patch.tag) params.delete("tag");
-      else params.set("tag", patch.tag);
+    if ('tag' in patch) {
+      if (!patch.tag) params.delete('tag');
+      else params.set('tag', patch.tag);
     }
 
     router.push(`?${params.toString()}`);
@@ -50,8 +46,8 @@ export function PostFilters({
             onClick={() => update({ tag: null })}
             className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
               !currentTag
-                ? "bg-fg text-bg border-fg"
-                : "border-border text-fg-muted hover:text-fg hover:border-fg-muted"
+                ? 'bg-fg text-bg border-fg'
+                : 'border-border text-fg-muted hover:text-fg hover:border-fg-muted'
             }`}
           >
             전체
@@ -60,13 +56,11 @@ export function PostFilters({
             <button
               key={tag.slug}
               type="button"
-              onClick={() =>
-                update({ tag: currentTag === tag.slug ? null : tag.slug })
-              }
+              onClick={() => update({ tag: currentTag === tag.slug ? null : tag.slug })}
               className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${
                 currentTag === tag.slug
-                  ? "bg-fg text-bg border-fg"
-                  : "border-border text-fg-muted hover:text-fg hover:border-fg-muted"
+                  ? 'bg-fg text-bg border-fg'
+                  : 'border-border text-fg-muted hover:text-fg hover:border-fg-muted'
               }`}
             >
               {tag.name}

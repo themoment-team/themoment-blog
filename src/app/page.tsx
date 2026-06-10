@@ -4,28 +4,25 @@ import {
   PostCard,
   PostFilters,
   type PostSortKey,
-} from "@features/post-view";
-import Link from "next/link";
-import { Suspense } from "react";
-import { Footer } from "./_components/footer";
-import { Header } from "./_components/header";
+} from '@features/post-view';
+import Link from 'next/link';
+import { Suspense } from 'react';
+import { Footer } from './_components/footer';
+import { Header } from './_components/header';
 
 interface HomePageProps {
   searchParams: Promise<{ sort?: string; tag?: string }>;
 }
 
 function isValidSort(v: unknown): v is PostSortKey {
-  return v === "latest" || v === "views" || v === "likes";
+  return v === 'latest' || v === 'views' || v === 'likes';
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { sort: rawSort, tag } = await searchParams;
-  const sort: PostSortKey = isValidSort(rawSort) ? rawSort : "likes";
+  const sort: PostSortKey = isValidSort(rawSort) ? rawSort : 'likes';
 
-  const [posts, tags] = await Promise.all([
-    getPublishedPosts(10, 0, sort, tag),
-    getAllTags(),
-  ]);
+  const [posts, tags] = await Promise.all([getPublishedPosts(10, 0, sort, tag), getAllTags()]);
 
   return (
     <>

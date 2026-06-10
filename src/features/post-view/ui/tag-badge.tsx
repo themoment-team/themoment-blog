@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link';
 
 interface TagBadgeProps {
   name: string;
@@ -13,9 +13,7 @@ export function TagBadge({ name, slug, count }: TagBadgeProps) {
       className="inline-flex items-center gap-1 text-xs font-medium uppercase tracking-[0.06em] text-fg-muted border border-border px-2 py-0.5 rounded hover:text-accent hover:border-accent transition-colors"
     >
       {name}
-      {count !== undefined && (
-        <span className="text-[10px] opacity-60">{count}</span>
-      )}
+      {count !== undefined && <span className="text-[10px] opacity-60">{count}</span>}
     </Link>
   );
 }

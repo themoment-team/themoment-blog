@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
@@ -13,13 +13,13 @@ export function ThemeToggle() {
     return <span className="size-8 inline-block shrink-0" aria-hidden />;
   }
 
-  const isDark = theme === "dark";
+  const isDark = theme === 'dark';
 
   function toggle() {
-    const style = document.createElement("style");
-    style.textContent = "*,*::before,*::after{transition:none!important}";
+    const style = document.createElement('style');
+    style.textContent = '*,*::before,*::after{transition:none!important}';
     document.head.appendChild(style);
-    setTheme(isDark ? "light" : "dark");
+    setTheme(isDark ? 'light' : 'dark');
     requestAnimationFrame(() => {
       requestAnimationFrame(() => document.head.removeChild(style));
     });
@@ -28,7 +28,7 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      aria-label={isDark ? "라이트 모드로 전환" : "다크 모드로 전환"}
+      aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       onClick={toggle}
       className="size-8 flex items-center justify-center rounded-md text-fg-muted hover:text-fg hover:bg-bg-subtle transition-colors"
     >

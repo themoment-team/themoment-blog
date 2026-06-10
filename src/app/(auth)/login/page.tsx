@@ -1,8 +1,8 @@
-import { signIn } from "@features/auth/config";
-import type { Metadata } from "next";
+import { signIn } from '@features/auth/config';
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: "로그인",
+  title: '로그인',
 };
 
 export default function LoginPage() {
@@ -11,20 +11,16 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-10">
         {/* 로고 */}
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold tracking-[-0.04em] leading-[1.0] text-fg">
-            그순간
-          </h1>
-          <p className="text-sm text-fg-muted uppercase tracking-[0.06em]">
-            더모먼트 기술블로그
-          </p>
+          <h1 className="text-4xl font-bold tracking-[-0.04em] leading-[1.0] text-fg">그순간</h1>
+          <p className="text-sm text-fg-muted uppercase tracking-[0.06em]">더모먼트 기술블로그</p>
         </div>
 
         {/* 로그인 폼 */}
         <div className="space-y-4">
           <form
             action={async () => {
-              "use server";
-              await signIn("datagsm", { redirectTo: "/" });
+              'use server';
+              await signIn('datagsm', { redirectTo: '/' });
             }}
           >
             <button

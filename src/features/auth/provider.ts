@@ -1,4 +1,4 @@
-import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers";
+import type { OAuthConfig, OAuthUserConfig } from 'next-auth/providers';
 
 export interface DataGSMProfile {
   id: number;
@@ -16,25 +16,25 @@ export interface DataGSMProfile {
   } | null;
 }
 
-type DataGSMChecks = ("pkce" | "state" | "none")[];
+type DataGSMChecks = ('pkce' | 'state' | 'none')[];
 
 export function DataGSMProvider(
   options: OAuthUserConfig<DataGSMProfile>,
 ): OAuthConfig<DataGSMProfile> {
-  const checks: DataGSMChecks = ["pkce", "state"];
+  const checks: DataGSMChecks = ['pkce', 'state'];
 
   return {
     ...options,
-    id: "datagsm",
-    name: "DataGSM",
-    type: "oauth",
+    id: 'datagsm',
+    name: 'DataGSM',
+    type: 'oauth',
     authorization: {
-      url: "https://oauth.authorization.datagsm.kr/v1/oauth/authorize",
-      params: { response_type: "code", scope: "datagsm:self_read" },
+      url: 'https://oauth.authorization.datagsm.kr/v1/oauth/authorize',
+      params: { response_type: 'code', scope: 'datagsm:self_read' },
     },
     token: `${process.env.AUTH_URL}/api/auth/token`,
-    userinfo: "https://oauth.resource.datagsm.kr/userinfo",
-    client: { token_endpoint_auth_method: "client_secret_post" },
+    userinfo: 'https://oauth.resource.datagsm.kr/userinfo',
+    client: { token_endpoint_auth_method: 'client_secret_post' },
     checks,
     profile(profile) {
       return {

@@ -1,4 +1,4 @@
-import { SITE_URL } from "@shared/config/site";
+import { SITE_URL } from '@shared/config/site';
 import {
   getLikeCount,
   getPostBySlug,
@@ -9,23 +9,21 @@ import {
   TableOfContents,
   TagBadge,
   ViewCounter,
-} from "@features/post-view";
-import { extractHeadings } from "@shared/lib/markdown";
-import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
-import { notFound } from "next/navigation";
+} from '@features/post-view';
+import { extractHeadings } from '@shared/lib/markdown';
+import type { Metadata } from 'next';
+import Image from 'next/image';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(decodeURIComponent(slug));
-  if (!post) return { title: "포스트를 찾을 수 없습니다" };
+  if (!post) return { title: '포스트를 찾을 수 없습니다' };
 
   const url = `${SITE_URL}/posts/${post.slug}`;
 
@@ -38,14 +36,14 @@ export async function generateMetadata({
       title: post.title,
       description: post.excerpt ?? undefined,
       url,
-      type: "article",
+      type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
       authors: [post.author.name],
       images: post.coverImage ? [{ url: post.coverImage }] : [],
     },
     twitter: {
-      card: "summary_large_image",
+      card: 'summary_large_image',
       title: post.title,
       description: post.excerpt ?? undefined,
       images: post.coverImage ? [post.coverImage] : [],
@@ -69,19 +67,19 @@ export default async function PostPage({ params }: PageProps) {
   ]);
 
   const dateStr = post.publishedAt
-    ? new Intl.DateTimeFormat("ko-KR", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+    ? new Intl.DateTimeFormat('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       }).format(new Date(post.publishedAt))
     : null;
 
   const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt ?? "",
-    author: { "@type": "Person", name: post.author.name },
+    description: post.excerpt ?? '',
+    author: { '@type': 'Person', name: post.author.name },
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt.toISOString(),
     url: `${SITE_URL}/posts/${post.slug}`,
@@ -91,15 +89,12 @@ export default async function PostPage({ params }: PageProps) {
   // <script> 태그 내 </script> 주입 방지: <, >, & 를 유니코드로 이스케이프
   const safeJsonLd = JSON.stringify(jsonLd).replace(
     /[<>&]/g,
-    (c) => ({ "<": "\\u003c", ">": "\\u003e", "&": "\\u0026" })[c] ?? c,
+    (c) => ({ '<': '\\u003c', '>': '\\u003e', '&': '\\u0026' })[c] ?? c,
   );
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd }} />
       <div className="max-w-5xl mx-auto px-4 py-10">
         <div className="flex gap-12 items-start">
           {/* 메인 콘텐츠 */}

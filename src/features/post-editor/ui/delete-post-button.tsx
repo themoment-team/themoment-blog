@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { createPortal } from "react-dom";
-import { deletePostAction } from "../actions";
+import { useState } from 'react';
+import { createPortal } from 'react-dom';
+import { deletePostAction } from '../actions';
 
 interface DeletePostButtonProps {
   postId: string;
@@ -52,8 +52,8 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
               <h2 className="text-sm font-semibold text-fg mb-2">글 삭제</h2>
               <p className="text-sm text-fg-muted mb-6">
                 {published
-                  ? "발행된 글을 삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?"
-                  : "임시저장 글을 삭제하시겠습니까?"}
+                  ? '발행된 글을 삭제하면 복구할 수 없습니다. 정말 삭제하시겠습니까?'
+                  : '임시저장 글을 삭제하시겠습니까?'}
               </p>
               <div className="flex justify-end gap-2">
                 <button
@@ -70,7 +70,7 @@ export function DeletePostButton({ postId, published }: DeletePostButtonProps) {
                   disabled={pending}
                   className="px-4 py-2 text-xs text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors disabled:opacity-50"
                 >
-                  {pending ? "삭제 중…" : "삭제"}
+                  {pending ? '삭제 중…' : '삭제'}
                 </button>
               </div>
             </div>
