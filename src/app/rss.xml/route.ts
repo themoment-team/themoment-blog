@@ -1,7 +1,7 @@
 import { getPublishedPosts } from '@/features/post-view';
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from '@/shared/config/site';
 
-export const revalidate = 3600;
+export const dynamic = 'force-dynamic';
 
 function escapeXml(str: string): string {
   return str

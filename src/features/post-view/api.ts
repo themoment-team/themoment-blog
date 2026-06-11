@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { likes, posts, postTags } from '@/entities/post';
 import { series } from '@/entities/series';
 import { tags } from '@/entities/tag';
@@ -209,57 +209,22 @@ export async function removeLike(postId: string, fingerprint: string) {
   await db.delete(likes).where(and(eq(likes.postId, postId), eq(likes.fingerprint, fingerprint)));
 }
 
-// ── 태그 ─────────────────────────────────────────────────────────
-
-export async function getAllTags() {
-  return db
-    .select({
-      id: tags.id,
-      name: tags.name,
-      slug: tags.slug,
-      count: sql<number>`cast(count(${postTags.postId}) as int)`,
-    })
-    .from(tags)
-    .leftJoin(postTags, eq(tags.id, postTags.tagId))
-    .groupBy(tags.id)
-    .orderBy(desc(sql`count(${postTags.postId})`));
-}
-
-export async function getTagBySlug(slug: string) {
-  const [tag] = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1);
-  return tag ?? null;
-}
-
-export async function getTagIdsByNames(names: string[]): Promise<string[]> {
-  if (names.length === 0) return [];
-  const rows = await db.select({ id: tags.id }).from(tags).where(inArray(tags.name, names));
-  return rows.map((r) => r.id);
-}
-
 // ── 시리즈 ────────────────────────────────────────────────────────
 
 export async function getAllSeries() {
-  const allSeries = await db.select().from(series).orderBy(series.createdAt);
-
-  if (allSeries.length === 0) return [];
-
-  const postCounts = await db
+  return db
     .select({
-      seriesId: posts.seriesId,
-      count: sql<number>`cast(count(*) as int)`,
+      id: series.id,
+      title: series.title,
+      slug: series.slug,
+      description: series.description,
+      createdAt: series.createdAt,
+      postCount: sql<number>`cast(count(${posts.id}) as int)`,
     })
-    .from(posts)
-    .where(and(eq(posts.published, true), isNotNull(posts.seriesId)))
-    .groupBy(posts.seriesId);
-
-  const countMap = new Map(postCounts.map((r) => [r.seriesId, r.count]));
-
-  return allSeries.map((s) => ({ ...s, postCount: countMap.get(s.id) ?? 0 }));
-}
-
-export async function getSeriesBySlug(slug: string) {
-  const [s] = await db.select().from(series).where(eq(series.slug, slug)).limit(1);
-  return s ?? null;
+    .from(series)
+    .leftJoin(posts, and(eq(series.id, posts.seriesId), eq(posts.published, true)))
+    .groupBy(series.id)
+    .orderBy(series.createdAt);
 }
 
 export async function getSeriesWithPosts(seriesId: string) {
@@ -295,4 +260,20 @@ export async function getSeriesNavData(postId: string, seriesId: string) {
     prevPost,
     nextPost,
   };
+}
+
+// ── 태그 ─────────────────────────────────────────────────────────
+
+export async function getAllTags() {
+  return db
+    .select({
+      id: tags.id,
+      name: tags.name,
+      slug: tags.slug,
+      count: sql<number>`cast(count(${postTags.postId}) as int)`,
+    })
+    .from(tags)
+    .leftJoin(postTags, eq(tags.id, postTags.tagId))
+    .groupBy(tags.id)
+    .orderBy(desc(sql`count(${postTags.postId})`));
 }
