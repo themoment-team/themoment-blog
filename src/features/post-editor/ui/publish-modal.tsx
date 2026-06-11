@@ -33,11 +33,10 @@ export function PublishModal({
   initialSeriesId,
   initialSeriesOrder,
 }: PublishModalProps) {
-  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>(
-    () =>
-      (initialTagNames ?? []).filter((t): t is AllowedTag =>
-        (ALLOWED_TAGS as readonly string[]).includes(t),
-      ),
+  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>(() =>
+    (initialTagNames ?? []).filter((t): t is AllowedTag =>
+      (ALLOWED_TAGS as readonly string[]).includes(t),
+    ),
   );
   const [coverImage, setCoverImage] = useState(initialCoverImage ?? '');
   const [uploading, setUploading] = useState(false);
@@ -118,7 +117,7 @@ export function PublishModal({
       tagNames: selectedTags,
       published: true,
       seriesTitle,
-      seriesDescription: isNewSeries ? (newSeriesDescription.trim() || null) : null,
+      seriesDescription: isNewSeries ? newSeriesDescription.trim() || null : null,
       seriesOrder: seriesOrder ? Number(seriesOrder) : null,
     };
 
