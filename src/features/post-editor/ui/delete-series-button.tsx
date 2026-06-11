@@ -53,7 +53,7 @@ export function DeleteSeriesButton({ seriesId, title, postCount }: DeleteSeriesB
               onClick={(e) => e.stopPropagation()}
             >
               <h2 className="mb-2 font-semibold text-fg text-sm">시리즈 삭제</h2>
-              <p className="mb-1 text-fg text-sm font-medium">{title}</p>
+              <p className="mb-1 font-medium text-fg text-sm">{title}</p>
               <p className="mb-6 text-fg-muted text-sm">
                 {postCount > 0
                   ? `이 시리즈에 ${postCount}개의 글이 있습니다. 삭제하면 글들은 시리즈에서 분리되며 복구할 수 없습니다.`

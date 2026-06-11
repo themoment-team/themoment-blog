@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, not } from 'drizzle-orm';
 import { posts, postTags } from '@/entities/post';
 import { series } from '@/entities/series';
 import { getTagIdsByNames } from '@/entities/tag';
@@ -140,4 +140,30 @@ export async function deletePost(postId: string) {
 
 export async function deleteSeries(seriesId: string) {
   await db.delete(series).where(eq(series.id, seriesId));
+}
+
+export async function updateSeries(
+  seriesId: string,
+  data: { title: string; description?: string | null },
+) {
+  let slug = data.title
+    .toLowerCase()
+    .replace(/[^a-z0-9가-힣]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  if (!slug) slug = `series-${Math.random().toString(36).slice(2, 8)}`;
+
+  const [slugConflict] = await db
+    .select({ id: series.id })
+    .from(series)
+    .where(and(eq(series.slug, slug), not(eq(series.id, seriesId))))
+    .limit(1);
+
+  if (slugConflict) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+
+  await db
+    .update(series)
+    .set({ title: data.title, slug, description: data.description ?? null })
+    .where(eq(series.id, seriesId));
 }

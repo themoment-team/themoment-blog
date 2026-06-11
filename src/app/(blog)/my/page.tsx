@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/features/auth/config';
 import { DeletePostButton } from '@/features/post-editor/ui/delete-post-button';
 import { DeleteSeriesButton } from '@/features/post-editor/ui/delete-series-button';
+import { EditSeriesButton } from '@/features/post-editor/ui/edit-series-button';
 import { getAllSeries, getDraftPosts, getPublishedPosts } from '@/features/post-view';
 
 export const metadata: Metadata = { title: '내 글 목록' };
@@ -119,11 +120,14 @@ export default async function MyPostsPage() {
                   <p className="truncate font-medium text-fg text-sm">{s.title}</p>
                   <p className="mt-0.5 text-fg-muted text-xs">{s.postCount}개의 글</p>
                 </div>
-                <DeleteSeriesButton
-                  seriesId={s.id}
-                  title={s.title}
-                  postCount={s.postCount}
-                />
+                <div className="flex shrink-0 items-center gap-3">
+                  <EditSeriesButton
+                    seriesId={s.id}
+                    initialTitle={s.title}
+                    initialDescription={s.description}
+                  />
+                  <DeleteSeriesButton seriesId={s.id} title={s.title} postCount={s.postCount} />
+                </div>
               </li>
             ))}
           </ul>
