@@ -55,7 +55,7 @@ export function EditSeriesButton({
       <button
         type="button"
         onClick={handleOpen}
-        className="text-fg-muted text-xs transition-colors hover:text-fg"
+        className="rounded border border-border px-3 py-1 text-fg-muted text-xs transition-colors hover:text-fg"
       >
         수정
       </button>
