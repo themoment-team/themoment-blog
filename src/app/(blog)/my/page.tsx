@@ -121,12 +121,18 @@ export default async function MyPostsPage() {
                   <p className="mt-0.5 text-fg-muted text-xs">{s.postCount}개의 글</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
+                  <DeleteSeriesButton seriesId={s.id} title={s.title} postCount={s.postCount} />
+                  <Link
+                    href={`/series/${s.slug}`}
+                    className="text-fg-muted text-xs transition-colors hover:text-fg"
+                  >
+                    보기
+                  </Link>
                   <EditSeriesButton
                     seriesId={s.id}
                     initialTitle={s.title}
                     initialDescription={s.description}
                   />
-                  <DeleteSeriesButton seriesId={s.id} title={s.title} postCount={s.postCount} />
                 </div>
               </li>
             ))}
