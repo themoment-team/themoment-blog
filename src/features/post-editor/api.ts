@@ -148,21 +148,33 @@ export async function updateSeries(
   seriesId: string,
   data: { title: string; description?: string | null },
 ) {
-  let slug = data.title
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-
-  if (!slug) slug = `series-${Math.random().toString(36).slice(2, 8)}`;
-
-  const [slugConflict] = await db
-    .select({ id: series.id })
+  const [current] = await db
+    .select({ title: series.title, slug: series.slug })
     .from(series)
-    .where(and(eq(series.slug, slug), not(eq(series.id, seriesId))))
+    .where(eq(series.id, seriesId))
     .limit(1);
 
-  if (slugConflict) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+  if (!current) return;
+
+  let slug = current.slug;
+
+  if (current.title !== data.title) {
+    slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    if (!slug) slug = `series-${Math.random().toString(36).slice(2, 8)}`;
+
+    const [slugConflict] = await db
+      .select({ id: series.id })
+      .from(series)
+      .where(and(eq(series.slug, slug), not(eq(series.id, seriesId))))
+      .limit(1);
+
+    if (slugConflict) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+  }
 
   await db
     .update(series)
