@@ -35,8 +35,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ slug: 
   }
 
   const body = await req.json();
-  const { title, content, excerpt, coverImage, published, tagNames, seriesTitle, seriesOrder } =
-    body;
+  const {
+    title,
+    content,
+    excerpt,
+    coverImage,
+    published,
+    tagNames,
+    seriesTitle,
+    seriesDescription,
+    seriesOrder,
+  } = body;
 
   const validatedTagNames = Array.isArray(tagNames)
     ? (tagNames as string[]).filter((t) => (ALLOWED_TAGS as readonly string[]).includes(t))
@@ -51,6 +60,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ slug: 
     tagNames: validatedTagNames,
     ...('seriesTitle' in body && {
       seriesTitle: seriesTitle ?? null,
+      seriesDescription: seriesDescription ?? null,
       seriesOrder:
         typeof seriesOrder === 'number' && !Number.isNaN(seriesOrder) ? seriesOrder : null,
     }),

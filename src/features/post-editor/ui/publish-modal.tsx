@@ -28,6 +28,7 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
   const [seriesList, setSeriesList] = useState<SeriesItem[]>([]);
   const [selectedSeriesId, setSelectedSeriesId] = useState('');
   const [newSeriesTitle, setNewSeriesTitle] = useState('');
+  const [newSeriesDescription, setNewSeriesDescription] = useState('');
   const [seriesOrder, setSeriesOrder] = useState('');
   const [isNewSeries, setIsNewSeries] = useState(false);
 
@@ -96,6 +97,7 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
       tagNames: selectedTags,
       published: true,
       seriesTitle,
+      seriesDescription: isNewSeries ? (newSeriesDescription.trim() || null) : null,
       seriesOrder: seriesOrder ? Number(seriesOrder) : null,
     };
 
@@ -194,13 +196,22 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
           </div>
 
           {isNewSeries ? (
-            <input
-              type="text"
-              placeholder="시리즈 제목 입력"
-              value={newSeriesTitle}
-              onChange={(e) => setNewSeriesTitle(e.target.value)}
-              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
-            />
+            <div className="space-y-2">
+              <input
+                type="text"
+                placeholder="시리즈 제목"
+                value={newSeriesTitle}
+                onChange={(e) => setNewSeriesTitle(e.target.value)}
+                className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
+              />
+              <textarea
+                placeholder="설명 (선택)"
+                value={newSeriesDescription}
+                onChange={(e) => setNewSeriesDescription(e.target.value)}
+                rows={2}
+                className="w-full resize-none rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
+              />
+            </div>
           ) : (
             <select
               value={selectedSeriesId}
