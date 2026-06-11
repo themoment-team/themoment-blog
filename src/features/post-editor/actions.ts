@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 import { posts } from '@/entities/post';
 import { auth } from '@/features/auth/config';
 import { db } from '@/shared/lib/db';
-import { deletePost } from './api';
+import { deletePost, deleteSeries } from './api';
 
 export async function deletePostAction(postId: string) {
   const session = await auth();
@@ -22,4 +22,13 @@ export async function deletePostAction(postId: string) {
 
   await deletePost(postId);
   revalidatePath('/my');
+}
+
+export async function deleteSeriesAction(seriesId: string) {
+  const session = await auth();
+  if (!session?.user.isMomentMember) redirect('/');
+
+  await deleteSeries(seriesId);
+  revalidatePath('/my');
+  revalidatePath('/series');
 }

@@ -137,3 +137,7 @@ export async function updatePost(
 export async function deletePost(postId: string) {
   await db.delete(posts).where(eq(posts.id, postId));
 }
+
+export async function deleteSeries(seriesId: string) {
+  await db.delete(series).where(eq(series.id, seriesId));
+}

@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth } from '@/features/auth/config';
 import { DeletePostButton } from '@/features/post-editor/ui/delete-post-button';
-import { getDraftPosts, getPublishedPosts } from '@/features/post-view';
+import { DeleteSeriesButton } from '@/features/post-editor/ui/delete-series-button';
+import { getAllSeries, getDraftPosts, getPublishedPosts } from '@/features/post-view';
 
 export const metadata: Metadata = { title: '내 글 목록' };
 
@@ -20,9 +21,10 @@ export default async function MyPostsPage() {
   const session = await auth();
   if (!session?.user.isMomentMember) redirect('/');
 
-  const [myPublished, drafts] = await Promise.all([
+  const [myPublished, drafts, allSeries] = await Promise.all([
     getPublishedPosts(200, 0, 'latest', undefined, session.user.id),
     getDraftPosts(session.user.id),
+    getAllSeries(),
   ]);
 
   return (
@@ -95,6 +97,33 @@ export default async function MyPostsPage() {
                     수정
                   </Link>
                 </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      {/* 시리즈 관리 */}
+      <section className="mt-12">
+        <h2 className="mb-4 font-medium text-fg-muted text-xs uppercase tracking-[0.06em]">
+          시리즈 관리 ({allSeries.length})
+        </h2>
+
+        {allSeries.length === 0 ? (
+          <p className="py-6 text-fg-muted text-sm">시리즈가 없습니다.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {allSeries.map((s) => (
+              <li key={s.id} className="flex items-center justify-between gap-4 py-4">
+                <div className="min-w-0">
+                  <p className="truncate font-medium text-fg text-sm">{s.title}</p>
+                  <p className="mt-0.5 text-fg-muted text-xs">{s.postCount}개의 글</p>
+                </div>
+                <DeleteSeriesButton
+                  seriesId={s.id}
+                  title={s.title}
+                  postCount={s.postCount}
+                />
               </li>
             ))}
           </ul>
