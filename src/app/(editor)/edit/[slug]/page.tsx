@@ -27,6 +27,14 @@ export default async function EditPage({ params }: PageProps) {
   if (post.authorId !== session.user.id) redirect('/');
 
   return (
-    <MarkdownEditor initialTitle={post.title} initialContent={post.content} slug={decodedSlug} />
+    <MarkdownEditor
+      initialTitle={post.title}
+      initialContent={post.content}
+      slug={decodedSlug}
+      initialCoverImage={post.coverImage}
+      initialTagNames={post.tagNames}
+      initialSeriesId={post.seriesId}
+      initialSeriesOrder={post.seriesOrder}
+    />
   );
 }

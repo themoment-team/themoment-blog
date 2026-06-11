@@ -19,6 +19,10 @@ interface MarkdownEditorProps {
   initialTitle?: string;
   initialContent?: string;
   slug?: string;
+  initialCoverImage?: string | null;
+  initialTagNames?: string[];
+  initialSeriesId?: string | null;
+  initialSeriesOrder?: number | null;
 }
 
 type Mode = 'write' | 'split' | 'preview';
@@ -194,6 +198,10 @@ export function MarkdownEditor({
   initialTitle = '',
   initialContent = '',
   slug,
+  initialCoverImage,
+  initialTagNames,
+  initialSeriesId,
+  initialSeriesOrder,
 }: MarkdownEditorProps) {
   const router = useRouter();
   const editorRef = useRef<CodeMirrorEditorHandle | null>(null);
@@ -466,6 +474,10 @@ export function MarkdownEditor({
           slug={draftSlugRef.current}
           onClose={() => setShowPublishModal(false)}
           onPublished={(newSlug) => router.push(`/posts/${newSlug}`)}
+          initialCoverImage={initialCoverImage}
+          initialTagNames={initialTagNames}
+          initialSeriesId={initialSeriesId}
+          initialSeriesOrder={initialSeriesOrder}
         />
       )}
     </>

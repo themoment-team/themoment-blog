@@ -16,20 +16,41 @@ interface PublishModalProps {
   slug?: string;
   onClose: () => void;
   onPublished: (slug: string) => void;
+  initialCoverImage?: string | null;
+  initialTagNames?: string[];
+  initialSeriesId?: string | null;
+  initialSeriesOrder?: number | null;
 }
 
-export function PublishModal({ title, content, slug, onClose, onPublished }: PublishModalProps) {
-  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>([]);
-  const [coverImage, setCoverImage] = useState('');
+export function PublishModal({
+  title,
+  content,
+  slug,
+  onClose,
+  onPublished,
+  initialCoverImage,
+  initialTagNames,
+  initialSeriesId,
+  initialSeriesOrder,
+}: PublishModalProps) {
+  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>(
+    () =>
+      (initialTagNames ?? []).filter((t): t is AllowedTag =>
+        (ALLOWED_TAGS as readonly string[]).includes(t),
+      ),
+  );
+  const [coverImage, setCoverImage] = useState(initialCoverImage ?? '');
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState('');
 
   const [seriesList, setSeriesList] = useState<SeriesItem[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState('');
+  const [selectedSeriesId, setSelectedSeriesId] = useState(initialSeriesId ?? '');
   const [newSeriesTitle, setNewSeriesTitle] = useState('');
   const [newSeriesDescription, setNewSeriesDescription] = useState('');
-  const [seriesOrder, setSeriesOrder] = useState('');
+  const [seriesOrder, setSeriesOrder] = useState(
+    initialSeriesOrder != null ? String(initialSeriesOrder) : '',
+  );
   const [isNewSeries, setIsNewSeries] = useState(false);
 
   useEffect(() => {
