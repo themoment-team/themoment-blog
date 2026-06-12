@@ -16,19 +16,40 @@ interface PublishModalProps {
   slug?: string;
   onClose: () => void;
   onPublished: (slug: string) => void;
+  initialCoverImage?: string | null;
+  initialTagNames?: string[];
+  initialSeriesId?: string | null;
+  initialSeriesOrder?: number | null;
 }
 
-export function PublishModal({ title, content, slug, onClose, onPublished }: PublishModalProps) {
-  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>([]);
-  const [coverImage, setCoverImage] = useState('');
+export function PublishModal({
+  title,
+  content,
+  slug,
+  onClose,
+  onPublished,
+  initialCoverImage,
+  initialTagNames,
+  initialSeriesId,
+  initialSeriesOrder,
+}: PublishModalProps) {
+  const [selectedTags, setSelectedTags] = useState<AllowedTag[]>(() =>
+    (initialTagNames ?? []).filter((t): t is AllowedTag =>
+      (ALLOWED_TAGS as readonly string[]).includes(t),
+    ),
+  );
+  const [coverImage, setCoverImage] = useState(initialCoverImage ?? '');
   const [uploading, setUploading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [error, setError] = useState('');
 
   const [seriesList, setSeriesList] = useState<SeriesItem[]>([]);
-  const [selectedSeriesId, setSelectedSeriesId] = useState('');
+  const [selectedSeriesId, setSelectedSeriesId] = useState(initialSeriesId ?? '');
   const [newSeriesTitle, setNewSeriesTitle] = useState('');
-  const [seriesOrder, setSeriesOrder] = useState('');
+  const [newSeriesDescription, setNewSeriesDescription] = useState('');
+  const [seriesOrder, setSeriesOrder] = useState(
+    initialSeriesOrder != null ? String(initialSeriesOrder) : '',
+  );
   const [isNewSeries, setIsNewSeries] = useState(false);
 
   useEffect(() => {
@@ -96,6 +117,7 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
       tagNames: selectedTags,
       published: true,
       seriesTitle,
+      seriesDescription: isNewSeries ? newSeriesDescription.trim() || null : null,
       seriesOrder: seriesOrder ? Number(seriesOrder) : null,
     };
 
@@ -194,13 +216,22 @@ export function PublishModal({ title, content, slug, onClose, onPublished }: Pub
           </div>
 
           {isNewSeries ? (
-            <input
-              type="text"
-              placeholder="시리즈 제목 입력"
-              value={newSeriesTitle}
-              onChange={(e) => setNewSeriesTitle(e.target.value)}
-              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
-            />
+            <div className="space-y-2">
+              <input
+                type="text"
+                placeholder="시리즈 제목"
+                value={newSeriesTitle}
+                onChange={(e) => setNewSeriesTitle(e.target.value)}
+                className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
+              />
+              <textarea
+                placeholder="설명 (선택)"
+                value={newSeriesDescription}
+                onChange={(e) => setNewSeriesDescription(e.target.value)}
+                rows={2}
+                className="w-full resize-none rounded border border-border bg-bg px-3 py-2 text-fg text-sm placeholder:text-fg-muted focus:border-fg-muted focus:outline-none"
+              />
+            </div>
           ) : (
             <select
               value={selectedSeriesId}

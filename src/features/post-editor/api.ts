@@ -1,10 +1,10 @@
-import { eq } from 'drizzle-orm';
+import { and, eq, not } from 'drizzle-orm';
 import { posts, postTags } from '@/entities/post';
 import { series } from '@/entities/series';
 import { getTagIdsByNames } from '@/entities/tag';
 import { db } from '@/shared/lib/db';
 
-export async function upsertSeries(title: string): Promise<string> {
+export async function upsertSeries(title: string, description?: string | null): Promise<string> {
   const [existing] = await db
     .select({ id: series.id })
     .from(series)
@@ -36,7 +36,7 @@ export async function upsertSeries(title: string): Promise<string> {
 
   const [created] = await db
     .insert(series)
-    .values({ title, slug })
+    .values({ title, slug, description: description ?? null })
     .onConflictDoUpdate({ target: series.slug, set: { id: series.id } })
     .returning({ id: series.id });
 
@@ -53,13 +53,14 @@ export async function createPost(data: {
   published: boolean;
   tagNames?: string[];
   seriesTitle?: string;
+  seriesDescription?: string | null;
   seriesOrder?: number;
 }) {
-  const { tagNames, seriesTitle, seriesOrder, ...postData } = data;
+  const { tagNames, seriesTitle, seriesDescription, seriesOrder, ...postData } = data;
 
   let seriesId: string | null = null;
   if (seriesTitle?.trim()) {
-    seriesId = await upsertSeries(seriesTitle.trim());
+    seriesId = await upsertSeries(seriesTitle.trim(), seriesDescription);
   }
 
   const [post] = await db
@@ -92,10 +93,11 @@ export async function updatePost(
     published: boolean;
     tagNames: string[];
     seriesTitle: string | null;
+    seriesDescription: string | null;
     seriesOrder: number | null;
   }>,
 ) {
-  const { tagNames, seriesTitle, seriesOrder, ...postData } = data;
+  const { tagNames, seriesTitle, seriesDescription, seriesOrder, ...postData } = data;
 
   const updateData: Record<string, unknown> = {
     ...postData,
@@ -105,7 +107,7 @@ export async function updatePost(
   if ('seriesTitle' in data) {
     const trimmedSeriesTitle = seriesTitle?.trim();
     if (trimmedSeriesTitle) {
-      updateData.seriesId = await upsertSeries(trimmedSeriesTitle);
+      updateData.seriesId = await upsertSeries(trimmedSeriesTitle, seriesDescription);
       updateData.seriesOrder = seriesOrder ?? null;
     } else {
       updateData.seriesId = null;
@@ -136,4 +138,46 @@ export async function updatePost(
 
 export async function deletePost(postId: string) {
   await db.delete(posts).where(eq(posts.id, postId));
+}
+
+export async function deleteSeries(seriesId: string) {
+  await db.delete(series).where(eq(series.id, seriesId));
+}
+
+export async function updateSeries(
+  seriesId: string,
+  data: { title: string; description?: string | null },
+) {
+  const [current] = await db
+    .select({ title: series.title, slug: series.slug })
+    .from(series)
+    .where(eq(series.id, seriesId))
+    .limit(1);
+
+  if (!current) return;
+
+  let slug = current.slug;
+
+  if (current.title !== data.title) {
+    slug = data.title
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+    if (!slug) slug = `series-${Math.random().toString(36).slice(2, 8)}`;
+
+    const [slugConflict] = await db
+      .select({ id: series.id })
+      .from(series)
+      .where(and(eq(series.slug, slug), not(eq(series.id, seriesId))))
+      .limit(1);
+
+    if (slugConflict) slug = `${slug}-${Math.random().toString(36).slice(2, 6)}`;
+  }
+
+  await db
+    .update(series)
+    .set({ title: data.title, slug, description: data.description ?? null })
+    .where(eq(series.id, seriesId));
 }

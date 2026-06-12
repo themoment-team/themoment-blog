@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     published,
     tagNames,
     seriesTitle,
+    seriesDescription,
     seriesOrder,
   } = body;
 
@@ -41,6 +42,7 @@ export async function POST(req: Request) {
     published: published ?? false,
     tagNames: validatedTagNames,
     seriesTitle: seriesTitle ?? undefined,
+    seriesDescription: seriesDescription ?? null,
     seriesOrder:
       typeof seriesOrder === 'number' && !Number.isNaN(seriesOrder) ? seriesOrder : undefined,
   });

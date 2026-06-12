@@ -104,11 +104,25 @@ export async function getPostForEdit(slug: string) {
       slug: posts.slug,
       content: posts.content,
       authorId: posts.authorId,
+      coverImage: posts.coverImage,
+      seriesId: posts.seriesId,
+      seriesOrder: posts.seriesOrder,
+      seriesTitle: series.title,
     })
     .from(posts)
+    .leftJoin(series, eq(posts.seriesId, series.id))
     .where(eq(posts.slug, slug))
     .limit(1);
-  return post ?? null;
+
+  if (!post) return null;
+
+  const tagRows = await db
+    .select({ name: tags.name })
+    .from(postTags)
+    .innerJoin(tags, eq(postTags.tagId, tags.id))
+    .where(eq(postTags.postId, post.id));
+
+  return { ...post, tagNames: tagRows.map((t) => t.name) };
 }
 
 export async function getPostBySlug(slug: string) {
