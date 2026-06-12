@@ -207,6 +207,25 @@ body {
   display: block;
 }
 
+/* 헤딩 앵커 링크 (URL 복사용) */
+.prose h1 a.anchor-heading,
+.prose h2 a.anchor-heading,
+.prose h3 a.anchor-heading,
+.prose h4 a.anchor-heading {
+  opacity: 0;
+  margin-left: 0.4em;
+  font-size: 0.75em;
+  font-weight: 400;
+  transition: opacity 0.15s;
+}
+
+.prose h1:hover a.anchor-heading,
+.prose h2:hover a.anchor-heading,
+.prose h3:hover a.anchor-heading,
+.prose h4:hover a.anchor-heading {
+  opacity: 1;
+}
+
 /* Shiki 코드 하이라이팅 — 다크/라이트 전환 */
 .shiki,
 .shiki span {
