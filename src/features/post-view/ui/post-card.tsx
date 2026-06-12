@@ -7,6 +7,7 @@ interface PostCardProps {
   excerpt?: string | null;
   coverImage?: string | null;
   viewCount: number;
+  likeCount?: number;
   publishedAt?: Date | null;
   author: { name: string };
   tags?: Array<{ name: string; slug: string }>;
@@ -18,6 +19,7 @@ export function PostCard({
   excerpt,
   coverImage,
   viewCount,
+  likeCount,
   publishedAt,
   author,
   tags,
@@ -70,6 +72,12 @@ export function PostCard({
             )}
             <span className="opacity-40">·</span>
             <span>{viewCount.toLocaleString()} 조회</span>
+            {likeCount !== undefined && likeCount > 0 && (
+              <>
+                <span className="opacity-40">·</span>
+                <span>{likeCount.toLocaleString()} 좋아요</span>
+              </>
+            )}
           </div>
         </div>
 

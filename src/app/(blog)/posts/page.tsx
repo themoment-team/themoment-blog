@@ -50,6 +50,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
             excerpt={post.excerpt}
             coverImage={post.coverImage}
             viewCount={post.viewCount}
+            likeCount={post.likeCount}
             publishedAt={post.publishedAt}
             author={post.author}
             tags={post.tags}
