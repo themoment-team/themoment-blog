@@ -14,6 +14,15 @@ export function Footer() {
           </a>
           <span>·</span>
           <a
+            href="https://github.com/themoment-team/themoment-blog"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-fg"
+          >
+            GitHub
+          </a>
+          <span>·</span>
+          <a
             href="https://github.com/themoment-team/themoment-blog/blob/main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
