@@ -51,13 +51,13 @@ export default async function MyPostsPage() {
                   <p className="mt-0.5 text-fg-muted text-xs">{formatDate(post.updatedAt)} 수정</p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
-                  <DeletePostButton postId={post.id} published={false} />
                   <Link
                     href={`/edit/${post.slug}`}
-                    className="rounded border border-border px-3 py-1 text-fg-muted text-xs transition-colors hover:text-fg"
+                    className="text-fg-muted text-xs transition-colors hover:text-fg"
                   >
                     이어쓰기
                   </Link>
+                  <DeletePostButton postId={post.id} published={false} />
                 </div>
               </li>
             ))}
@@ -77,26 +77,22 @@ export default async function MyPostsPage() {
           <ul className="divide-y divide-border">
             {myPublished.map((post) => (
               <li key={post.id} className="flex items-center justify-between gap-4 py-4">
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-fg text-sm">{post.title}</p>
+                <Link href={`/posts/${post.slug}`} className="group min-w-0">
+                  <p className="truncate font-medium text-fg text-sm transition-colors group-hover:text-accent">
+                    {post.title}
+                  </p>
                   <p className="mt-0.5 text-fg-muted text-xs">
                     {formatDate(post.publishedAt)} 발행
                   </p>
-                </div>
+                </Link>
                 <div className="flex shrink-0 items-center gap-3">
-                  <DeletePostButton postId={post.id} published={true} />
-                  <Link
-                    href={`/posts/${post.slug}`}
-                    className="text-fg-muted text-xs transition-colors hover:text-fg"
-                  >
-                    보기
-                  </Link>
                   <Link
                     href={`/edit/${post.slug}`}
-                    className="rounded border border-border px-3 py-1 text-fg-muted text-xs transition-colors hover:text-fg"
+                    className="text-fg-muted text-xs transition-colors hover:text-fg"
                   >
                     수정
                   </Link>
+                  <DeletePostButton postId={post.id} published={true} />
                 </div>
               </li>
             ))}
@@ -116,23 +112,19 @@ export default async function MyPostsPage() {
           <ul className="divide-y divide-border">
             {allSeries.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-4 py-4">
-                <div className="min-w-0">
-                  <p className="truncate font-medium text-fg text-sm">{s.title}</p>
+                <Link href={`/series/${s.slug}`} className="group min-w-0">
+                  <p className="truncate font-medium text-fg text-sm transition-colors group-hover:text-accent">
+                    {s.title}
+                  </p>
                   <p className="mt-0.5 text-fg-muted text-xs">{s.postCount}개의 글</p>
-                </div>
+                </Link>
                 <div className="flex shrink-0 items-center gap-3">
-                  <DeleteSeriesButton seriesId={s.id} title={s.title} postCount={s.postCount} />
-                  <Link
-                    href={`/series/${s.slug}`}
-                    className="text-fg-muted text-xs transition-colors hover:text-fg"
-                  >
-                    보기
-                  </Link>
                   <EditSeriesButton
                     seriesId={s.id}
                     initialTitle={s.title}
                     initialDescription={s.description}
                   />
+                  <DeleteSeriesButton seriesId={s.id} title={s.title} postCount={s.postCount} />
                 </div>
               </li>
             ))}
