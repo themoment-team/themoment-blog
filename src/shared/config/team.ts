@@ -50,7 +50,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'DataGSM',
     description: '교내 학생 정보 관리 서비스',
-    url: 'https://datagsm.kr',
+    url: 'https://www.datagsm.kr',
     banner: '/projects/data-gsm.png',
   },
   {
@@ -62,7 +62,7 @@ export const PROJECTS: Project[] = [
   {
     name: 'Ready,GSM',
     description: '광주소프트웨어마이스터고 학과체험 신청 시스템',
-    url: '',
+    url: 'https://www.ready.hellogsm.kr',
     banner: '/projects/ready-gsm.png',
   },
   {
