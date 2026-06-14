@@ -23,9 +23,7 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = await getPostBySlug(decodeURIComponent(slug));
   if (!post) return { title: '포스트를 찾을 수 없습니다' };
@@ -103,10 +101,7 @@ export default async function PostPage({ params }: PageProps) {
   return (
     <>
       {/* biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD 구조화 데이터, 서버에서 이스케이프 처리됨 */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: safeJsonLd }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd }} />
       <CopyHeadingLinks />
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="flex items-start gap-12">
@@ -130,14 +125,11 @@ export default async function PostPage({ params }: PageProps) {
                   <div className="flex flex-none items-center gap-3">
                     <Link
                       href={`/edit/${post.slug}`}
-                      className="rounded border border-border px-3 py-1.5 text-fg-muted text-xs uppercase tracking-label transition-colors hover:border-fg hover:text-fg"
+                      className="text-fg-muted text-xs uppercase tracking-label transition-colors hover:border-fg hover:text-fg"
                     >
                       수정
                     </Link>
-                    <DeletePostButton
-                      postId={post.id}
-                      published={post.published}
-                    />
+                    <DeletePostButton postId={post.id} published={post.published} />
                   </div>
                 )}
               </div>
