@@ -30,11 +30,14 @@ export function Select({ value, onChange, options, className }: SelectProps) {
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
+    <div
+      ref={ref}
+      className="relative"
+      onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
+    >
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}
         aria-haspopup="listbox"
         aria-expanded={open}
         className={className}
