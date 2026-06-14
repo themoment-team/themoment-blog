@@ -20,7 +20,7 @@ function isValidSort(v: unknown): v is PostSortKey {
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const { sort: rawSort, tag } = await searchParams;
-  const sort: PostSortKey = isValidSort(rawSort) ? rawSort : 'likes';
+  const sort: PostSortKey = isValidSort(rawSort) ? rawSort : 'latest';
 
   const [posts, tags] = await Promise.all([getPublishedPosts(10, 0, sort, tag), getAllTags()]);
 
