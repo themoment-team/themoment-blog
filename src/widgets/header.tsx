@@ -9,7 +9,10 @@ export async function Header() {
   return (
     <header className="sticky top-0 z-50 border-border border-b bg-bg/90 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-4">
-        <Link href="/" className="shrink-0 font-bold text-fg text-sm tracking-tight transition-colors hover:text-accent">
+        <Link
+          href="/"
+          className="shrink-0 font-bold text-fg text-sm tracking-tight transition-colors hover:text-accent"
+        >
           그순간
         </Link>
 
