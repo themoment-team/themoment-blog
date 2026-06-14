@@ -95,6 +95,8 @@ body {
   line-height: var(--leading-heading);
   margin-top: 2em;
   margin-bottom: 0.6em;
+  /* sticky 헤더(h-14, 3.5rem)에 가려지지 않도록 앵커 이동 시 여백 확보 */
+  scroll-margin-top: 4.5rem;
 }
 
 .prose h1 {
