@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Select } from '@/shared/ui/select';
 import type { PostSortKey } from '../api';
 
 interface TagItem {
@@ -72,29 +73,16 @@ export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps)
 
       {/* 정렬 */}
       <div className="flex justify-end">
-        <div className="relative inline-flex items-center">
-          <select
-            value={currentSort}
-            onChange={(e) => update({ sort: e.target.value as PostSortKey })}
-            className="cursor-pointer appearance-none rounded border border-border bg-bg py-1.5 pr-7 pl-2.5 text-fg-muted text-xs transition-colors hover:text-fg focus:border-fg-muted focus:outline-none"
-          >
-            <option value="latest">최신순</option>
-            <option value="views">조회수순</option>
-            <option value="likes">좋아요순</option>
-          </select>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="pointer-events-none absolute right-2 size-3 text-fg-muted"
-            aria-hidden="true"
-          >
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-        </div>
+        <Select
+          value={currentSort}
+          onChange={(v) => update({ sort: v as PostSortKey })}
+          options={[
+            { value: 'latest', label: '최신순' },
+            { value: 'views', label: '조회수순' },
+            { value: 'likes', label: '좋아요순' },
+          ]}
+          className="inline-flex min-w-[5.5rem] cursor-pointer items-center rounded border border-border bg-bg px-2.5 py-1.5 text-fg-muted text-xs transition-colors hover:text-fg focus:border-fg-muted focus:outline-none"
+        />
       </div>
     </div>
   );

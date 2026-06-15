@@ -2,7 +2,10 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { auth } from '@/features/auth/config';
+import { DeletePostButton } from '@/features/post-editor';
 import {
+  CopyHeadingLinks,
   getLikeCount,
   getPostBySlug,
   getSeriesNavData,
@@ -60,6 +63,9 @@ export default async function PostPage({ params }: PageProps) {
 
   if (!post?.published) notFound();
 
+  const session = await auth();
+  const isAuthor = session?.user.id === post.author.id;
+
   const headings = extractHeadings(post.content);
   const [likeCount, seriesNav] = await Promise.all([
     getLikeCount(post.id),
@@ -96,6 +102,7 @@ export default async function PostPage({ params }: PageProps) {
     <>
       {/* biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD 구조화 데이터, 서버에서 이스케이프 처리됨 */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd }} />
+      <CopyHeadingLinks />
       <div className="mx-auto max-w-5xl px-4 py-10">
         <div className="flex items-start gap-12">
           {/* 메인 콘텐츠 */}
@@ -110,9 +117,22 @@ export default async function PostPage({ params }: PageProps) {
                 </div>
               )}
 
-              <h1 className="font-bold text-4xl text-fg leading-[1.0] tracking-display sm:text-5xl">
-                {post.title}
-              </h1>
+              <div className="flex items-start justify-between gap-4">
+                <h1 className="font-bold text-4xl text-fg leading-[1.0] tracking-display sm:text-5xl">
+                  {post.title}
+                </h1>
+                {isAuthor && (
+                  <div className="flex flex-none items-center gap-3">
+                    <Link
+                      href={`/edit/${post.slug}`}
+                      className="text-fg-muted text-xs uppercase tracking-label transition-colors hover:border-fg hover:text-fg"
+                    >
+                      수정
+                    </Link>
+                    <DeletePostButton postId={post.id} published={post.published} />
+                  </div>
+                )}
+              </div>
 
               <div className="flex items-center gap-3 text-fg-muted text-sm">
                 <span>{post.author.name}</span>

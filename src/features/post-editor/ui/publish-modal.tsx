@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { ALLOWED_TAGS, type AllowedTag } from '@/shared/config/tags';
+import { Select } from '@/shared/ui/select';
 
 interface SeriesItem {
   id: string;
@@ -233,18 +234,15 @@ export function PublishModal({
               />
             </div>
           ) : (
-            <select
+            <Select
               value={selectedSeriesId}
-              onChange={(e) => setSelectedSeriesId(e.target.value)}
-              className="w-full rounded border border-border bg-bg px-3 py-2 text-fg text-sm focus:border-fg-muted focus:outline-none"
-            >
-              <option value="">없음</option>
-              {seriesList.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.title}
-                </option>
-              ))}
-            </select>
+              onChange={setSelectedSeriesId}
+              options={[
+                { value: '', label: '없음' },
+                ...seriesList.map((s) => ({ value: s.id, label: s.title })),
+              ]}
+              className="flex w-full items-center rounded border border-border bg-bg px-3 py-2 text-fg text-sm focus:border-fg-muted focus:outline-none"
+            />
           )}
 
           {hasSeriesSelection && (

@@ -13,24 +13,24 @@
 
 /* ─── 디자인 토큰 (라이트 모드 기본값) ──────────────────────── */
 :root {
-  --bg: #faf9f5;
-  --bg-subtle: #efe9de;
-  --fg: #141413;
-  --fg-muted: #6c6a64;
-  --accent: #cc785c;
-  --accent-active: #a9583e;
-  --border: #e6dfd8;
+  --bg: #fbfaff;
+  --bg-subtle: #f0eefb;
+  --fg: #16153a;
+  --fg-muted: #6b6a8c;
+  --accent: #3a36d6;
+  --accent-active: #2a27ab;
+  --border: #e4e0f5;
 }
 
 /* ─── 다크 모드 (next-themes: html[data-theme="dark"]) ───────── */
 html[data-theme="dark"] {
-  --bg: #181715;
-  --bg-subtle: #252320;
-  --fg: #faf9f5;
-  --fg-muted: #a09d96;
-  --accent: #cc785c;
-  --accent-active: #c06a4e;
-  --border: #3a3530;
+  --bg: #131225;
+  --bg-subtle: #1e1d3a;
+  --fg: #f4f3ff;
+  --fg-muted: #a3a1c2;
+  --accent: #7d79ff;
+  --accent-active: #9590ff;
+  --border: #322f55;
 }
 
 /* ─── Tailwind v4 @theme ────────────────────────────────────── */
@@ -95,6 +95,8 @@ body {
   line-height: var(--leading-heading);
   margin-top: 2em;
   margin-bottom: 0.6em;
+  /* sticky 헤더(h-14, 3.5rem)에 가려지지 않도록 앵커 이동 시 여백 확보 */
+  scroll-margin-top: 4.5rem;
 }
 
 .prose h1 {
@@ -205,6 +207,25 @@ body {
   border-radius: 6px;
   margin: 1.5em auto;
   display: block;
+}
+
+/* 헤딩 앵커 링크 (URL 복사용) */
+.prose h1 a.anchor-heading,
+.prose h2 a.anchor-heading,
+.prose h3 a.anchor-heading,
+.prose h4 a.anchor-heading {
+  opacity: 0;
+  margin-left: 0.4em;
+  font-size: 0.75em;
+  font-weight: 400;
+  transition: opacity 0.15s;
+}
+
+.prose h1:hover a.anchor-heading,
+.prose h2:hover a.anchor-heading,
+.prose h3:hover a.anchor-heading,
+.prose h4:hover a.anchor-heading {
+  opacity: 1;
 }
 
 /* Shiki 코드 하이라이팅 — 다크/라이트 전환 */

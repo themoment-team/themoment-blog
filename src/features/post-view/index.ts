@@ -15,6 +15,7 @@ export {
   type PostSortKey,
   removeLike,
 } from './api';
+export { CopyHeadingLinks } from './ui/copy-heading-links';
 export { LikeButton } from './ui/like-button';
 export { PostCard } from './ui/post-card';
 export { PostContent } from './ui/post-content';

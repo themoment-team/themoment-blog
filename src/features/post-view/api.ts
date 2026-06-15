@@ -51,6 +51,7 @@ export async function getPublishedPosts(
       excerpt: posts.excerpt,
       coverImage: posts.coverImage,
       viewCount: posts.viewCount,
+      likeCount: sql<number>`cast((select count(*) from ${likes} where ${likes.postId} = ${posts.id}) as int)`,
       publishedAt: posts.publishedAt,
       createdAt: posts.createdAt,
       author: { id: users.id, name: users.name },
@@ -172,6 +173,7 @@ export async function getPostsByTag(tagSlug: string, limit = 20, offset = 0) {
       excerpt: posts.excerpt,
       coverImage: posts.coverImage,
       viewCount: posts.viewCount,
+      likeCount: sql<number>`cast((select count(*) from ${likes} where ${likes.postId} = ${posts.id}) as int)`,
       publishedAt: posts.publishedAt,
       author: { id: users.id, name: users.name },
     })

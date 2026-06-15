@@ -97,8 +97,9 @@ export async function markdownToHtml(content: string): Promise<string> {
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeSlug)
     .use(rehypeAutolinkHeadings, {
-      behavior: 'wrap',
-      properties: { className: ['anchor-heading'] },
+      behavior: 'append',
+      properties: { className: ['anchor-heading'], ariaHidden: 'true', tabIndex: -1 },
+      content: { type: 'text', value: '#' },
     })
     .use(rehypeShiki(hl))
     .use(rehypeStringify, { allowDangerousHtml: true })
