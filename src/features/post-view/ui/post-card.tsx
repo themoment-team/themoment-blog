@@ -54,9 +54,9 @@ export function PostCard({
                 <Link
                   key={tag.slug}
                   href={`/tags/${tag.slug}`}
-                  className="font-medium text-[11px] text-fg-muted uppercase tracking-label transition-colors hover:text-accent"
+                  className="font-medium text-[11px] text-fg-muted tracking-label transition-colors hover:text-accent"
                 >
-                  {tag.name}
+                  #{tag.name}
                 </Link>
               ))}
             </div>

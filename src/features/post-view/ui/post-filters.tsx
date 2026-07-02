@@ -64,7 +64,7 @@ export function PostFilters({ currentSort, currentTag, tags }: PostFiltersProps)
                   : 'border-border text-fg-muted hover:border-fg-muted hover:text-fg'
               }`}
             >
-              {tag.name}
+              #{tag.name}
               <span className="ml-1 opacity-50">{tag.count}</span>
             </button>
           ))}
