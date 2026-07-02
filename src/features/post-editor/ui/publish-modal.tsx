@@ -175,7 +175,7 @@ export function PublishModal({
                       : 'border-border text-fg-muted hover:border-fg hover:text-fg'
                   }`}
                 >
-                  {tag}
+                  #{tag}
                 </button>
               );
             })}
