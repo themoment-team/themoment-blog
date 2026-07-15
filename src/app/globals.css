@@ -167,10 +167,23 @@ body {
   font-style: italic;
 }
 
+/* Tailwind preflight가 list-style을 none으로 리셋하므로 마커를 되살린다 */
 .prose ul,
 .prose ol {
   margin: 1em 0;
   padding-left: 1.5em;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li::marker {
+  color: var(--fg-muted);
 }
 
 .prose li {
