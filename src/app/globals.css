@@ -241,15 +241,16 @@ body {
   opacity: 1;
 }
 
-/* Shiki 코드 하이라이팅 — 다크/라이트 전환 */
+/* Shiki 코드 하이라이팅 — 다크/라이트 전환.
+   배경은 .prose pre의 --bg-subtle을 그대로 쓴다. --shiki-*-bg는 .shiki 루트에만
+   정의되지만 CSS 변수는 상속되므로 span에 걸면 토큰마다 배경이 칠해진다. */
 .shiki,
 .shiki span {
   color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
+  background-color: transparent;
 }
 
 html[data-theme="dark"] .shiki,
 html[data-theme="dark"] .shiki span {
   color: var(--shiki-dark);
-  background-color: var(--shiki-dark-bg);
 }
