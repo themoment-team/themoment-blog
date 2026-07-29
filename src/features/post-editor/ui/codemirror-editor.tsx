@@ -138,6 +138,8 @@ export function CodeMirrorEditor({
   // 마운트 시점의 값으로 고정 — 이후 재렌더에서 value가 다시 내려가면
   // 라이브러리가 doc 전체를 덮어쓰면서 커서를 0으로 되돌린다.
   const initialValueRef = useRef(initialValue);
+
+  // 언마운트 시 파괴된 view를 가리키는 handle이 남지 않도록 정리
   useEffect(() => () => onReadyRef.current?.(null), []);
 
   const extensions = useMemo(
