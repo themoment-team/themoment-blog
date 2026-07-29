@@ -8,18 +8,39 @@ import { EditorSelection } from '@codemirror/state';
 import { EditorView, keymap, placeholder } from '@codemirror/view';
 import { tags } from '@lezer/highlight';
 import CodeMirror from '@uiw/react-codemirror';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 export interface CodeMirrorEditorHandle {
   insert: (before: string, after?: string) => void;
+  setValue: (next: string) => void;
 }
 
 interface Props {
-  value: string;
+  initialValue: string;
   onChange: (value: string) => void;
   onSave: () => void;
   onImageUpload: (file: File) => Promise<void>;
-  onReady?: (handle: CodeMirrorEditorHandle) => void;
+  onReady?: (handle: CodeMirrorEditorHandle | null) => void;
+}
+
+function replaceDoc(view: EditorView, next: string) {
+  const cur = view.state.doc.toString();
+  if (cur === next) return;
+
+  let start = 0;
+  const minLen = Math.min(cur.length, next.length);
+  while (start < minLen && cur[start] === next[start]) start++;
+
+  let endCur = cur.length;
+  let endNext = next.length;
+  while (endCur > start && endNext > start && cur[endCur - 1] === next[endNext - 1]) {
+    endCur--;
+    endNext--;
+  }
+
+  view.dispatch({
+    changes: { from: start, to: endCur, insert: next.slice(start, endNext) },
+  });
 }
 
 // ── 토글 래퍼 ────────────────────────────────────────────────────
@@ -100,11 +121,24 @@ const editorTheme = EditorView.theme({
 });
 
 // ── 컴포넌트 ─────────────────────────────────────────────────────
-export function CodeMirrorEditor({ value, onChange, onSave, onImageUpload, onReady }: Props) {
+export function CodeMirrorEditor({
+  initialValue,
+  onChange,
+  onSave,
+  onImageUpload,
+  onReady,
+}: Props) {
   const onSaveRef = useRef(onSave);
   const onImageUploadRef = useRef(onImageUpload);
+  const onReadyRef = useRef(onReady);
   onSaveRef.current = onSave;
   onImageUploadRef.current = onImageUpload;
+  onReadyRef.current = onReady;
+
+  // 마운트 시점의 값으로 고정 — 이후 재렌더에서 value가 다시 내려가면
+  // 라이브러리가 doc 전체를 덮어쓰면서 커서를 0으로 되돌린다.
+  const initialValueRef = useRef(initialValue);
+  useEffect(() => () => onReadyRef.current?.(null), []);
 
   const extensions = useMemo(
     () => [
@@ -178,11 +212,12 @@ export function CodeMirrorEditor({ value, onChange, onSave, onImageUpload, onRea
 
   return (
     <CodeMirror
-      value={value}
+      value={initialValueRef.current}
       onChange={onChange}
       onCreateEditor={(view) => {
-        onReady?.({
+        onReadyRef.current?.({
           insert: (before, after = '') => toggleWrapper(view, before, after),
+          setValue: (next) => replaceDoc(view, next),
         });
       }}
       extensions={extensions}

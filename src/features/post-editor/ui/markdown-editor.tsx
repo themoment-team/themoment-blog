@@ -229,17 +229,28 @@ export function MarkdownEditor({
     editorRef.current?.insert(before, after);
   }, []);
 
+  const contentRef = useRef(content);
+  const handleContentChange = useCallback((next: string) => {
+    contentRef.current = next;
+    setContent(next);
+  }, []);
+
   function handleImageWidthChange(src: string, newWidth: number) {
-    setContent((prev) =>
-      prev.replace(/<img\b[^>]*>/g, (match) => {
-        if (!match.includes(`src="${src}"`)) return match;
-        const widthAttr = `width="${Math.round(newWidth)}"`;
-        if (match.includes('width=')) {
-          return match.replace(/width="[^"]*"/, widthAttr);
-        }
-        return match.replace(/(\s*\/?>)$/, ` ${widthAttr}$1`);
-      }),
-    );
+    const next = contentRef.current.replace(/<img\b[^>]*>/g, (match) => {
+      if (!match.includes(`src="${src}"`)) return match;
+      const widthAttr = `width="${Math.round(newWidth)}"`;
+      if (match.includes('width=')) {
+        return match.replace(/width="[^"]*"/, widthAttr);
+      }
+      return match.replace(/(\s*\/?>)$/, ` ${widthAttr}$1`);
+    });
+    if (next === contentRef.current) return;
+
+    contentRef.current = next;
+    setContent(next);
+    // 에디터가 마운트돼 있으면(편집/분할 모드) 커서를 유지한 채 반영.
+    // 미리보기 전용 모드면 언마운트 상태라 다음 마운트 시 initialValue로 들어간다.
+    editorRef.current?.setValue(next);
   }
 
   async function handleImageUpload(file: File) {
@@ -447,8 +458,8 @@ export function MarkdownEditor({
               className={`${mode === 'split' ? 'w-1/2 border-border border-r' : 'w-full'} overflow-hidden`}
             >
               <CodeMirrorEditor
-                value={content}
-                onChange={setContent}
+                initialValue={content}
+                onChange={handleContentChange}
                 onSave={handleSaveDraft}
                 onImageUpload={handleImageUpload}
                 onReady={(handle) => {
