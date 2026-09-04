@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/features/auth/config';
 import { createPost } from '@/features/post-editor';
 import { ALLOWED_TAGS } from '@/shared/config/tags';
+import { notifyPostPublished } from '@/shared/lib/discord';
 import { generateExcerpt } from '@/shared/lib/markdown';
 
 export async function POST(req: Request) {
@@ -46,6 +47,18 @@ export async function POST(req: Request) {
     seriesOrder:
       typeof seriesOrder === 'number' && !Number.isNaN(seriesOrder) ? seriesOrder : undefined,
   });
+
+  if (post.published) {
+    await notifyPostPublished({
+      title: post.title,
+      slug: post.slug,
+      authorName: session.user.name,
+      excerpt: post.excerpt,
+      coverImage: post.coverImage,
+      seriesTitle: typeof seriesTitle === 'string' ? seriesTitle.trim() || undefined : undefined,
+      tagNames: validatedTagNames,
+    });
+  }
 
   return NextResponse.json({ slug: post.slug }, { status: 201 });
 }

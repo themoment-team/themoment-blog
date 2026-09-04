@@ -43,6 +43,9 @@ jobs:
       - name: Biome Check
         run: pnpm check
 
+      - name: Discord Webhook Test
+        run: node --experimental-strip-types --test test/discord.test.ts
+
       - name: Build
         run: pnpm build
 

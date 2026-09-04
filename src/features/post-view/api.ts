@@ -142,10 +142,12 @@ export async function getPostBySlug(slug: string) {
       updatedAt: posts.updatedAt,
       seriesId: posts.seriesId,
       seriesOrder: posts.seriesOrder,
+      seriesTitle: series.title,
       author: { id: users.id, name: users.name },
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(series, eq(posts.seriesId, series.id))
     .where(eq(posts.slug, slug))
     .limit(1);
 
