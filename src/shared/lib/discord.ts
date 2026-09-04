@@ -21,6 +21,9 @@ export async function notifyPostPublished({
   if (!webhookUrl) return;
 
   const siteUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
+  const titleCharacters = Array.from(title);
+  const embedTitle =
+    titleCharacters.length > 256 ? `${titleCharacters.slice(0, 255).join('')}…` : title;
   const summary = excerpt?.trim();
   const description = summary
     ? summary.length > 120
@@ -38,6 +41,7 @@ export async function notifyPostPublished({
     const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(3000),
       body: JSON.stringify({
         username: '그순간',
         avatar_url: `${siteUrl}/logo.png`,
@@ -45,7 +49,7 @@ export async function notifyPostPublished({
           {
             color: 5793266,
             author: { name: '그순간 기술블로그', url: siteUrl },
-            title,
+            title: embedTitle,
             url: `${siteUrl}/posts/${slug}`,
             description,
             ...(coverImage && { image: { url: coverImage } }),

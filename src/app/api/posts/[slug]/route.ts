@@ -67,15 +67,17 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ slug: 
     }),
   });
 
-  if (!post.published && updated.published) {
+  const publishedPost =
+    !post.published && updated.published ? await getPostBySlug(updated.slug) : null;
+  if (publishedPost) {
     await notifyPostPublished({
-      title: updated.title,
-      slug: updated.slug,
-      authorName: post.author.name,
-      excerpt: updated.excerpt,
-      coverImage: updated.coverImage,
-      seriesTitle: typeof seriesTitle === 'string' ? seriesTitle.trim() || undefined : undefined,
-      tagNames: validatedTagNames,
+      title: publishedPost.title,
+      slug: publishedPost.slug,
+      authorName: publishedPost.author.name,
+      excerpt: publishedPost.excerpt,
+      coverImage: publishedPost.coverImage,
+      seriesTitle: publishedPost.seriesTitle ?? undefined,
+      tagNames: publishedPost.tags.map((tag) => tag.name),
     });
   }
 
