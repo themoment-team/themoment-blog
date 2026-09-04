@@ -3,6 +3,7 @@ import { auth } from '@/features/auth/config';
 import { deletePost, updatePost } from '@/features/post-editor';
 import { getPostBySlug } from '@/features/post-view';
 import { ALLOWED_TAGS } from '@/shared/config/tags';
+import { notifyPostPublished } from '@/shared/lib/discord';
 import { generateExcerpt } from '@/shared/lib/markdown';
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
@@ -65,6 +66,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ slug: 
         typeof seriesOrder === 'number' && !Number.isNaN(seriesOrder) ? seriesOrder : null,
     }),
   });
+
+  if (!post.published && updated.published) {
+    await notifyPostPublished({
+      title: updated.title,
+      slug: updated.slug,
+      authorName: post.author.name,
+      excerpt: updated.excerpt,
+      coverImage: updated.coverImage,
+      seriesTitle: typeof seriesTitle === 'string' ? seriesTitle.trim() || undefined : undefined,
+      tagNames: validatedTagNames,
+    });
+  }
 
   return NextResponse.json({ slug: updated.slug });
 }
