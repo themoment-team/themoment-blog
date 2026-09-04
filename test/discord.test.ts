@@ -29,6 +29,7 @@ test('발행한 글을 Discord 웹훅으로 전송한다', async () => {
     assert.equal(request?.init?.method, 'POST');
     assert.deepEqual(JSON.parse(String(request?.init?.body)), {
       username: '그순간',
+      avatar_url: 'http://localhost:3000/logo.png',
       embeds: [
         {
           color: 5793266,

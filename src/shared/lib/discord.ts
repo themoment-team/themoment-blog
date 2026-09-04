@@ -40,6 +40,7 @@ export async function notifyPostPublished({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: '그순간',
+        avatar_url: `${siteUrl}/logo.png`,
         embeds: [
           {
             color: 5793266,
