@@ -142,6 +142,10 @@ body {
   font-family: "Fira Code", "Cascadia Code", ui-monospace, monospace;
 }
 
+.prose :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
 .prose pre {
   background-color: var(--bg-subtle);
   border: 1px solid var(--border);
@@ -164,7 +168,6 @@ body {
   margin: 1.5em 0;
   padding: 0.5em 0 0.5em 1.25em;
   color: var(--fg-muted);
-  font-style: italic;
 }
 
 /* Tailwind preflight가 list-style을 none으로 리셋하므로 마커를 되살린다 */

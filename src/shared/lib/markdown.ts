@@ -90,6 +90,7 @@ function rehypeShiki(hl: Highlighter) {
 
 export async function markdownToHtml(content: string): Promise<string> {
   const hl = await getHighlighter();
+  const normalizedContent = content.replace(/(<img\b[^>]*\/?>)(\r?\n)(?=>)/g, '$1$2$2');
 
   const file = await unified()
     .use(remarkParse)
@@ -103,7 +104,7 @@ export async function markdownToHtml(content: string): Promise<string> {
     })
     .use(rehypeShiki(hl))
     .use(rehypeStringify, { allowDangerousHtml: true })
-    .process(content);
+    .process(normalizedContent);
 
   return String(file);
 }
