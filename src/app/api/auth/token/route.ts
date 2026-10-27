@@ -3,7 +3,8 @@
 const ALLOWED_PARAMS = ['code', 'redirect_uri', 'grant_type', 'code_verifier'] as const;
 
 const omitNullIdToken = (value: unknown): unknown => {
-  if (!value || typeof value !== 'object' || !('id_token' in value) || value.id_token !== null) return value;
+  if (!value || typeof value !== 'object' || !('id_token' in value) || value.id_token !== null)
+    return value;
   const { id_token: _, ...rest } = value;
   return rest;
 };
