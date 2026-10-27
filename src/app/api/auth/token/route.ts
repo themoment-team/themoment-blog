@@ -2,12 +2,11 @@
 // client_id/client_secret은 서버 환경변수에서만 주입하고, 클라이언트가 제어 가능한 파라미터만 통과시킨다.
 const ALLOWED_PARAMS = ['code', 'redirect_uri', 'grant_type', 'code_verifier'] as const;
 
-// DataGSM은 "id_token": null을 내려주는데, Auth.js(oauth4webapi)는 id_token이 있으면 문자열이어야 해서
-// CallbackRouteError가 난다. null 값 필드는 제거해서 넘긴다.
-const omitNullFields = (value: unknown): unknown =>
-  value && typeof value === 'object'
-    ? Object.fromEntries(Object.entries(value).filter(([, fieldValue]) => fieldValue !== null))
-    : value;
+const omitNullIdToken = (value: unknown): unknown => {
+  if (!value || typeof value !== 'object' || !('id_token' in value) || value.id_token !== null) return value;
+  const { id_token: _, ...rest } = value;
+  return rest;
+};
 
 export async function POST(request: Request) {
   const text = await request.text();
@@ -29,5 +28,5 @@ export async function POST(request: Request) {
   });
 
   const data: unknown = await res.json();
-  return Response.json(res.ok ? omitNullFields(data) : data, { status: res.status });
+  return Response.json(omitNullIdToken(data), { status: res.status });
 }
