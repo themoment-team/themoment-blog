@@ -21,6 +21,11 @@ export async function POST(request: Request) {
     body: JSON.stringify(body),
   });
 
-  const data: unknown = await res.json();
+  let data: unknown = await res.json();
+  // DataGSM은 "id_token": null을 내려주는데, Auth.js(oauth4webapi)는 id_token이 있으면 문자열이어야 해서
+  // CallbackRouteError가 난다. null 값 필드는 제거해서 넘긴다.
+  if (res.ok && data && typeof data === 'object') {
+    data = Object.fromEntries(Object.entries(data).filter(([, value]) => value !== null));
+  }
   return Response.json(data, { status: res.status });
 }
