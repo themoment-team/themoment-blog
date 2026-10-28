@@ -2,6 +2,13 @@
 // client_id/client_secret은 서버 환경변수에서만 주입하고, 클라이언트가 제어 가능한 파라미터만 통과시킨다.
 const ALLOWED_PARAMS = ['code', 'redirect_uri', 'grant_type', 'code_verifier'] as const;
 
+const omitNullIdToken = (value: unknown): unknown => {
+  if (!value || typeof value !== 'object' || !('id_token' in value) || value.id_token !== null)
+    return value;
+  const { id_token: _, ...rest } = value;
+  return rest;
+};
+
 export async function POST(request: Request) {
   const text = await request.text();
   const params = new URLSearchParams(text);
@@ -22,5 +29,5 @@ export async function POST(request: Request) {
   });
 
   const data: unknown = await res.json();
-  return Response.json(data, { status: res.status });
+  return Response.json(omitNullIdToken(data), { status: res.status });
 }
